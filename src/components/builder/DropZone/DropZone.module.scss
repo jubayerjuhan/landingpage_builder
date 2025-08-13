@@ -1,0 +1,71 @@
+.dropZone {
+  min-height: 140px;
+  padding: var(--spacing-lg);
+  border: 2px dashed #e6e1b3; // subtle yellow to echo screenshot
+  border-radius: 10px;
+  background-color: #fff;
+  transition: all var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.dropZoneActive {
+  border-color: var(--color-primary);
+  background-color: rgba(0, 123, 255, 0.05);
+}
+
+.dropZoneOver {
+  border-color: #f1c40f;
+  background-color: rgba(241, 196, 15, 0.08);
+  border-style: solid;
+}
+
+.placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100px;
+  color: var(--color-gray-500);
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
+
+.placeholderIcon {
+  width: 32px;
+  height: 32px;
+  margin-bottom: var(--spacing-xs);
+  opacity: 0.5;
+}
+
+.componentWrapper {
+  position: relative;
+  border: 1px solid transparent;
+  border-radius: var(--border-radius-sm);
+  transition: border-color var(--transition-fast);
+  
+  &:hover {
+    border-color: var(--color-gray-300);
+    
+    .componentControls {
+      opacity: 1;
+    }
+  }
+  
+  &.selected {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+  }
+}
+
+.componentControls {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  display: flex;
+  gap: var(--spacing-xs);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+  z-index: 10;
+}

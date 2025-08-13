@@ -1,0 +1,36 @@
+.dragHandle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background-color: var(--color-gray-300);
+  border-radius: var(--border-radius-sm);
+  cursor: grab;
+  transition: background-color var(--transition-fast);
+  
+  &:hover {
+    background-color: var(--color-gray-400);
+  }
+  
+  &:active,
+  &.dragging {
+    cursor: grabbing;
+    background-color: var(--color-primary);
+    
+    .dots {
+      background-color: var(--color-white);
+    }
+  }
+}
+
+.dots {
+  width: 12px;
+  height: 12px;
+  background-image: 
+    radial-gradient(circle, var(--color-gray-600) 2px, transparent 2px),
+    radial-gradient(circle, var(--color-gray-600) 2px, transparent 2px);
+  background-size: 6px 6px;
+  background-position: 0 0, 3px 3px;
+  background-repeat: repeat;
+}

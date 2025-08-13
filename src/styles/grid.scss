@@ -1,0 +1,75 @@
+// Custom Grid System
+@import './tokens.scss';
+
+.container {
+  width: 100%;
+  padding-left: var(--spacing-md);
+  padding-right: var(--spacing-md);
+  margin-left: auto;
+  margin-right: auto;
+  
+  @media (min-width: #{$breakpoint-sm}) {
+    max-width: 540px;
+  }
+  
+  @media (min-width: #{$breakpoint-md}) {
+    max-width: 720px;
+  }
+  
+  @media (min-width: #{$breakpoint-lg}) {
+    max-width: 960px;
+  }
+  
+  @media (min-width: #{$breakpoint-xl}) {
+    max-width: 1140px;
+  }
+  
+  @media (min-width: #{$breakpoint-xxl}) {
+    max-width: 1320px;
+  }
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: calc(var(--spacing-sm) * -1);
+  margin-right: calc(var(--spacing-sm) * -1);
+}
+
+// Column classes
+@for $i from 1 through 12 {
+  .col-#{$i} {
+    flex: 0 0 auto;
+    width: percentage($i / 12);
+    padding-left: var(--spacing-sm);
+    padding-right: var(--spacing-sm);
+  }
+}
+
+// Responsive columns
+@each $breakpoint, $size in (sm: $breakpoint-sm, md: $breakpoint-md, lg: $breakpoint-lg, xl: $breakpoint-xl, xxl: $breakpoint-xxl) {
+  @media (min-width: #{$size}) {
+    @for $i from 1 through 12 {
+      .col-#{$breakpoint}-#{$i} {
+        flex: 0 0 auto;
+        width: percentage($i / 12);
+        padding-left: var(--spacing-sm);
+        padding-right: var(--spacing-sm);
+      }
+    }
+  }
+}
+
+// Utility classes for common layouts
+.col-auto {
+  flex: 0 0 auto;
+  width: auto;
+  padding-left: var(--spacing-sm);
+  padding-right: var(--spacing-sm);
+}
+
+.col {
+  flex: 1 0 0%;
+  padding-left: var(--spacing-sm);
+  padding-right: var(--spacing-sm);
+}
