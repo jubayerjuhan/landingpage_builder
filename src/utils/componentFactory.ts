@@ -8,8 +8,8 @@ export const createComponentFromTemplate = (type: ComponentType): AnyComponent =
     type,
     styles: {
       margin: '8px',
-      padding: '8px'
-    }
+      padding: '8px',
+    },
   };
 
   switch (type) {
@@ -25,8 +25,8 @@ export const createComponentFromTemplate = (type: ComponentType): AnyComponent =
           backgroundColor: '#007bff',
           color: '#ffffff',
           padding: '12px 24px',
-          borderRadius: '6px'
-        }
+          borderRadius: '6px',
+        },
       };
 
     case ComponentType.TEXT:
@@ -39,8 +39,8 @@ export const createComponentFromTemplate = (type: ComponentType): AnyComponent =
           ...baseComponent.styles,
           fontSize: '16px',
           color: '#333333',
-          lineHeight: '1.5'
-        }
+          lineHeight: '1.5',
+        },
       };
 
     case ComponentType.HEADING:
@@ -54,8 +54,8 @@ export const createComponentFromTemplate = (type: ComponentType): AnyComponent =
           fontSize: '24px',
           fontWeight: '600',
           color: '#333333',
-          margin: '0 0 16px 0'
-        }
+          margin: '0 0 16px 0',
+        },
       };
 
     case ComponentType.IMAGE:
@@ -69,8 +69,8 @@ export const createComponentFromTemplate = (type: ComponentType): AnyComponent =
           ...baseComponent.styles,
           width: '300px',
           height: '200px',
-          borderRadius: '8px'
-        }
+          borderRadius: '8px',
+        },
       };
 
     case ComponentType.INPUT:
@@ -87,8 +87,8 @@ export const createComponentFromTemplate = (type: ComponentType): AnyComponent =
           padding: '12px',
           borderRadius: '6px',
           fontSize: '16px',
-          width: '300px'
-        }
+          width: '300px',
+        },
       };
 
     case ComponentType.CONTAINER:
@@ -104,8 +104,8 @@ export const createComponentFromTemplate = (type: ComponentType): AnyComponent =
           padding: '24px',
           borderRadius: '8px',
           width: '100%',
-          minHeight: '120px'
-        }
+          minHeight: '120px',
+        },
       };
 
     case ComponentType.TEXTAREA:
@@ -123,8 +123,8 @@ export const createComponentFromTemplate = (type: ComponentType): AnyComponent =
           borderRadius: '6px',
           fontSize: '16px',
           width: '300px',
-          minHeight: '100px'
-        }
+          minHeight: '100px',
+        },
       };
 
     case ComponentType.CARD:
@@ -140,8 +140,26 @@ export const createComponentFromTemplate = (type: ComponentType): AnyComponent =
           padding: '24px',
           borderRadius: '12px',
           boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-          width: '300px'
-        }
+          width: '300px',
+        },
+      };
+
+    case ComponentType.SECTION:
+      return {
+        ...baseComponent,
+        type: ComponentType.SECTION,
+        children: [],
+        padding: '40px 20px',
+        backgroundColor: '#ffffff',
+        styles: {
+          ...baseComponent.styles,
+          backgroundColor: '#ffffff',
+          padding: '40px 20px',
+          width: '100%',
+          minHeight: '200px',
+          border: '1px dashed #e5e7eb',
+          borderRadius: '8px',
+        },
       };
 
     default:
@@ -149,7 +167,7 @@ export const createComponentFromTemplate = (type: ComponentType): AnyComponent =
         ...baseComponent,
         type: ComponentType.TEXT,
         content: 'Unknown component',
-        tag: 'div' as const
+        tag: 'div' as const,
       };
   }
 };

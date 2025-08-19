@@ -1,0 +1,58 @@
+.formField {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
+
+  &.hasError {
+    .fieldWrapper {
+      input,
+      textarea,
+      select {
+        border-color: var(--color-danger);
+
+        &:focus {
+          border-color: var(--color-danger);
+          box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+      }
+    }
+  }
+}
+
+.label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs);
+  letter-spacing: -0.01em;
+
+  .required {
+    color: var(--color-danger);
+    margin-left: 2px;
+  }
+}
+
+.fieldWrapper {
+  position: relative;
+
+  input,
+  textarea,
+  select {
+    width: 100%;
+    transition: var(--transition-fast);
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px var(--color-primary-light);
+    }
+  }
+}
+
+.error {
+  font-size: var(--font-size-xs);
+  color: var(--color-danger);
+  margin-top: var(--spacing-xs);
+  font-weight: var(--font-weight-medium);
+}

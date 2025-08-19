@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { ComponentType } from '../../../types/components';
 import styles from './ComponentPalette.module.scss';
@@ -8,45 +8,73 @@ interface ComponentTemplate {
   name: string;
   description: string;
   icon: string;
+  category: 'layout' | 'content';
 }
 
 const componentTemplates: ComponentTemplate[] = [
   {
-    type: ComponentType.BUTTON,
-    name: 'Button',
-    description: 'Clickable button element',
-    icon: '🔘'
-  },
-  {
-    type: ComponentType.TEXT,
-    name: 'Text',
-    description: 'Simple text paragraph',
-    icon: '📝'
-  },
-  {
-    type: ComponentType.HEADING,
-    name: 'Heading',
-    description: 'Section heading',
-    icon: '📰'
-  },
-  {
-    type: ComponentType.IMAGE,
-    name: 'Image',
-    description: 'Image element',
-    icon: '🖼️'
-  },
-  {
-    type: ComponentType.INPUT,
-    name: 'Input',
-    description: 'Text input field',
-    icon: '📄'
+    type: ComponentType.SECTION,
+    name: 'Section',
+    description: 'Container for organizing content',
+    icon: '📋',
+    category: 'layout',
   },
   {
     type: ComponentType.CONTAINER,
     name: 'Container',
     description: 'Container for other elements',
-    icon: '📦'
-  }
+    icon: '📦',
+    category: 'layout',
+  },
+  {
+    type: ComponentType.CARD,
+    name: 'Card',
+    description: 'Card with shadow and border',
+    icon: '🃏',
+    category: 'layout',
+  },
+  {
+    type: ComponentType.HEADING,
+    name: 'Heading',
+    description: 'Section heading',
+    icon: '📰',
+    category: 'content',
+  },
+  {
+    type: ComponentType.TEXT,
+    name: 'Text',
+    description: 'Simple text paragraph',
+    icon: '📝',
+    category: 'content',
+  },
+  {
+    type: ComponentType.BUTTON,
+    name: 'Button',
+    description: 'Clickable button element',
+    icon: '🔘',
+    category: 'content',
+  },
+  {
+    type: ComponentType.IMAGE,
+    name: 'Image',
+    description: 'Image element',
+    icon: '🖼️',
+    category: 'content',
+  },
+  {
+    type: ComponentType.INPUT,
+    name: 'Input',
+    description: 'Text input field',
+    icon: '📄',
+    category: 'content',
+  },
+  {
+    type: ComponentType.TEXTAREA,
+    name: 'Text Area',
+    description: 'Multi-line text input',
+    icon: '📝',
+    category: 'content',
+  },
 ];
 
 interface DraggableComponentProps {
@@ -58,8 +86,8 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({ template }) => 
     id: `palette-${template.type}`,
     data: {
       type: template.type,
-      isFromPalette: true
-    }
+      isFromPalette: true,
+    },
   });
 
   return (
@@ -70,58 +98,34 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({ template }) => 
       {...attributes}
       style={{ opacity: isDragging ? 0.5 : 1 }}
     >
-      <div className={styles.componentIcon}>
-        {template.icon}
-      </div>
+      <div className={styles.componentIcon}>{template.icon}</div>
       <div className={styles.componentInfo}>
-        <div className={styles.componentName}>
-          {template.name}
-        </div>
-        <div className={styles.componentDescription}>
-          {template.description}
-        </div>
+        <div className={styles.componentName}>{template.name}</div>
+        <div className={styles.componentDescription}>{template.description}</div>
       </div>
     </div>
   );
 };
 
 export const ComponentPalette: React.FC = () => {
-  const [tab, setTab] = useState<'elements' | 'layouts'>('elements');
+  const layoutComponents = componentTemplates.filter(c => c.category === 'layout');
+  const contentComponents = componentTemplates.filter(c => c.category === 'content');
 
   return (
     <div className={styles.palette}>
-      <div style={{ display: 'flex', gap: 8, paddingBottom: 8 }}>
-        <button
-          className={styles.tab + ' ' + (tab === 'elements' ? styles.active : '')}
-          onClick={() => setTab('elements')}
-        >
-          Elements
-        </button>
-        <button
-          className={styles.tab + ' ' + (tab === 'layouts' ? styles.active : '')}
-          onClick={() => setTab('layouts')}
-        >
-          Layouts
-        </button>
+      <h3 className={styles.paletteTitle}>Layout Elements</h3>
+      <div className={styles.componentList}>
+        {layoutComponents.map(template => (
+          <DraggableComponent key={template.type} template={template} />
+        ))}
       </div>
 
-      {tab === 'elements' && (
-        <>
-          <h3 className={styles.paletteTitle}>Basic Elements</h3>
-          <div className={styles.componentList}>
-            {componentTemplates.map((template) => (
-              <DraggableComponent
-                key={template.type}
-                template={template}
-              />
-            ))}
-          </div>
-        </>
-      )}
-
-      {tab === 'layouts' && (
-        <div style={{ color: '#6b7280', fontSize: 12 }}>Layout presets coming soon.</div>
-      )}
+      <h3 className={styles.paletteTitle}>Content Elements</h3>
+      <div className={styles.componentList}>
+        {contentComponents.map(template => (
+          <DraggableComponent key={template.type} template={template} />
+        ))}
+      </div>
     </div>
   );
 };

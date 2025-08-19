@@ -17,9 +17,7 @@ export enum ComponentType {
   INPUT = 'input',
   TEXTAREA = 'textarea',
   CARD = 'card',
-  MODAL = 'modal',
-  GRID = 'grid',
-  COLUMN = 'column'
+  SECTION = 'section',
 }
 
 export interface ButtonComponent extends BaseComponent {
@@ -79,20 +77,14 @@ export interface CardComponent extends BaseComponent {
   border?: boolean;
 }
 
-export interface GridComponent extends BaseComponent {
-  type: ComponentType.GRID;
-  children: ColumnComponent[];
-  columns?: number;
-  gap?: string;
-}
-
-export interface ColumnComponent extends BaseComponent {
-  type: ComponentType.COLUMN;
+export interface SectionComponent extends BaseComponent {
+  type: ComponentType.SECTION;
   children: BaseComponent[];
-  span?: number;
+  padding?: string;
+  backgroundColor?: string;
 }
 
-export type AnyComponent = 
+export type AnyComponent =
   | ButtonComponent
   | TextComponent
   | HeadingComponent
@@ -101,5 +93,4 @@ export type AnyComponent =
   | InputComponent
   | TextareaComponent
   | CardComponent
-  | GridComponent
-  | ColumnComponent;
+  | SectionComponent;

@@ -1,13 +1,14 @@
 import React from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { Accordion } from './shared/Accordion';
-import { Layout, Type, Square, Circle, Image, RectangleHorizontal } from 'lucide-react';
+import { Layout, Type, Circle, Image, RectangleHorizontal, Columns, Columns2, Columns3 } from 'lucide-react';
 import './LeftSidebar.module.scss';
 
 const layoutItems = [
-  { id: 'section', name: 'Section', icon: Square },
-  { id: 'container', name: 'Container', icon: Layout },
-  { id: 'grid', name: 'Grid', icon: Layout },
+  { id: 'layout_1_column', name: '1 Column', icon: Columns },
+  { id: 'layout_2_column', name: '2 Column', icon: Columns2 },
+  { id: 'layout_3_column', name: '3 Column', icon: Columns3 },
+  { id: 'layout_4_column', name: '4 Column', icon: Layout },
 ];
 
 const typographyItems = [
