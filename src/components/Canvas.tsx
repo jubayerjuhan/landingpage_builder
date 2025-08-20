@@ -72,6 +72,12 @@ const SortableElementWrapper: React.FC<SortableElementWrapperProps> = ({
 
   const badge = getComponentBadge(element.type);
   const isLayoutComponent = ['section', 'container', 'card'].includes(element.type);
+  const { removeElement } = useBuilderStore();
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    removeElement(element.id);
+  };
 
   if (isLayoutComponent) {
     // For layout components, don't show wrapper styling - let the component handle its own appearance
@@ -87,21 +93,35 @@ const SortableElementWrapper: React.FC<SortableElementWrapperProps> = ({
     );
   }
 
+  // For content elements, show unified design similar to layout components
   return (
     <div ref={setNodeRef} style={style} className="sortable-element-wrapper">
-      <div className={`canvas__element-container ${isSelected ? 'canvas__element-container--selected' : ''}`}>
-        <div className="canvas__drag-handle" {...attributes} {...listeners}>
-          <GripVertical size={16} />
-        </div>
+      <div 
+        className={`canvas__content-element ${isSelected ? 'canvas__content-element--selected' : ''}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          onElementClick(element.id, e);
+        }}
+      >
         {isSelected && (
           <div 
-            className="canvas__element-badge"
+            className="canvas__content-element-badge"
             style={{ backgroundColor: badge.color }}
           >
             {badge.label}
           </div>
         )}
-        <div className="canvas__element-content">
+        {isSelected && (
+          <div className="canvas__content-element-drag-handle" {...attributes} {...listeners}>
+            <GripVertical size={16} />
+          </div>
+        )}
+        {isSelected && (
+          <div className="canvas__content-element-delete-button" onClick={handleDelete}>
+            <X size={14} />
+          </div>
+        )}
+        <div className="canvas__content-element-content">
           <ElementRenderer
             element={element}
             isSelected={isSelected}
@@ -324,14 +344,20 @@ const ElementRenderer: React.FC<ElementRendererProps> = ({
     onElementClick(element.id, e);
   };
 
-  return (
-    <div
-      className={`canvas__element ${isSelected ? 'canvas__element--selected' : ''}`}
-      onClick={handleElementClick}
-    >
-      {renderElementContent()}
-    </div>
-  );
+  // For content elements, don't add extra wrapper since SortableElementWrapper handles styling
+  const isLayoutComponent = ['section', 'container', 'card'].includes(element.type);
+  
+  if (isLayoutComponent) {
+    // Layout components need their onClick handler
+    return (
+      <div onClick={handleElementClick}>
+        {renderElementContent()}
+      </div>
+    );
+  }
+
+  // Content elements get their click handler from the outer wrapper
+  return renderElementContent();
 };
 
 export const Canvas: React.FC = () => {
