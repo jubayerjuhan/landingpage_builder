@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { DndContext, DragOverlay } from '@dnd-kit/core';
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 import { TopBar } from '../components/TopBar';
-import { ComponentPalette } from '../components/builder/ComponentPalette';
+import { ComponentPalette } from '../components/builder/ComponentPalette/ComponentPalette';
 import { Canvas } from '../components/Canvas';
 import { RightSidebar } from '../components/RightSidebar';
 import { useBuilderStore } from '../app/store';
@@ -12,7 +12,7 @@ import './BuilderPage.module.scss';
 export const BuilderPage: React.FC = () => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [draggedType, setDraggedType] = useState<string | null>(null);
-  const { addElement } = useBuilderStore();
+  const { addElement, reorderElements, droppedElements, getElementById } = useBuilderStore();
 
   const createElement = (type: string): DroppedElement => {
     const id = `${type}-${Date.now()}`;
@@ -57,7 +57,14 @@ export const BuilderPage: React.FC = () => {
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
-    if (over && active.data.current?.isFromPalette) {
+    if (!over) {
+      setActiveId(null);
+      setDraggedType(null);
+      return;
+    }
+
+    // Handle drops from component palette
+    if (active.data.current?.isFromPalette) {
       const elementType = active.data.current.type as string;
       const newElement = createElement(elementType);
 
@@ -71,6 +78,50 @@ export const BuilderPage: React.FC = () => {
       }
 
       console.log('Created new element:', newElement);
+    } 
+    // Handle reordering of existing elements
+    else {
+      const activeElement = getElementById(active.id as string);
+      if (!activeElement) return;
+
+      // Find the parent of the active element and the target parent
+      const activeParentId = activeElement.parentId || null;
+      
+      // Determine target parent based on over.id
+      let targetParentId = null;
+      if (over.id !== 'main-canvas' && typeof over.id === 'string') {
+        if (over.id.startsWith('container-')) {
+          targetParentId = over.id.replace('container-', '');
+        } else {
+          // If dropping on another element, find its parent
+          const targetElement = getElementById(over.id as string);
+          targetParentId = targetElement?.parentId || null;
+        }
+      }
+
+      // Get the current elements list (either root or parent's children)
+      const currentElements = activeParentId 
+        ? getElementById(activeParentId)?.children || []
+        : droppedElements;
+      
+      const targetElements = targetParentId 
+        ? getElementById(targetParentId)?.children || []
+        : droppedElements;
+
+      // Find current and target indices
+      const oldIndex = currentElements.findIndex(el => el.id === active.id);
+      
+      // If moving within the same container, calculate new index
+      if (activeParentId === targetParentId) {
+        let newIndex = targetElements.findIndex(el => el.id === over.id);
+        if (newIndex === -1) newIndex = targetElements.length;
+        
+        if (oldIndex !== newIndex) {
+          reorderElements(activeParentId, oldIndex, newIndex);
+        }
+      }
+      // TODO: Handle moving between different containers (cross-container drag)
+      // This would require using moveElement instead of reorderElements
     }
 
     setActiveId(null);
