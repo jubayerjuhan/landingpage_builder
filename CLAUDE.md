@@ -3,6 +3,22 @@
 ## Overview
 A modern website/landing page builder similar to GoHighLevel and other professional builders, built with React, TypeScript, and modern web technologies.
 
+## Important Development Conventions
+
+### CSS Modules Convention
+**ALWAYS use CSS Modules for styling components:**
+- Use `.module.scss` files for component styles
+- Import styles as: `import styles from './ComponentName.module.scss'`
+- Apply styles using: `className={styles.className}` (NOT `className="className"`)
+- Use camelCase for class names in SCSS files (e.g., `.topBar`, `.leftSidebar`, `.buttonPrimary`)
+- This ensures locally scoped styles and prevents CSS conflicts
+
+**CRITICAL REMINDER FOR ALL NEW COMPONENTS:**
+- Never use plain class names like `className="header"` or `className="button"`
+- Always use the styles object: `className={styles.header}` or `className={styles.button}`
+- For multiple classes: `className={`${styles.button} ${styles.primary}`}`
+- This convention is mandatory for all component styling in this project
+
 ## Project Goals
 Create a no-code drag-and-drop website builder with features like:
 - Visual page builder with drag-and-drop interface
@@ -165,3 +181,8 @@ The core component library is **complete and functional**. You can now:
 - Maintain clean, maintainable code structure
 - Follow React best practices and patterns
 - **Development server runs on port 5555**
+
+## Git Commit Guidelines
+- **NEVER include "Generated with Claude Code" or "Co-Authored-By: Claude" messages in git commits**
+- Keep commit messages clean and professional
+- Focus on describing the actual changes made

@@ -1,94 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDraggable } from '@dnd-kit/core';
-import { ComponentType } from '../../../types/components';
+import { 
+  getAllCategories, 
+  getComponentsByCategory
+} from '../../definitions/componentDefinitions';
+import { ComponentCategory } from '../../../types/builder';
+import type { ComponentDefinition } from '../../../types/builder';
 import styles from './ComponentPalette.module.scss';
 
-interface ComponentTemplate {
-  type: ComponentType;
-  name: string;
-  description: string;
-  icon: string;
-  category: 'layout' | 'content';
-}
-
-const componentTemplates: ComponentTemplate[] = [
-  {
-    type: ComponentType.SECTION,
-    name: 'Section',
-    description: 'Container for organizing content',
-    icon: '📋',
-    category: 'layout',
-  },
-  {
-    type: ComponentType.CONTAINER,
-    name: 'Container',
-    description: 'Container for other elements',
-    icon: '📦',
-    category: 'layout',
-  },
-  {
-    type: ComponentType.CARD,
-    name: 'Card',
-    description: 'Card with shadow and border',
-    icon: '🃏',
-    category: 'layout',
-  },
-  {
-    type: ComponentType.HEADING,
-    name: 'Heading',
-    description: 'Section heading',
-    icon: '📰',
-    category: 'content',
-  },
-  {
-    type: ComponentType.TEXT,
-    name: 'Text',
-    description: 'Simple text paragraph',
-    icon: '📝',
-    category: 'content',
-  },
-  {
-    type: ComponentType.BUTTON,
-    name: 'Button',
-    description: 'Clickable button element',
-    icon: '🔘',
-    category: 'content',
-  },
-  {
-    type: ComponentType.IMAGE,
-    name: 'Image',
-    description: 'Image element',
-    icon: '🖼️',
-    category: 'content',
-  },
-  {
-    type: ComponentType.INPUT,
-    name: 'Input',
-    description: 'Text input field',
-    icon: '📄',
-    category: 'content',
-  },
-  {
-    type: ComponentType.TEXTAREA,
-    name: 'Text Area',
-    description: 'Multi-line text input',
-    icon: '📝',
-    category: 'content',
-  },
-];
-
 interface DraggableComponentProps {
-  template: ComponentTemplate;
+  definition: ComponentDefinition;
 }
 
-const DraggableComponent: React.FC<DraggableComponentProps> = ({ template }) => {
+const DraggableComponent: React.FC<DraggableComponentProps> = ({ definition }) => {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
-    id: `palette-${template.type}`,
+    id: `palette-${definition.type}`,
     data: {
-      type: template.type,
+      type: definition.type,
       isFromPalette: true,
     },
   });
+
+  const IconComponent = definition.icon;
 
   return (
     <div
@@ -98,33 +31,77 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({ template }) => 
       {...attributes}
       style={{ opacity: isDragging ? 0.5 : 1 }}
     >
-      <div className={styles.componentIcon}>{template.icon}</div>
+      <div className={styles.componentIcon}>
+        <IconComponent size={18} />
+      </div>
       <div className={styles.componentInfo}>
-        <div className={styles.componentName}>{template.name}</div>
-        <div className={styles.componentDescription}>{template.description}</div>
+        <div className={styles.componentName}>{definition.name}</div>
+        <div className={styles.componentDescription}>{definition.description}</div>
       </div>
     </div>
   );
 };
 
+type TabType = 'elements' | 'layouts';
+
 export const ComponentPalette: React.FC = () => {
-  const layoutComponents = componentTemplates.filter(c => c.category === 'layout');
-  const contentComponents = componentTemplates.filter(c => c.category === 'content');
+  const [activeTab, setActiveTab] = useState<TabType>('elements');
+  const categories = getAllCategories();
+  
+  const layoutCategories = [ComponentCategory.LAYOUT];
+  const elementCategories = [
+    ComponentCategory.CONTENT,
+    ComponentCategory.MEDIA, 
+    ComponentCategory.INTERACTIVE,
+    ComponentCategory.FORMS,
+    ComponentCategory.BUSINESS,
+    ComponentCategory.ADVANCED
+  ];
+
+  const getVisibleCategories = () => {
+    return activeTab === 'layouts' 
+      ? categories.filter(cat => layoutCategories.includes(cat.id))
+      : categories.filter(cat => elementCategories.includes(cat.id));
+  };
 
   return (
     <div className={styles.palette}>
-      <h3 className={styles.paletteTitle}>Layout Elements</h3>
-      <div className={styles.componentList}>
-        {layoutComponents.map(template => (
-          <DraggableComponent key={template.type} template={template} />
-        ))}
+      <div className={styles.tabContainer}>
+        <button
+          className={`${styles.tab} ${activeTab === 'elements' ? styles.active : ''}`}
+          onClick={() => setActiveTab('elements')}
+        >
+          Elements
+        </button>
+        <button
+          className={`${styles.tab} ${activeTab === 'layouts' ? styles.active : ''}`}
+          onClick={() => setActiveTab('layouts')}
+        >
+          Layouts
+        </button>
       </div>
 
-      <h3 className={styles.paletteTitle}>Content Elements</h3>
-      <div className={styles.componentList}>
-        {contentComponents.map(template => (
-          <DraggableComponent key={template.type} template={template} />
-        ))}
+      <div className={styles.categoriesContainer}>
+        {getVisibleCategories().map(category => {
+          const components = getComponentsByCategory(category.id);
+          const IconComponent = category.icon;
+          
+          return (
+            <div key={category.id} className={styles.category}>
+              <div className={styles.categoryHeader}>
+                <div className={styles.categoryIcon}>
+                  <IconComponent size={16} />
+                </div>
+                <h3 className={styles.categoryTitle}>{category.name}</h3>
+              </div>
+              <div className={styles.componentList}>
+                {components.map(definition => (
+                  <DraggableComponent key={definition.type} definition={definition} />
+                ))}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

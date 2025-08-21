@@ -6,12 +6,14 @@ interface AccordionProps {
   title: string;
   children: ReactNode;
   defaultOpen?: boolean;
+  icon?: React.ComponentType<{ size?: number; className?: string; }>;
 }
 
 export const Accordion: React.FC<AccordionProps> = ({ 
   title, 
   children, 
-  defaultOpen = false 
+  defaultOpen = false,
+  icon: Icon
 }) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
@@ -21,7 +23,10 @@ export const Accordion: React.FC<AccordionProps> = ({
         className="accordion__header"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <span className="accordion__title">{title}</span>
+        <div className="accordion__title-section">
+          {Icon && <Icon size={16} className="accordion__title-icon" />}
+          <span className="accordion__title">{title}</span>
+        </div>
         {isOpen ? (
           <ChevronDown size={16} className="accordion__icon" />
         ) : (

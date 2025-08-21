@@ -1,5 +1,7 @@
-import type { BuilderElement, ComponentType, ViewportMode } from '../types/builder';
+import { ComponentType } from '../types/builder';
+import type { BuilderElement, ViewportMode } from '../types/builder';
 import { COMPONENT_DEFINITIONS } from '../components/definitions/componentDefinitions';
+import type { SectionConfig, RowConfig } from '../stores/modalStore';
 
 /**
  * Creates a new BuilderElement from component definitions
@@ -144,4 +146,105 @@ export const updateElementViewport = (
   }
   
   return updated;
+};
+
+/**
+ * Creates a section element from modal configuration
+ */
+export const createSectionFromConfig = (config: SectionConfig, overrides?: Partial<BuilderElement>): BuilderElement => {
+  const maxWidthMap = {
+    'full-width': '100%',
+    'wide': '1400px',
+    'medium': '1200px',
+    'small': '800px'
+  };
+
+  const section = createElement(ComponentType.SECTION, {
+    name: `${config.type.charAt(0).toUpperCase() + config.type.slice(1)} Section`,
+    properties: {
+      maxWidth: config.maxWidth || maxWidthMap[config.type],
+      backgroundColor: config.backgroundColor || 'transparent',
+      padding: config.padding || '4rem 0'
+    },
+    styles: {
+      desktop: {
+        maxWidth: config.maxWidth || maxWidthMap[config.type],
+        backgroundColor: config.backgroundColor || 'transparent',
+        padding: config.padding || '4rem 0',
+        margin: '0 auto',
+        width: '100%'
+      },
+      tablet: {
+        padding: '3rem 1rem'
+      },
+      mobile: {
+        padding: '2rem 1rem'
+      }
+    },
+    ...overrides
+  });
+
+  return section;
+};
+
+/**
+ * Creates a row element with automatic column generation
+ */
+export const createRowWithColumns = (config: RowConfig, overrides?: Partial<BuilderElement>): BuilderElement => {
+  // Create columns based on count
+  const columns: BuilderElement[] = [];
+  const columnWidth = `${100 / config.columns}%`;
+  
+  for (let i = 0; i < config.columns; i++) {
+    const column = createElement(ComponentType.COLUMN, {
+      name: `Column ${i + 1}`,
+      properties: {
+        width: columnWidth,
+        padding: '1rem'
+      },
+      styles: {
+        desktop: {
+          width: columnWidth,
+          padding: '1rem',
+          minHeight: '100px'
+        },
+        tablet: {
+          width: config.columns <= 2 ? columnWidth : '100%',
+          marginBottom: config.columns > 2 ? '1rem' : '0'
+        },
+        mobile: {
+          width: '100%',
+          marginBottom: '1rem'
+        }
+      }
+    });
+    columns.push(column);
+  }
+
+  // Create row with columns as children
+  const row = createElementWithChildren(ComponentType.ROW, columns, {
+    name: `${config.columns}-Column Row`,
+    properties: {
+      gap: config.gap || '1rem',
+      alignment: config.alignment || 'stretch'
+    },
+    styles: {
+      desktop: {
+        display: 'flex',
+        gap: config.gap || '1rem',
+        alignItems: config.alignment === 'stretch' ? 'stretch' : config.alignment,
+        width: '100%'
+      },
+      tablet: {
+        flexWrap: config.columns > 2 ? 'wrap' : 'nowrap'
+      },
+      mobile: {
+        flexDirection: 'column',
+        gap: '1rem'
+      }
+    },
+    ...overrides
+  });
+
+  return row;
 };

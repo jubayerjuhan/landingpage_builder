@@ -17,6 +17,16 @@
     }
   }
 
+  &__title-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__title-icon {
+    color: #6b7280;
+  }
+
   &__title {
     font-size: 14px;
     font-weight: 600;
