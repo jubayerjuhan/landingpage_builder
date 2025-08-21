@@ -195,7 +195,7 @@
     word-break: break-word;
     overflow-wrap: break-word;
     max-width: calc(100% - 16px);
-    
+
     &:focus {
       outline: none !important;
       border: none !important;
@@ -212,7 +212,7 @@
     word-break: break-word;
     overflow-wrap: break-word;
     max-width: calc(100% - 16px);
-    
+
     &:focus {
       outline: none !important;
       border: none !important;
@@ -229,7 +229,7 @@
     overflow-wrap: break-word;
     max-width: calc(100% - 16px);
     display: inline-block;
-    
+
     &:focus {
       outline: none !important;
       border: none !important;
@@ -265,12 +265,12 @@
   &__section {
     border: 2px dashed #d1d5db;
     border-radius: 8px;
-    margin: 16px;
+    margin: 8px;
     background: rgba(249, 250, 251, 0.5);
     transition: all 0.2s ease;
     position: relative;
     min-height: 120px;
-    width: calc(100% - 32px);
+    width: calc(100% - 16px);
     box-sizing: border-box;
 
     &:hover:not(&--selected) {
@@ -283,7 +283,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      
+
       &::before {
         content: "📦 Section - Drop elements inside";
         color: #9ca3af;
@@ -390,7 +390,7 @@
     }
 
     &-content {
-      padding: 24px;
+      padding: 12px;
       min-height: 80px;
       position: relative;
       border-radius: 6px;
@@ -426,7 +426,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      
+
       &::before {
         content: "📁 Container - Drop elements inside";
         color: #9ca3af;
@@ -571,7 +571,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      
+
       &::before {
         content: "🃏 Card - Drop elements inside";
         color: #9ca3af;
