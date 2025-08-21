@@ -114,10 +114,10 @@ const useModalStore = create<ModalStore>((set, get) => ({
         
         if (targetParentId) {
           // Add as child to specific parent
-          elementStore.addElement(sectionElement, targetParentId);
+          elementStore.addElementWithChildren(sectionElement, targetParentId);
         } else {
           // Add to root level
-          elementStore.addElement(sectionElement);
+          elementStore.addElementWithChildren(sectionElement);
         }
         
         // Select the newly created section
@@ -140,7 +140,7 @@ const useModalStore = create<ModalStore>((set, get) => ({
         
         // Add to element store as child of target parent
         const elementStore = useElementStore.getState();
-        elementStore.addElement(rowElement, targetParentId);
+        elementStore.addElementWithChildren(rowElement, targetParentId);
         
         // Select the newly created row
         elementStore.selectElement(rowElement.id);

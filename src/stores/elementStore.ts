@@ -25,6 +25,44 @@ const useElementStore = create<ElementStore>((set, get) => ({
     return newElement.id;
   },
 
+  addElementWithChildren: (element, parentId, index) => {
+    const elementsToAdd: BuilderElement[] = [];
+    
+    // Recursively add element and its children
+    const processElement = (el: BuilderElement, newParentId?: string): string => {
+      const newId = el.id || uuidv4(); // Keep existing ID if present
+      const order = index ?? get().elements.filter(elem => elem.parentId === newParentId).length + elementsToAdd.filter(elem => elem.parentId === newParentId).length;
+      
+      const processedElement: BuilderElement = {
+        ...el,
+        id: newId,
+        parentId: newParentId,
+        order
+      };
+      
+      // Remove children from the element since we'll add them separately
+      const { children: _, ...elementWithoutChildren } = processedElement;
+      elementsToAdd.push(elementWithoutChildren);
+      
+      // Process children if they exist
+      if (el.children && el.children.length > 0) {
+        el.children.forEach((child, childIndex) => {
+          processElement(child, newId);
+        });
+      }
+      
+      return newId;
+    };
+    
+    const newElementId = processElement(element, parentId);
+    
+    set(state => ({
+      elements: [...state.elements, ...elementsToAdd]
+    }));
+
+    return newElementId;
+  },
+
   updateElement: (id, updates, viewport) => {
     set(state => ({
       elements: state.elements.map(element => {

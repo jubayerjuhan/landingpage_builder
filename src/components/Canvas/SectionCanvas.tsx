@@ -1,4 +1,5 @@
 import React from 'react';
+import { useDroppable } from '@dnd-kit/core';
 import { Plus } from 'lucide-react';
 import useElementStore from '../../stores/elementStore';
 import useModalStore from '../../stores/modalStore';
@@ -8,7 +9,7 @@ import type { BuilderElement } from '../../types/builder';
 import styles from './SectionCanvas.module.scss';
 
 export const SectionCanvas: React.FC = () => {
-  const { elements, selectedElementId, selectElement } = useElementStore();
+  const { elements, selectedElementIds, selectElement } = useElementStore();
   const { openAddSectionModal, openAddRowModal } = useModalStore();
 
   // Get root level sections (elements with no parentId)
@@ -17,12 +18,12 @@ export const SectionCanvas: React.FC = () => {
   const handleCanvasClick = (e: React.MouseEvent) => {
     // Only clear selection if clicking on canvas directly
     if (e.target === e.currentTarget) {
-      selectElement(null);
+      selectElement(''); // Use empty string instead of null
     }
   };
 
   const renderSection = (section: BuilderElement) => {
-    const isSelected = selectedElementId === section.id;
+    const isSelected = selectedElementIds.includes(section.id);
     const rows = elements.filter(el => el.parentId === section.id && el.type === ComponentType.ROW);
 
     return (
@@ -78,7 +79,7 @@ export const SectionCanvas: React.FC = () => {
   };
 
   const renderRow = (row: BuilderElement) => {
-    const isSelected = selectedElementId === row.id;
+    const isSelected = selectedElementIds.includes(row.id);
     const columns = elements.filter(el => el.parentId === row.id && el.type === ComponentType.COLUMN);
 
     return (
@@ -106,16 +107,27 @@ export const SectionCanvas: React.FC = () => {
   };
 
   const renderColumn = (column: BuilderElement) => {
-    const isSelected = selectedElementId === column.id;
+    const isSelected = selectedElementIds.includes(column.id);
+
+    return (
+      <DroppableColumn key={column.id} column={column} isSelected={isSelected} />
+    );
+  };
+
+  // Droppable column component
+  const DroppableColumn: React.FC<{ column: BuilderElement; isSelected: boolean }> = ({ column, isSelected }) => {
     const columnElements = elements.filter(el => el.parentId === column.id);
+    const { isOver, setNodeRef } = useDroppable({
+      id: `container-${column.id}`,
+    });
 
     return (
       <div
-        key={column.id}
-        className={`${styles.column} ${isSelected ? styles.columnSelected : ''}`}
+        ref={setNodeRef}
+        className={`${styles.column} ${isSelected ? styles.columnSelected : ''} ${isOver ? styles.columnOver : ''}`}
         style={{
-          width: column.properties?.width || 'auto',
-          flex: column.properties?.width ? 'none' : '1'
+          width: (column.properties as any)?.width || 'auto',
+          flex: (column.properties as any)?.width ? 'none' : '1'
         }}
         onClick={(e) => {
           e.stopPropagation();
@@ -136,10 +148,37 @@ export const SectionCanvas: React.FC = () => {
               <ElementRenderer key={element.id} element={element} />
             ))
           ) : (
-            <div className={styles.emptyColumn}>
+            <div className={`${styles.emptyColumn} ${isOver ? styles.emptyColumnOver : ''}`}>
               Drop elements here
             </div>
           )}
+        </div>
+      </div>
+    );
+  };
+
+  // Empty canvas drop zone component
+  const EmptyCanvasDropZone: React.FC = () => {
+    const { isOver, setNodeRef } = useDroppable({
+      id: 'main-canvas',
+    });
+
+    return (
+      <div 
+        ref={setNodeRef}
+        className={`${styles.emptyCanvas} ${isOver ? styles.emptyCanvasOver : ''}`}
+      >
+        <div className={styles.emptyMessage}>
+          <Plus size={32} />
+          <h3>Start Building Your Page</h3>
+          <p>Add your first section to get started</p>
+          <button
+            className={styles.primaryButton}
+            onClick={() => openAddSectionModal()}
+          >
+            <Plus size={18} />
+            Add Section
+          </button>
         </div>
       </div>
     );
@@ -170,20 +209,7 @@ export const SectionCanvas: React.FC = () => {
             {sections.map(section => renderSection(section))}
           </div>
         ) : (
-          <div className={styles.emptyCanvas}>
-            <div className={styles.emptyMessage}>
-              <Plus size={32} />
-              <h3>Start Building Your Page</h3>
-              <p>Add your first section to get started</p>
-              <button
-                className={styles.primaryButton}
-                onClick={() => openAddSectionModal()}
-              >
-                <Plus size={18} />
-                Add Section
-              </button>
-            </div>
-          </div>
+          <EmptyCanvasDropZone />
         )}
       </div>
     </div>

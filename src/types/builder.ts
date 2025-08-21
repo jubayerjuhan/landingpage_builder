@@ -446,6 +446,7 @@ export interface ElementStore {
   
   // Element operations
   addElement: (element: Omit<BuilderElement, 'id'>, parentId?: string, index?: number) => string;
+  addElementWithChildren: (element: BuilderElement, parentId?: string, index?: number) => string;
   updateElement: (id: string, updates: Partial<BuilderElement>, viewport?: ViewportMode) => void;
   updateElements: (updates: Array<{ id: string; updates: Partial<BuilderElement> }>) => void;
   deleteElement: (id: string) => void;
