@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DndContext, DragOverlay } from '@dnd-kit/core';
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 import { TopBar } from './TopBar/TopBar';
 import { Sidebar } from './Sidebar/Sidebar';
 import { Canvas } from './Canvas/Canvas';
+import { PropertiesSidebar } from './PropertiesSidebar/PropertiesSidebar';
 import { useBuilderStore } from '../../stores/builderStore';
 import styles from './Builder.module.scss';
 
@@ -11,7 +12,29 @@ export const Builder: React.FC = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [draggingType, setDraggingType] = useState<string | null>(null);
   const [draggedLabel, setDraggedLabel] = useState<string | null>(null);
-  const { addElement, addLayout, reorderLayout } = useBuilderStore();
+  const { addElement, addLayout, updateElement, selectElement, deleteElement, selectedElementId } = useBuilderStore();
+
+  // Handle keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Delete selected element
+      if (event.key === 'Delete' || event.key === 'Backspace') {
+        if (selectedElementId) {
+          event.preventDefault();
+          deleteElement(selectedElementId);
+          selectElement(null);
+        }
+      }
+      
+      // Escape to deselect
+      if (event.key === 'Escape') {
+        selectElement(null);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [selectedElementId, deleteElement, selectElement]);
 
   const handleDragStart = (event: DragStartEvent) => {
     setIsDragging(true);
@@ -29,7 +52,8 @@ export const Builder: React.FC = () => {
       'single-column': 'Single Column',
       'two-column': '2 Columns',
       'three-column': '3 Columns',
-      'four-column': '4 Columns'
+      'four-column': '4 Columns',
+      'existing-element': 'Element'
     };
     setDraggedLabel(type ? labelMap[type] || type : null);
   };
@@ -45,8 +69,23 @@ export const Builder: React.FC = () => {
     if (active.data.current?.type) {
       const elementType = active.data.current.type;
       const targetId = over.id as string;
+      const activeId = active.id as string;
       
-      // Handle layout drops
+      // Handle existing element movement
+      if (elementType === 'existing-element') {
+        const element = active.data.current.element;
+        if (targetId.startsWith('column-')) {
+          const newParentId = targetId.replace('column-', '');
+          if (element.parentId !== newParentId) {
+            // Move element to different column
+            updateElement(element.id, { parentId: newParentId });
+            selectElement(element.id); // Keep element selected after move
+          }
+        }
+        return;
+      }
+      
+      // Handle new layout drops from sidebar
       if (elementType.includes('column')) {
         const columnCount = elementType === 'single-column' ? 1 : 
                            elementType === 'two-column' ? 2 :
@@ -86,6 +125,7 @@ export const Builder: React.FC = () => {
         <div className={styles.builderMain}>
           <Sidebar />
           <Canvas draggingType={draggingType} />
+          <PropertiesSidebar />
         </div>
       </div>
       

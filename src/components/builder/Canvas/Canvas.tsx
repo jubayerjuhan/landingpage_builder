@@ -225,8 +225,13 @@ const Column: React.FC<{ column: any }> = ({ column }) => {
     >
       {columnElements.length === 0 ? (
         <div className={styles.emptyColumn}>
-          {isOver && <div className={styles.insertionLine} />}
-          Drop elements here
+          {isOver && (
+            <>
+              <div className={styles.insertionLine} />
+              <div className={styles.dropMessage}>Drop element here</div>
+            </>
+          )}
+          {!isOver && "Drop elements here"}
         </div>
       ) : (
         <div className={styles.columnElements}>
@@ -234,11 +239,9 @@ const Column: React.FC<{ column: any }> = ({ column }) => {
           {columnElements.map((element, index) => (
             <div key={element.id} className={styles.elementWrapper}>
               <Element element={element} />
-              {isOver && index === columnElements.length - 1 && (
-                <div className={styles.insertionLine} />
-              )}
             </div>
           ))}
+          {isOver && <div className={styles.insertionLine} />}
         </div>
       )}
     </div>

@@ -180,6 +180,54 @@
   z-index: 10;
 }
 
+.layoutControls {
+  position: absolute;
+  top: -12px;
+  right: 12px;
+  z-index: 10;
+}
+
+
+.moveButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.moveButton {
+  background: #5457ff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  width: 24px;
+  height: 24px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  &:hover:not(.disabled) {
+    background: #4144d9;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active:not(.disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  &.disabled {
+    background: #d1d5db;
+    color: #9ca3af;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+}
+
 .dragOverIndicator {
   position: absolute;
   top: 50%;
@@ -221,6 +269,17 @@
   min-height: 60px;
   color: #9ca3af;
   font-size: 13px;
+  position: relative;
+}
+
+.dropMessage {
+  color: #5457ff;
+  font-weight: 500;
+  z-index: 10;
+  background: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(84, 87, 255, 0.2);
 }
 
 .columnElements {

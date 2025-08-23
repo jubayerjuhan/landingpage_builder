@@ -21,6 +21,8 @@ interface BuilderStore {
   addRow: (layoutId: string) => string;
   addColumn: (rowId: string) => string;
   reorderLayout: (layoutId: string, targetLayoutId: string, position: 'above' | 'below') => void;
+  moveElement: (elementId: string, targetColumnId: string) => void;
+  reorderElements: (elementId: string, targetElementId: string, position: 'above' | 'below') => void;
 }
 
 export const useBuilderStore = create<BuilderStore>((set, get) => ({
@@ -184,6 +186,50 @@ export const useBuilderStore = create<BuilderStore>((set, get) => ({
       elements: state.elements.map(el => {
         if (el.type === 'layout') {
           const newIndex = newLayouts.findIndex(l => l.id === el.id);
+          return { ...el, order: newIndex };
+        }
+        return el;
+      })
+    }));
+  },
+
+  moveElement: (elementId, targetColumnId) => {
+    get().updateElement(elementId, { parentId: targetColumnId });
+  },
+
+  reorderElements: (elementId, targetElementId, position) => {
+    const { elements } = get();
+    const sourceElement = elements.find(el => el.id === elementId);
+    const targetElement = elements.find(el => el.id === targetElementId);
+    
+    if (!sourceElement || !targetElement) return;
+    
+    // Get all elements in the target column
+    const columnElements = elements
+      .filter(el => el.parentId === targetElement.parentId)
+      .sort((a, b) => a.order - b.order);
+    
+    const sourceIndex = columnElements.findIndex(el => el.id === elementId);
+    const targetIndex = columnElements.findIndex(el => el.id === targetElementId);
+    
+    // Create new array with element moved
+    const newElements = [...columnElements];
+    newElements.splice(sourceIndex, 1);
+    
+    let insertIndex;
+    if (position === 'above') {
+      insertIndex = targetIndex > sourceIndex ? targetIndex - 1 : targetIndex;
+    } else {
+      insertIndex = targetIndex >= sourceIndex ? targetIndex : targetIndex + 1;
+    }
+    
+    newElements.splice(insertIndex, 0, sourceElement);
+    
+    // Update orders for all elements in the column
+    set((state) => ({
+      elements: state.elements.map(el => {
+        if (el.parentId === targetElement.parentId) {
+          const newIndex = newElements.findIndex(e => e.id === el.id);
           return { ...el, order: newIndex };
         }
         return el;
