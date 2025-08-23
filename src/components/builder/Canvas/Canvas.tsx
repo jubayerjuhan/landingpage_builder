@@ -6,7 +6,11 @@ import { Element } from './Element/Element';
 import { AddLayoutModal } from '../../modals/AddLayoutModal';
 import styles from './Canvas.module.scss';
 
-export const Canvas: React.FC = () => {
+interface CanvasProps {
+  draggingType: string | null;
+}
+
+export const Canvas: React.FC<CanvasProps> = ({ draggingType }) => {
   const { elements, addLayout } = useBuilderStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   
@@ -44,9 +48,10 @@ export const Canvas: React.FC = () => {
                 layout={layout} 
                 isFirst={index === 0}
                 isLast={index === layouts.length - 1}
+                draggingType={draggingType}
               />
             ))}
-            <LayoutDropZone position="below" />
+            {draggingType?.includes('column') && <LayoutDropZone position="below" />}
           </div>
         )}
       </div>
@@ -98,7 +103,8 @@ const LayoutContainer: React.FC<{
   layout: any; 
   isFirst: boolean;
   isLast: boolean;
-}> = ({ layout, isFirst, isLast }) => {
+  draggingType: string | null;
+}> = ({ layout, isFirst, isLast, draggingType }) => {
   const { elements, selectedElementId, selectElement } = useBuilderStore();
   const rows = elements.filter(el => el.type === 'row' && el.parentId === layout.id);
 
@@ -114,25 +120,29 @@ const LayoutContainer: React.FC<{
     selectElement(layout.id);
   };
 
+  // Only show layout drag over effects when dragging layouts
+  const isLayoutDragging = draggingType?.includes('column');
+  const showDragIndicator = isLayoutOver && isLayoutDragging;
+
   return (
     <div className={styles.layoutWrapper}>
-      {!isFirst && <LayoutDropZone position="above" layoutId={layout.id} />}
+      {!isFirst && isLayoutDragging && <LayoutDropZone position="above" layoutId={layout.id} />}
       
       <div 
         ref={setLayoutRef}
-        className={`${styles.layout} ${isSelected ? styles.selected : ''} ${isLayoutOver ? styles.dragOverLayout : ''}`}
+        className={`${styles.layout} ${isSelected ? styles.selected : ''} ${showDragIndicator ? styles.dragOverLayout : ''}`}
         style={layout.styles}
         onClick={handleLayoutClick}
       >
         {isSelected && <div className={styles.layoutLabel}>Layout</div>}
-        {isLayoutOver && <div className={styles.dragOverIndicator}>Drop here to reorder</div>}
+        {showDragIndicator && <div className={styles.dragOverIndicator}>Drop here to reorder</div>}
         
         {rows.map(row => (
           <Row key={row.id} row={row} />
         ))}
       </div>
       
-      {isLast && <LayoutDropZone position="below" layoutId={layout.id} />}
+      {isLast && isLayoutDragging && <LayoutDropZone position="below" layoutId={layout.id} />}
     </div>
   );
 };
@@ -168,12 +178,21 @@ const Column: React.FC<{ column: any }> = ({ column }) => {
     >
       {columnElements.length === 0 ? (
         <div className={styles.emptyColumn}>
+          {isOver && <div className={styles.insertionLine} />}
           Drop elements here
         </div>
       ) : (
-        columnElements.map(element => (
-          <Element key={element.id} element={element} />
-        ))
+        <div className={styles.columnElements}>
+          {isOver && <div className={styles.insertionLine} />}
+          {columnElements.map((element, index) => (
+            <div key={element.id} className={styles.elementWrapper}>
+              <Element element={element} />
+              {isOver && index === columnElements.length - 1 && (
+                <div className={styles.insertionLine} />
+              )}
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );

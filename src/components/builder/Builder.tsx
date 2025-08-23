@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { DndContext } from '@dnd-kit/core';
-import type { DragEndEvent } from '@dnd-kit/core';
+import { DndContext, DragOverlay } from '@dnd-kit/core';
+import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 import { TopBar } from './TopBar/TopBar';
 import { Sidebar } from './Sidebar/Sidebar';
 import { Canvas } from './Canvas/Canvas';
@@ -9,11 +9,36 @@ import styles from './Builder.module.scss';
 
 export const Builder: React.FC = () => {
   const [isDragging, setIsDragging] = useState(false);
+  const [draggingType, setDraggingType] = useState<string | null>(null);
+  const [draggedLabel, setDraggedLabel] = useState<string | null>(null);
   const { addElement, addLayout, reorderLayout } = useBuilderStore();
+
+  const handleDragStart = (event: DragStartEvent) => {
+    setIsDragging(true);
+    const type = event.active.data.current?.type || null;
+    setDraggingType(type);
+    
+    // Set label for drag overlay
+    const labelMap: Record<string, string> = {
+      'heading': 'Heading',
+      'paragraph': 'Paragraph', 
+      'text': 'Text',
+      'button': 'Button',
+      'image': 'Image',
+      'list': 'List',
+      'single-column': 'Single Column',
+      'two-column': '2 Columns',
+      'three-column': '3 Columns',
+      'four-column': '4 Columns'
+    };
+    setDraggedLabel(type ? labelMap[type] || type : null);
+  };
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     setIsDragging(false);
+    setDraggingType(null);
+    setDraggedLabel(null);
 
     if (!over) return;
 
@@ -55,14 +80,22 @@ export const Builder: React.FC = () => {
   };
 
   return (
-    <DndContext onDragEnd={handleDragEnd}>
-      <div className={styles.builder}>
+    <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+      <div className={`${styles.builder} ${isDragging ? 'dnd-cursor-grabbing' : ''}`}>
         <TopBar />
         <div className={styles.builderMain}>
           <Sidebar />
-          <Canvas />
+          <Canvas draggingType={draggingType} />
         </div>
       </div>
+      
+      <DragOverlay>
+        {isDragging && draggedLabel && (
+          <div className="drag-overlay">
+            📦 {draggedLabel}
+          </div>
+        )}
+      </DragOverlay>
     </DndContext>
   );
 };

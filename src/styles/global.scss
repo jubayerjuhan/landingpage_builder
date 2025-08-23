@@ -25,3 +25,25 @@ button {
 input, textarea {
   font-family: inherit;
 }
+
+// Drag and drop cursor styles
+.dnd-cursor-grabbing * {
+  cursor: grabbing !important;
+}
+
+.dnd-drag-overlay {
+  cursor: grabbing !important;
+}
+
+// Custom drag overlay styles
+.drag-overlay {
+  background: rgba(84, 87, 255, 0.1);
+  border: 2px solid #5457ff;
+  border-radius: 8px;
+  padding: 12px;
+  color: #5457ff;
+  font-weight: 600;
+  box-shadow: 0 8px 25px rgba(84, 87, 255, 0.3);
+  transform: rotate(5deg);
+  z-index: 9999;
+}
