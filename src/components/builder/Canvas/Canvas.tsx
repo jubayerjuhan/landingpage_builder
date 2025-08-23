@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDroppable } from '@dnd-kit/core';
-import { Plus } from 'lucide-react';
+import { Plus, ChevronUp, ChevronDown } from 'lucide-react';
 import { useBuilderStore } from '../../../stores/builderStore';
 import { Element } from './Element/Element';
 import { AddLayoutModal } from '../../modals/AddLayoutModal';
@@ -105,12 +105,12 @@ const LayoutContainer: React.FC<{
   isLast: boolean;
   draggingType: string | null;
 }> = ({ layout, isFirst, isLast, draggingType }) => {
-  const { elements, selectedElementId, selectElement } = useBuilderStore();
+  const { elements, selectedElementId, selectElement, reorderLayout } = useBuilderStore();
   const rows = elements.filter(el => el.type === 'row' && el.parentId === layout.id);
 
   const isSelected = selectedElementId === layout.id;
 
-  // Make layout droppable for reordering
+  // Make layout droppable for new elements only
   const { setNodeRef: setLayoutRef, isOver: isLayoutOver } = useDroppable({
     id: `layout-${layout.id}`
   });
@@ -120,13 +120,36 @@ const LayoutContainer: React.FC<{
     selectElement(layout.id);
   };
 
-  // Only show layout drag over effects when dragging layouts
-  const isLayoutDragging = draggingType?.includes('column');
-  const showDragIndicator = isLayoutOver && isLayoutDragging;
+  const handleMoveUp = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const layouts = elements.filter(el => el.type === 'layout').sort((a, b) => a.order - b.order);
+    const currentIndex = layouts.findIndex(l => l.id === layout.id);
+    if (currentIndex > 0) {
+      const targetLayout = layouts[currentIndex - 1];
+      reorderLayout(layout.id, targetLayout.id, 'above');
+    }
+  };
+
+  const handleMoveDown = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const layouts = elements.filter(el => el.type === 'layout').sort((a, b) => a.order - b.order);
+    const currentIndex = layouts.findIndex(l => l.id === layout.id);
+    if (currentIndex < layouts.length - 1) {
+      const targetLayout = layouts[currentIndex + 1];
+      reorderLayout(layout.id, targetLayout.id, 'below');
+    }
+  };
+
+  // Only show drag effects for new layouts from sidebar
+  const isNewLayoutDragging = draggingType?.includes('column');
+  const showDragIndicator = isLayoutOver && isNewLayoutDragging;
+  
+  // Only show drop zones when dragging new layouts from sidebar
+  const shouldShowDropZones = isNewLayoutDragging;
 
   return (
     <div className={styles.layoutWrapper}>
-      {!isFirst && isLayoutDragging && <LayoutDropZone position="above" layoutId={layout.id} />}
+      {!isFirst && shouldShowDropZones && <LayoutDropZone position="above" layoutId={layout.id} />}
       
       <div 
         ref={setLayoutRef}
@@ -134,15 +157,39 @@ const LayoutContainer: React.FC<{
         style={layout.styles}
         onClick={handleLayoutClick}
       >
-        {isSelected && <div className={styles.layoutLabel}>Layout</div>}
-        {showDragIndicator && <div className={styles.dragOverIndicator}>Drop here to reorder</div>}
+        {isSelected && (
+          <>
+            <div className={styles.layoutLabel}>Layout</div>
+            <div className={styles.layoutControls}>
+              <div className={styles.moveButtons}>
+                <button 
+                  className={`${styles.moveButton} ${isFirst ? styles.disabled : ''}`}
+                  onClick={handleMoveUp}
+                  disabled={isFirst}
+                  title="Move up"
+                >
+                  <ChevronUp size={16} />
+                </button>
+                <button 
+                  className={`${styles.moveButton} ${isLast ? styles.disabled : ''}`}
+                  onClick={handleMoveDown}
+                  disabled={isLast}
+                  title="Move down"
+                >
+                  <ChevronDown size={16} />
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+        {showDragIndicator && <div className={styles.dragOverIndicator}>Drop here to add layout</div>}
         
         {rows.map(row => (
           <Row key={row.id} row={row} />
         ))}
       </div>
       
-      {isLast && isLayoutDragging && <LayoutDropZone position="below" layoutId={layout.id} />}
+      {isLast && shouldShowDropZones && <LayoutDropZone position="below" layoutId={layout.id} />}
     </div>
   );
 };

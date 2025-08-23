@@ -163,34 +163,31 @@ export const useBuilderStore = create<BuilderStore>((set, get) => ({
     
     if (!sourceLayout || !targetLayout) return;
     
+    const sourceIndex = layouts.findIndex(l => l.id === layoutId);
     const targetIndex = layouts.findIndex(l => l.id === targetLayoutId);
-    let newOrder: number;
     
+    // Create a new array with the layout moved to the new position
+    const newLayouts = [...layouts];
+    newLayouts.splice(sourceIndex, 1); // Remove source layout
+    
+    let insertIndex;
     if (position === 'above') {
-      newOrder = targetLayout.order;
-      // Shift layouts at or after target position
-      layouts.slice(targetIndex).forEach(layout => {
-        if (layout.id !== layoutId) {
-          get().updateElement(layout.id, { order: layout.order + 1 });
-        }
-      });
+      insertIndex = targetIndex > sourceIndex ? targetIndex - 1 : targetIndex;
     } else {
-      newOrder = targetLayout.order + 1;
-      // Shift layouts after target position
-      layouts.slice(targetIndex + 1).forEach(layout => {
-        if (layout.id !== layoutId) {
-          get().updateElement(layout.id, { order: layout.order + 1 });
-        }
-      });
+      insertIndex = targetIndex >= sourceIndex ? targetIndex : targetIndex + 1;
     }
     
-    // Update source layout order
-    get().updateElement(layoutId, { order: newOrder });
+    newLayouts.splice(insertIndex, 0, sourceLayout); // Insert at new position
     
-    // Compact orders
-    const updatedLayouts = elements.filter(el => el.type === 'layout').sort((a, b) => a.order - b.order);
-    updatedLayouts.forEach((layout, index) => {
-      get().updateElement(layout.id, { order: index });
-    });
+    // Update all layout orders
+    set((state) => ({
+      elements: state.elements.map(el => {
+        if (el.type === 'layout') {
+          const newIndex = newLayouts.findIndex(l => l.id === el.id);
+          return { ...el, order: newIndex };
+        }
+        return el;
+      })
+    }));
   }
 }));
