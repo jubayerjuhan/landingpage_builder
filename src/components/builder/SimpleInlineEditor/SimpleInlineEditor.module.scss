@@ -1,0 +1,20 @@
+.editingContainer {
+  position: relative;
+  width: 100%;
+}
+
+.editableContent {
+  width: 100%;
+  cursor: text;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.editableWrapper {
+  position: relative;
+  width: 100%;
+  
+  &:hover {
+    background: rgba(84, 87, 255, 0.02);
+  }
+}

@@ -1,0 +1,1 @@
+export { SimpleInlineEditor } from './SimpleInlineEditor';

@@ -1,0 +1,170 @@
+.dropIndicator {
+  pointer-events: none;
+  opacity: 0.9;
+  
+  &.fadeIn {
+    animation: fadeIn 0.2s ease forwards;
+  }
+  
+  &.fadeOut {
+    animation: fadeOut 0.15s ease forwards;
+  }
+  
+  // Pulse animation for inside position
+  &.inside {
+    animation: pulse 1.5s ease-in-out infinite;
+    
+    @keyframes pulse {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(84, 87, 255, 0.4);
+      }
+      50% {
+        box-shadow: 0 0 0 8px rgba(84, 87, 255, 0);
+      }
+    }
+  }
+  
+  // Glow effect for before/after positions
+  &.before,
+  &.after {
+    box-shadow: 
+      0 0 8px rgba(84, 87, 255, 0.6),
+      inset 0 0 8px rgba(84, 87, 255, 0.3);
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, 
+        rgba(84, 87, 255, 0.8) 0%, 
+        rgba(68, 68, 214, 0.8) 50%, 
+        rgba(84, 87, 255, 0.8) 100%);
+      border-radius: inherit;
+      animation: shimmer 2s ease-in-out infinite;
+    }
+  }
+}
+
+.dropMessage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(84, 87, 255, 0.9);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(4px);
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-bottom: 4px solid rgba(84, 87, 255, 0.9);
+  }
+}
+
+// Animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .dropIndicator {
+    // Make indicators slightly larger on mobile for easier visibility
+    &.before,
+    &.after {
+      min-height: 6px;
+      min-width: 6px;
+    }
+  }
+  
+  .dropMessage {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+  .dropIndicator {
+    &.before,
+    &.after {
+      background-color: #0000ff;
+      box-shadow: 0 0 4px #ffffff;
+    }
+    
+    &.inside {
+      border-color: #0000ff;
+      box-shadow: 0 0 4px #ffffff;
+    }
+  }
+  
+  .dropMessage {
+    background: #0000ff;
+    border: 1px solid #ffffff;
+  }
+}
+
+// Reduced motion support
+@media (prefers-reduced-motion: reduce) {
+  .dropIndicator {
+    animation: none !important;
+    transition: none !important;
+    
+    &.inside {
+      animation: none;
+    }
+    
+    &::before {
+      animation: none;
+    }
+  }
+  
+  .fadeIn,
+  .fadeOut {
+    animation: none;
+  }
+}

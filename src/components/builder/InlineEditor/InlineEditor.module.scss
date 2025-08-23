@@ -1,0 +1,137 @@
+.editableWrapper {
+  position: relative;
+  cursor: text;
+  
+  &:hover {
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border: 1px dashed rgba(84, 87, 255, 0.5);
+      border-radius: 4px;
+      pointer-events: none;
+    }
+  }
+  
+  &::before {
+    content: 'Double-click to edit';
+    position: absolute;
+    top: -24px;
+    left: 0;
+    font-size: 11px;
+    color: #666;
+    background: white;
+    padding: 2px 6px;
+    border-radius: 3px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    white-space: nowrap;
+    z-index: 5;
+  }
+  
+  &:hover::before {
+    opacity: 1;
+  }
+}
+
+.inlineEditor {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(4px);
+  transition: all 0.2s ease;
+  
+  &:focus {
+    border-color: #4044d6 !important;
+    box-shadow: 0 0 0 3px rgba(84, 87, 255, 0.1) !important;
+  }
+  
+  // Remove default browser outline
+  &:focus-visible {
+    outline: none;
+  }
+  
+  // Ensure text formatting is preserved
+  * {
+    font-family: inherit;
+  }
+  
+  // Style for placeholder text
+  &:empty::before {
+    content: attr(data-placeholder);
+    color: #999;
+    font-style: italic;
+  }
+}
+
+.floatingToolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: white;
+  border: 1px solid #e1e5e9;
+  border-radius: 6px;
+  padding: 4px 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: fadeInUp 0.2s ease;
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+.toolbarButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.15s ease;
+  
+  &:hover {
+    background: #f5f5f5;
+    color: #333;
+  }
+  
+  &:active,
+  &.active {
+    background: #5457ff;
+    color: white;
+  }
+  
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(84, 87, 255, 0.3);
+  }
+}
+
+.separator {
+  width: 1px;
+  height: 20px;
+  background: #e1e5e9;
+  margin: 0 4px;
+}
+
+// Ensure proper text selection styling
+::selection {
+  background: rgba(84, 87, 255, 0.2);
+}
+
+::-moz-selection {
+  background: rgba(84, 87, 255, 0.2);
+}

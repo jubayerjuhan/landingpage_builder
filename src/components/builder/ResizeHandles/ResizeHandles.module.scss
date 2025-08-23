@@ -1,0 +1,171 @@
+.resizeContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.resizeHandle {
+  position: absolute;
+  background: #5457ff;
+  border: 2px solid white;
+  border-radius: 3px;
+  width: 8px;
+  height: 8px;
+  pointer-events: auto;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  
+  &:hover {
+    background: #4044d6;
+    transform: scale(1.2);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  }
+  
+  &:active {
+    background: #3b3fd1;
+    transform: scale(1.1);
+  }
+  
+  // Corner handles
+  &.nw {
+    top: -4px;
+    left: -4px;
+    cursor: nw-resize;
+  }
+  
+  &.ne {
+    top: -4px;
+    right: -4px;
+    cursor: ne-resize;
+  }
+  
+  &.sw {
+    bottom: -4px;
+    left: -4px;
+    cursor: sw-resize;
+  }
+  
+  &.se {
+    bottom: -4px;
+    right: -4px;
+    cursor: se-resize;
+  }
+  
+  // Edge handles
+  &.n {
+    top: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    cursor: n-resize;
+  }
+  
+  &.s {
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    cursor: s-resize;
+  }
+  
+  &.w {
+    top: 50%;
+    left: -4px;
+    transform: translateY(-50%);
+    cursor: w-resize;
+  }
+  
+  &.e {
+    top: 50%;
+    right: -4px;
+    transform: translateY(-50%);
+    cursor: e-resize;
+  }
+  
+  // Hover states for edge handles
+  &.n:hover,
+  &.s:hover {
+    transform: translateX(-50%) scale(1.2);
+  }
+  
+  &.w:hover,
+  &.e:hover {
+    transform: translateY(-50%) scale(1.2);
+  }
+  
+  &.n:active,
+  &.s:active {
+    transform: translateX(-50%) scale(1.1);
+  }
+  
+  &.w:active,
+  &.e:active {
+    transform: translateY(-50%) scale(1.1);
+  }
+}
+
+.dimensionDisplay {
+  position: absolute;
+  bottom: -35px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  animation: fadeIn 0.2s ease;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-bottom: 4px solid #333;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+}
+
+// Show resize handles only when parent element is selected
+.elementWrapper:not(.selected) .resizeContainer {
+  display: none;
+}
+
+// Hide resize handles for text-only elements
+.elementWrapper[data-element-type="text"] .resizeContainer,
+.elementWrapper[data-element-type="heading"] .resizeContainer,
+.elementWrapper[data-element-type="paragraph"] .resizeContainer {
+  display: none;
+}
+
+// Special handling during resize
+body[style*="cursor"][style*="resize"] {
+  * {
+    pointer-events: none !important;
+  }
+  
+  .resizeHandle {
+    pointer-events: auto !important;
+  }
+}

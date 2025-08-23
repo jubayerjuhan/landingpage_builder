@@ -1,36 +1,41 @@
 .dragHandle {
+  position: absolute;
+  top: -12px;
+  left: -12px;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 24px;
   height: 24px;
-  background-color: var(--color-gray-300);
-  border-radius: var(--border-radius-sm);
+  background-color: #5457ff;
+  border: 2px solid white;
+  border-radius: 6px;
   cursor: grab;
-  transition: background-color var(--transition-fast);
+  transition: all 0.2s ease;
+  z-index: 10;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   
   &:hover {
-    background-color: var(--color-gray-400);
+    background-color: #4044d6;
+    transform: scale(1.1);
   }
   
   &:active,
   &.dragging {
     cursor: grabbing;
-    background-color: var(--color-primary);
-    
-    .dots {
-      background-color: var(--color-white);
-    }
+    background-color: #3b3fd1;
+    transform: scale(0.95);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
   }
-}
-
-.dots {
-  width: 12px;
-  height: 12px;
-  background-image: 
-    radial-gradient(circle, var(--color-gray-600) 2px, transparent 2px),
-    radial-gradient(circle, var(--color-gray-600) 2px, transparent 2px);
-  background-size: 6px 6px;
-  background-position: 0 0, 3px 3px;
-  background-repeat: repeat;
+  
+  // Hide the handle when parent is not hovered or selected
+  opacity: 0;
+  pointer-events: none;
+  
+  .elementWrapper:hover &,
+  .elementWrapper.selected & {
+    opacity: 1;
+    pointer-events: auto;
+  }
 }
