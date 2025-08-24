@@ -66,10 +66,16 @@
     transform: translateY(1px);
   }
 
-  &:disabled {
+  &:disabled,
+  &.disabled {
     opacity: 0.4;
     cursor: not-allowed;
     transform: none;
+    
+    &:hover {
+      background: #f8f9fa;
+      border-color: #dee2e6;
+    }
   }
 
   svg {

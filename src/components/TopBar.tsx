@@ -2,7 +2,19 @@ import React from 'react';
 import { Undo, Redo, Eye, Globe, Save, Download, Settings } from 'lucide-react';
 import styles from './TopBar.module.scss';
 
-export const TopBar: React.FC = () => {
+interface TopBarProps {
+  canUndo?: boolean;
+  canRedo?: boolean;
+  onUndo?: () => void;
+  onRedo?: () => void;
+}
+
+export const TopBar: React.FC<TopBarProps> = ({
+  canUndo = false,
+  canRedo = false,
+  onUndo,
+  onRedo
+}) => {
   return (
     <div className={styles.topBar}>
       <div className={styles.topBarLeft}>
@@ -13,11 +25,21 @@ export const TopBar: React.FC = () => {
       
       <div className={styles.topBarCenter}>
         <div className={styles.actionGroup}>
-          <button className={styles.iconButton} title="Undo">
+          <button 
+            className={`${styles.iconButton} ${!canUndo ? styles.disabled : ''}`}
+            title="Undo (Ctrl+Z)"
+            onClick={onUndo}
+            disabled={!canUndo}
+          >
             <Undo size={18} />
             <span>Undo</span>
           </button>
-          <button className={styles.iconButton} title="Redo">
+          <button 
+            className={`${styles.iconButton} ${!canRedo ? styles.disabled : ''}`}
+            title="Redo (Ctrl+Y)"
+            onClick={onRedo}
+            disabled={!canRedo}
+          >
             <Redo size={18} />
             <span>Redo</span>
           </button>

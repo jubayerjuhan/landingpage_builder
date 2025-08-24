@@ -1,6 +1,5 @@
 import React from 'react';
 import type { BuilderElement } from '../../../types/builder';
-import { ElementWrapper } from '../ElementWrapper';
 import { getElementStyles } from '../../../utils/styleUtils';
 import useCanvasStore from '../../../stores/canvasStore';
 
@@ -27,23 +26,21 @@ export const Spacer: React.FC<SpacerProps> = ({ element }) => {
   }
   
   return (
-    <ElementWrapper element={element}>
-      <div style={spacerStyles}>
-        {previewMode === 'edit' && (
-          <div style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            color: '#3b82f6',
-            fontSize: '12px',
-            fontWeight: '500',
-            pointerEvents: 'none'
-          }}>
-            Spacer
-          </div>
-        )}
-      </div>
-    </ElementWrapper>
+    <div style={spacerStyles} data-element-id={element.id} data-element-type={element.type}>
+      {previewMode === 'edit' && (
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          color: '#3b82f6',
+          fontSize: '12px',
+          fontWeight: '500',
+          pointerEvents: 'none'
+        }}>
+          Spacer
+        </div>
+      )}
+    </div>
   );
 };

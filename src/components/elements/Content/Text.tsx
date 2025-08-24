@@ -1,28 +1,117 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import type { BuilderElement } from '../../../types/builder';
 import { ElementWrapper } from '../ElementWrapper';
 import { getElementStyles, getElementContent } from '../../../utils/styleUtils';
 import useCanvasStore from '../../../stores/canvasStore';
+import useElementStore from '../../../stores/elementStore';
 
 interface TextProps {
   element: BuilderElement;
 }
 
 export const Text: React.FC<TextProps> = ({ element }) => {
-  const { viewportMode } = useCanvasStore();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editText, setEditText] = useState('');
+  const editableRef = useRef<HTMLSpanElement>(null);
+  
+  const { viewportMode, previewMode } = useCanvasStore();
+  const { updateElement } = useElementStore();
+  
   const styles = getElementStyles(element, viewportMode);
   const content = getElementContent(element);
   
   const textStyles: React.CSSProperties = {
-    display: 'inline',
+    display: 'inline-block',
     ...styles,
+    cursor: previewMode === 'preview' ? 'default' : 'text',
+    position: 'relative',
   };
   
-  const text = content.text || 'Text content';
+  const text = content.text || element.content || 'Text content';
   
+  // Handle double-click to start editing
+  const handleDoubleClick = (e: React.MouseEvent) => {
+    if (previewMode === 'preview') return;
+    
+    e.preventDefault();
+    e.stopPropagation();
+    
+    console.log('🎯 Text double-clicked, starting edit mode');
+    setEditText(text);
+    setIsEditing(true);
+  };
+  
+  // Handle save
+  const handleSave = () => {
+    const newText = editableRef.current?.innerText || editText;
+    console.log('💾 Saving text content:', newText);
+    updateElement(element.id, { content: newText });
+    setIsEditing(false);
+  };
+  
+  // Handle cancel
+  const handleCancel = () => {
+    setIsEditing(false);
+    setEditText(text);
+  };
+  
+  // Handle keyboard events
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSave();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      handleCancel();
+    }
+  };
+  
+  // Focus when editing starts
+  useEffect(() => {
+    if (isEditing && editableRef.current) {
+      editableRef.current.focus();
+      // Select all text
+      const range = document.createRange();
+      range.selectNodeContents(editableRef.current);
+      const selection = window.getSelection();
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+    }
+  }, [isEditing]);
+  
+  // If editing, render contentEditable version
+  if (isEditing) {
+    return (
+      <ElementWrapper element={element}>
+        <span
+          ref={editableRef}
+          contentEditable
+          suppressContentEditableWarning
+          style={{
+            ...textStyles,
+            outline: '2px solid #5457ff',
+            outlineOffset: '2px',
+            background: 'rgba(84, 87, 255, 0.05)',
+            padding: '4px',
+            borderRadius: '4px',
+          }}
+          onBlur={handleSave}
+          onKeyDown={handleKeyDown}
+        >
+          {text}
+        </span>
+      </ElementWrapper>
+    );
+  }
+  
+  // Normal render with double-click handler
   return (
     <ElementWrapper element={element}>
-      <span style={textStyles}>
+      <span 
+        style={textStyles}
+        onDoubleClick={handleDoubleClick}
+        title={previewMode === 'edit' ? 'Double-click to edit' : undefined}
+      >
         {text}
       </span>
     </ElementWrapper>

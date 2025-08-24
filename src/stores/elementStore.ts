@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
 import type { BuilderElement, ElementStore } from '../types/builder';
 import { ComponentType } from '../types/builder';
+import { createSnapshot, historyActions } from './historyStore';
 
 const useElementStore = create<ElementStore>((set, get) => ({
   elements: [],
@@ -11,6 +12,9 @@ const useElementStore = create<ElementStore>((set, get) => ({
 
   // Element operations
   addElement: (element, parentId, index) => {
+    const state = get();
+    const beforeSnapshot = createSnapshot(state.elements, state.selectedElementIds);
+    
     const newElement: BuilderElement = {
       ...element,
       id: uuidv4(),
@@ -18,9 +22,22 @@ const useElementStore = create<ElementStore>((set, get) => ({
       order: index ?? get().elements.filter(el => el.parentId === parentId).length
     };
 
-    set(state => ({
-      elements: [...state.elements, newElement]
+    set(currentState => ({
+      elements: [...currentState.elements, newElement]
     }));
+
+    // Track history after state change
+    const afterState = get();
+    const afterSnapshot = createSnapshot(afterState.elements, afterState.selectedElementIds);
+    
+    // Import history store dynamically to avoid circular dependency
+    import('./historyStore').then(({ default: useHistoryStore }) => {
+      useHistoryStore.getState().pushHistory({
+        ...historyActions.createElement(newElement.id, `Add ${element.type}`),
+        beforeState: beforeSnapshot,
+        afterState: afterSnapshot
+      });
+    });
 
     return newElement.id;
   },
@@ -64,8 +81,11 @@ const useElementStore = create<ElementStore>((set, get) => ({
   },
 
   updateElement: (id, updates, viewport) => {
-    set(state => ({
-      elements: state.elements.map(element => {
+    const state = get();
+    const beforeSnapshot = createSnapshot(state.elements, state.selectedElementIds);
+    
+    set(currentState => ({
+      elements: currentState.elements.map(element => {
         if (element.id === id) {
           if (viewport && updates.styles) {
             // Update responsive styles for specific viewport
@@ -86,6 +106,19 @@ const useElementStore = create<ElementStore>((set, get) => ({
         return element;
       })
     }));
+
+    // Track history after state change
+    const afterState = get();
+    const afterSnapshot = createSnapshot(afterState.elements, afterState.selectedElementIds);
+    
+    // Import history store dynamically to avoid circular dependency
+    import('./historyStore').then(({ default: useHistoryStore }) => {
+      useHistoryStore.getState().pushHistory({
+        ...historyActions.updateElement(id, `Update ${state.elements.find(el => el.id === id)?.type || 'element'}`),
+        beforeState: beforeSnapshot,
+        afterState: afterSnapshot
+      });
+    });
   },
 
   updateElements: (updates) => {
@@ -158,12 +191,15 @@ const useElementStore = create<ElementStore>((set, get) => ({
   },
 
   moveElement: (id, newParentId, index) => {
-    set(state => {
-      const element = state.elements.find(el => el.id === id);
-      if (!element) return state;
+    const state = get();
+    const beforeSnapshot = createSnapshot(state.elements, state.selectedElementIds);
+    
+    set(currentState => {
+      const element = currentState.elements.find(el => el.id === id);
+      if (!element) return currentState;
 
       // Update the element's parent and order
-      const updatedElements = state.elements.map(el => {
+      const updatedElements = currentState.elements.map(el => {
         if (el.id === id) {
           return {
             ...el,
@@ -183,6 +219,19 @@ const useElementStore = create<ElementStore>((set, get) => ({
       });
 
       return { elements: updatedElements };
+    });
+
+    // Track history after state change
+    const afterState = get();
+    const afterSnapshot = createSnapshot(afterState.elements, afterState.selectedElementIds);
+    
+    // Import history store dynamically to avoid circular dependency
+    import('./historyStore').then(({ default: useHistoryStore }) => {
+      useHistoryStore.getState().pushHistory({
+        ...historyActions.moveElement(id, `Move ${state.elements.find(el => el.id === id)?.type || 'element'}`),
+        beforeState: beforeSnapshot,
+        afterState: afterSnapshot
+      });
     });
   },
 
@@ -217,6 +266,11 @@ const useElementStore = create<ElementStore>((set, get) => ({
   // Selection
   selectElement: (id, multiSelect = false) => {
     set(state => {
+      // Don't allow selecting empty or invalid IDs
+      if (!id || id.length === 0) {
+        return { selectedElementIds: [] };
+      }
+      
       if (multiSelect) {
         const isSelected = state.selectedElementIds.includes(id);
         return {
@@ -391,5 +445,18 @@ const useElementStore = create<ElementStore>((set, get) => ({
     });
   }
 }));
+
+// Set up global state restoration for history system
+if (typeof window !== 'undefined') {
+  (window as any).__restoreBuilderState = (snapshot: any) => {
+    const elementStore = useElementStore.getState();
+    
+    // Restore elements and selection
+    useElementStore.setState({
+      elements: snapshot.elements || [],
+      selectedElementIds: snapshot.selectedElementIds || [],
+    });
+  };
+}
 
 export default useElementStore;

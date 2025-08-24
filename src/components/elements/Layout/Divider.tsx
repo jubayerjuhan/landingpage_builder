@@ -1,6 +1,5 @@
 import React from 'react';
 import type { BuilderElement } from '../../../types/builder';
-import { ElementWrapper } from '../ElementWrapper';
 import { getElementStyles } from '../../../utils/styleUtils';
 import useCanvasStore from '../../../stores/canvasStore';
 
@@ -22,8 +21,6 @@ export const Divider: React.FC<DividerProps> = ({ element }) => {
   };
   
   return (
-    <ElementWrapper element={element}>
-      <hr style={dividerStyles} />
-    </ElementWrapper>
+    <hr style={dividerStyles} data-element-id={element.id} data-element-type={element.type} />
   );
 };

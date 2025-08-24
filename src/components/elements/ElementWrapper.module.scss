@@ -1,0 +1,252 @@
+.elementWrapper {
+  position: relative;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border-radius: 4px;
+  
+  // Base state - minimal styling
+  &:not(.selected):not(.hovered) {
+    outline: none;
+    border: none;
+  }
+  
+  // Hovered state
+  &.hovered:not(.selected):not(.editing) {
+    outline: 2px solid rgba(84, 87, 255, 0.3);
+    outline-offset: 1px;
+    background: rgba(84, 87, 255, 0.02);
+  }
+  
+  // Selected state
+  &.selected:not(.editing) {
+    outline: 2px solid #5457ff;
+    outline-offset: 1px;
+    background: rgba(84, 87, 255, 0.05);
+    box-shadow: 0 0 0 1px rgba(84, 87, 255, 0.1);
+  }
+  
+  // Editing state (for inline editing)
+  &.editing {
+    outline: none;
+    background: transparent;
+    cursor: text;
+  }
+  
+  // Preview mode
+  &.preview-mode {
+    cursor: default;
+    outline: none !important;
+    background: transparent !important;
+    
+    .elementLabel,
+    .dragHandle,
+    .resizeHandles {
+      display: none !important;
+    }
+  }
+  
+  // Ensure drag handles and resize handles are positioned correctly
+  &:hover .dragHandle,
+  &.selected .dragHandle {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  
+  &.selected .resizeHandles {
+    display: block;
+  }
+}
+
+.elementLabel {
+  position: absolute;
+  top: -24px;
+  left: 0;
+  background: #5457ff;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 500;
+  white-space: nowrap;
+  z-index: 8;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  text-transform: capitalize;
+  letter-spacing: 0.5px;
+  
+  // Arrow pointing down
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 8px;
+    width: 0;
+    height: 0;
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    border-top: 3px solid #5457ff;
+  }
+  
+  // Animation
+  animation: slideDown 0.2s ease;
+  
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+// Element type specific styles
+.elementWrapper {
+  // Text elements
+  &[data-element-type="heading"],
+  &[data-element-type="paragraph"],
+  &[data-element-type="text"] {
+    .dragHandle {
+      top: -8px;
+      left: -8px;
+    }
+    
+    .elementLabel {
+      top: -28px;
+    }
+  }
+  
+  // Image elements
+  &[data-element-type="image"] {
+    display: inline-block;
+    
+    &.selected {
+      outline-offset: 2px;
+    }
+  }
+  
+  // Button elements
+  &[data-element-type="button"] {
+    display: inline-block;
+    
+    .dragHandle {
+      top: -10px;
+      left: -10px;
+    }
+  }
+  
+  // Container elements
+  &[data-element-type="container"],
+  &[data-element-type="section"],
+  &[data-element-type="column"] {
+    min-height: 50px;
+    
+    &.hovered,
+    &.selected {
+      background: rgba(84, 87, 255, 0.03);
+      border: 1px dashed rgba(84, 87, 255, 0.3);
+    }
+    
+    &:empty::before {
+      content: 'Drop elements here';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #999;
+      font-size: 14px;
+      pointer-events: none;
+    }
+  }
+  
+  // Row elements
+  &[data-element-type="row"] {
+    .elementLabel {
+      background: #ff6b6b;
+      
+      &::after {
+        border-top-color: #ff6b6b;
+      }
+    }
+  }
+  
+  // Column elements
+  &[data-element-type="column"] {
+    .elementLabel {
+      background: #4ecdc4;
+      
+      &::after {
+        border-top-color: #4ecdc4;
+      }
+    }
+  }
+}
+
+// Handle positioning adjustments based on element size
+.elementWrapper {
+  &[data-element-type="spacer"],
+  &[data-element-type="divider"] {
+    .dragHandle {
+      top: 50%;
+      left: -12px;
+      transform: translateY(-50%);
+    }
+    
+    .elementLabel {
+      top: -20px;
+      left: -12px;
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .elementWrapper {
+    // Make selection outlines thicker on mobile
+    &.selected {
+      outline-width: 3px;
+    }
+    
+    .elementLabel {
+      font-size: 11px;
+      padding: 3px 8px;
+    }
+    
+    .dragHandle {
+      width: 28px;
+      height: 28px;
+    }
+  }
+}
+
+// High contrast mode
+@media (prefers-contrast: high) {
+  .elementWrapper {
+    &.selected {
+      outline-color: #000000;
+      background: rgba(255, 255, 0, 0.2);
+    }
+    
+    &.hovered {
+      outline-color: #000000;
+      background: rgba(255, 255, 0, 0.1);
+    }
+  }
+  
+  .elementLabel {
+    background: #000000;
+    border: 1px solid #ffffff;
+  }
+}
+
+// Reduced motion
+@media (prefers-reduced-motion: reduce) {
+  .elementWrapper {
+    transition: none;
+  }
+  
+  .elementLabel {
+    animation: none;
+  }
+}

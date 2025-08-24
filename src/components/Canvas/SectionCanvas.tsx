@@ -9,7 +9,7 @@ import type { BuilderElement } from '../../types/builder';
 import styles from './SectionCanvas.module.scss';
 
 export const SectionCanvas: React.FC = () => {
-  const { elements, selectedElementIds, selectElement } = useElementStore();
+  const { elements, selectedElementIds, selectElement, clearSelection } = useElementStore();
   const { openAddSectionModal, openAddRowModal } = useModalStore();
 
   // Get root level sections (elements with no parentId)
@@ -18,45 +18,29 @@ export const SectionCanvas: React.FC = () => {
   const handleCanvasClick = (e: React.MouseEvent) => {
     // Only clear selection if clicking on canvas directly
     if (e.target === e.currentTarget) {
-      selectElement(''); // Use empty string instead of null
+      clearSelection();
     }
   };
 
   const renderSection = (section: BuilderElement) => {
-    const isSelected = selectedElementIds.includes(section.id);
     const rows = elements.filter(el => el.parentId === section.id && el.type === ComponentType.ROW);
-
+    
     return (
-      <div
-        key={section.id}
-        className={`${styles.section} ${isSelected ? styles.sectionSelected : ''}`}
-        onClick={(e) => {
-          e.stopPropagation();
-          selectElement(section.id);
-        }}
-      >
-        {/* Section Header */}
+      <div key={section.id} className={styles.sectionContainer}>
         <div className={styles.sectionHeader}>
-          <span className={styles.sectionLabel}>
-            {section.name || 'Section'}
-          </span>
-          <div className={styles.sectionActions}>
-            <button
-              className={styles.actionButton}
-              onClick={(e) => {
-                e.stopPropagation();
-                openAddRowModal(section.id);
-              }}
-              title="Add Row"
-            >
-              <Plus size={16} />
-              Add Row
-            </button>
-          </div>
+          <button
+            className={styles.actionButton}
+            onClick={(e) => {
+              e.stopPropagation();
+              openAddRowModal(section.id);
+            }}
+            title="Add Row"
+          >
+            <Plus size={16} />
+            Add Row
+          </button>
         </div>
-
-        {/* Section Content */}
-        <div className={styles.sectionContent}>
+        <ElementRenderer element={section}>
           {rows.length > 0 ? (
             rows.map(row => renderRow(row))
           ) : (
@@ -73,86 +57,57 @@ export const SectionCanvas: React.FC = () => {
               </button>
             </div>
           )}
-        </div>
+        </ElementRenderer>
       </div>
     );
   };
 
   const renderRow = (row: BuilderElement) => {
-    const isSelected = selectedElementIds.includes(row.id);
     const columns = elements.filter(el => el.parentId === row.id && el.type === ComponentType.COLUMN);
-
+    
     return (
-      <div
-        key={row.id}
-        className={`${styles.row} ${isSelected ? styles.rowSelected : ''}`}
-        onClick={(e) => {
-          e.stopPropagation();
-          selectElement(row.id);
-        }}
-      >
-        {/* Row Header */}
-        <div className={styles.rowHeader}>
-          <span className={styles.rowLabel}>
-            {row.name || 'Row'}
-          </span>
-        </div>
-
-        {/* Row Content - Columns */}
-        <div className={styles.rowContent}>
-          {columns.map(column => renderColumn(column))}
-        </div>
-      </div>
+      <ElementRenderer key={row.id} element={row}>
+        {columns.map(column => renderColumn(column))}
+      </ElementRenderer>
     );
   };
 
   const renderColumn = (column: BuilderElement) => {
-    const isSelected = selectedElementIds.includes(column.id);
-
     return (
-      <DroppableColumn key={column.id} column={column} isSelected={isSelected} />
+      <DroppableColumn key={column.id} column={column} />
     );
   };
 
-  // Droppable column component
-  const DroppableColumn: React.FC<{ column: BuilderElement; isSelected: boolean }> = ({ column, isSelected }) => {
+  // Droppable column component - wrap the column's ElementRenderer with droppable
+  const DroppableColumn: React.FC<{ column: BuilderElement }> = ({ column }) => {
     const columnElements = elements.filter(el => el.parentId === column.id);
     const { isOver, setNodeRef } = useDroppable({
       id: `container-${column.id}`,
     });
 
+    // Pass the droppable ref to a wrapper div that contains the column
     return (
-      <div
-        ref={setNodeRef}
-        className={`${styles.column} ${isSelected ? styles.columnSelected : ''} ${isOver ? styles.columnOver : ''}`}
-        style={{
-          width: (column.properties as any)?.width || 'auto',
-          flex: (column.properties as any)?.width ? 'none' : '1'
-        }}
-        onClick={(e) => {
-          e.stopPropagation();
-          selectElement(column.id);
+      <div 
+        ref={setNodeRef} 
+        style={{ 
+          flex: 1, 
+          position: 'relative',
+          overflow: 'visible' // Don't clip child elements
         }}
       >
-        {/* Column Header */}
-        <div className={styles.columnHeader}>
-          <span className={styles.columnLabel}>
-            {column.name || 'Column'}
-          </span>
-        </div>
-
-        {/* Column Content */}
-        <div className={styles.columnContent}>
+        <ElementRenderer element={column}>
           {columnElements.length > 0 ? (
-            columnElements.map(element => (
-              <ElementRenderer key={element.id} element={element} />
-            ))
+            columnElements
+              .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+              .map(element => (
+                <ElementRenderer key={element.id} element={element} />
+              ))
           ) : (
             <div className={`${styles.emptyColumn} ${isOver ? styles.emptyColumnOver : ''}`}>
               Drop elements here
             </div>
           )}
-        </div>
+        </ElementRenderer>
       </div>
     );
   };

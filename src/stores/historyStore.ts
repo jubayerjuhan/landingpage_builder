@@ -1,10 +1,10 @@
 import { create } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
+import { HistoryActionType } from '../types/builder';
 import type { 
   HistoryStore, 
   HistoryEntry, 
   HistorySnapshot,
-  HistoryActionType,
   BuilderElement 
 } from '../types/builder';
 
