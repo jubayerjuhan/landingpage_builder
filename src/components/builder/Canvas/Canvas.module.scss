@@ -406,7 +406,7 @@
   transition: all $transition-base;
   border: 2px solid transparent;
   border-radius: $radius-lg;
-  padding: $space-8 0 0 0; // Add top padding for label and controls
+  padding-top: 32px; // Space for label and controls only
   background: $background;
   box-shadow: $shadow-xs;
   overflow: visible; // Changed to visible so controls can show
@@ -416,6 +416,20 @@
     background: $primary-50;
     box-shadow: $shadow-primary;
     transform: translateY(-2px);
+    
+    // Add dotted inner border to show actual content boundaries
+    &::after {
+      content: '';
+      position: absolute;
+      top: 32px; // Start after the label space
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border: 2px dotted rgba($primary, 0.4);
+      border-radius: $radius-base;
+      pointer-events: none;
+      z-index: 1;
+    }
   }
 
   &:hover:not(.selected) {
@@ -462,28 +476,27 @@
 
 .layoutControls {
   position: absolute;
-  top: $space-2;
-  right: $space-4;
+  top: -2px; // Position at the top border
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 10;
   opacity: 0;
-  transform: translateY(-4px);
   transition: all $transition-base;
   
   .layout.selected &,
   .layout:hover & {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
 .moveButtons {
   display: flex;
-  flex-direction: column;
+  flex-direction: row; // Horizontal layout
   gap: $space-1;
   background: $background;
   padding: $space-1;
   border-radius: $radius-base;
-  border: 1px solid $border-light;
+  border: 2px solid $primary;
   box-shadow: $shadow-md;
 }
 
@@ -545,26 +558,36 @@
 }
 
 // ============================================================================
+// LAYOUT CONTENT - Actual content area with padding
+// ============================================================================
+
+.layoutContent {
+  // This div will have the actual user-defined padding
+  // The padding starts from where the dotted line begins
+  position: relative;
+  z-index: 0;
+}
+
+// ============================================================================
 // ROWS & COLUMNS - Professional Layout
 // ============================================================================
 
 .row {
-  padding: $space-3;
+  padding: 0; // Remove hardcoded padding - let layout control this
   position: relative;
 }
 
 .column {
-  padding: $space-4;
-  border: 2px dashed $border-light;
+  padding: 0; // Remove hardcoded padding - let layout control this  
+  border: none; // Remove the gray dashed border
   border-radius: $radius-base;
   min-height: 120px;
   transition: all $transition-base;
-  background: rgba($background-secondary, 0.3);
+  background: transparent; // Make background transparent
   position: relative;
 
   &.dragOver {
-    border-color: $primary;
-    border-style: solid;
+    border: 2px solid $primary;
     background: $primary-50;
     box-shadow: inset 0 0 0 1px $primary-200;
     // Removed transform to prevent layout jumping
@@ -580,17 +603,10 @@
   font-size: $font-sm;
   position: relative;
   font-weight: $font-weight-medium;
+  padding: $space-4;
+  text-align: center;
   
-  // Subtle pattern for empty state
-  &::before {
-    content: '';
-    position: absolute;
-    inset: $space-4;
-    background-image: radial-gradient(circle at 2px 2px, $border 1px, transparent 0);
-    background-size: 16px 16px;
-    border-radius: $radius-sm;
-    opacity: 0.3;
-  }
+  // Remove the dotted pattern - keep it clean
 }
 
 .dropMessage {
@@ -801,5 +817,118 @@
     height: 6px;
     background: $primary;
     border-radius: $radius-full;
+  }
+}
+
+// ============================================================================
+// PREVIEW MODE - Clean Website Appearance
+// ============================================================================
+
+.canvas.previewMode {
+  // Remove dotted background pattern
+  background: white;
+  background-image: none;
+  
+  .canvasContent {
+    padding: 0;
+    background: white;
+  }
+  
+  .canvasInner {
+    padding: 0;
+    background: white;
+  }
+  
+  .canvasWorkspace {
+    background: white;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .layouts {
+    padding: 0;
+    gap: 0;
+    margin: 0;
+  }
+  
+  .layoutWrapper {
+    margin: 0;
+  }
+  
+  .layout {
+    // Remove all editor styling
+    border: none !important;
+    box-shadow: none !important;
+    padding-top: 0 !important; // Remove editor top padding
+    background: transparent !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    min-height: auto !important;
+    
+    // Hide any hover/selection states and dotted borders
+    &:hover,
+    &.selected {
+      border: none !important;
+      box-shadow: none !important;
+      background: transparent !important;
+      
+      &::after {
+        display: none !important;
+      }
+    }
+  }
+  
+  .layoutContent {
+    // Keep user-defined padding in preview mode
+  }
+  
+  .row {
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+  }
+  
+  .column {
+    // Remove all dashed borders and editor styling
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    min-height: auto !important;
+    border-radius: 0 !important;
+    
+    // Remove drag over styles
+    &.dragOver {
+      border: none !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+  }
+  
+  .emptyColumn {
+    display: none !important;
+  }
+  
+  .columnElements {
+    gap: 0;
+    margin: 0;
+  }
+  
+  .elementWrapper {
+    margin: 0 !important;
+  }
+  
+  // Hide all drop zones and editor elements
+  .elementDropZone,
+  .layoutDropZone {
+    display: none !important;
+  }
+  
+  .dragOverIndicator {
+    display: none !important;
+  }
+  
+  // Hide empty canvas placeholder in preview mode
+  .emptyCanvas {
+    display: none !important;
   }
 }

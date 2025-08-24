@@ -13,6 +13,7 @@ export interface BuilderElement {
 interface BuilderStore {
   elements: BuilderElement[];
   selectedElementId: string | null;
+  isPreviewMode: boolean;
   addElement: (element: Partial<BuilderElement>) => string;
   updateElement: (id: string, updates: Partial<BuilderElement>) => void;
   deleteElement: (id: string) => void;
@@ -23,11 +24,14 @@ interface BuilderStore {
   reorderLayout: (layoutId: string, targetLayoutId: string, position: 'above' | 'below') => void;
   moveElement: (elementId: string, targetColumnId: string) => void;
   reorderElements: (elementId: string, targetElementId: string, position: 'above' | 'below') => void;
+  togglePreviewMode: () => void;
+  setPreviewMode: (isPreview: boolean) => void;
 }
 
 export const useBuilderStore = create<BuilderStore>((set, get) => ({
   elements: [],
   selectedElementId: null,
+  isPreviewMode: false,
 
   addElement: (element) => {
     const { elements } = get();
@@ -103,7 +107,10 @@ export const useBuilderStore = create<BuilderStore>((set, get) => ({
       content: '',
       parentId: null,
       order: newOrder,
-      styles: {}
+      styles: {
+        padding: '40px',
+        backgroundColor: 'transparent'
+      }
     };
 
     set((state) => ({
@@ -253,6 +260,20 @@ export const useBuilderStore = create<BuilderStore>((set, get) => ({
       targetId: targetElementId, 
       position,
       newOrder: columnElements.map(e => ({ id: e.id, order: columnElements.findIndex(el => el.id === e.id) }))
+    });
+  },
+
+  togglePreviewMode: () => {
+    set((state) => ({ 
+      isPreviewMode: !state.isPreviewMode,
+      selectedElementId: !state.isPreviewMode ? null : state.selectedElementId 
+    }));
+  },
+
+  setPreviewMode: (isPreview) => {
+    set({ 
+      isPreviewMode: isPreview,
+      selectedElementId: isPreview ? null : get().selectedElementId 
     });
   }
 }));

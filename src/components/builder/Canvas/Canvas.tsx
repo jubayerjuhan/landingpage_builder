@@ -22,7 +22,7 @@ interface CanvasProps {
 }
 
 export const Canvas: React.FC<CanvasProps> = ({ draggingType }) => {
-  const { elements, addLayout } = useBuilderStore();
+  const { elements, addLayout, isPreviewMode } = useBuilderStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [zoom, setZoom] = useState(100);
   const [showGrid, setShowGrid] = useState(false);
@@ -62,8 +62,9 @@ export const Canvas: React.FC<CanvasProps> = ({ draggingType }) => {
   };
 
   return (
-    <div className={styles.canvas}>
+    <div className={`${styles.canvas} ${isPreviewMode ? styles.previewMode : ''}`}>
       {/* Modern Canvas Header */}
+      {!isPreviewMode && (
       <div className={styles.canvasHeader}>
         <div className={styles.canvasTitle}>
           <div className={styles.canvasTitleText}>
@@ -134,6 +135,7 @@ export const Canvas: React.FC<CanvasProps> = ({ draggingType }) => {
           </button>
         </div>
       </div>
+      )}
 
       {/* Canvas Content with Professional Layout */}
       <div className={styles.canvasContent}>
@@ -178,9 +180,11 @@ const EmptyCanvas: React.FC<{ onAddLayout: () => void }> = ({ onAddLayout }) => 
   const { setNodeRef, isOver } = useDroppable({
     id: 'main-canvas'
   });
+  const { isPreviewMode } = useBuilderStore();
 
   return (
     <div ref={setNodeRef} className={`${styles.emptyCanvas} ${isOver ? styles.dragOver : ''}`}>
+      {!isPreviewMode && (
       <div className={styles.emptyContent}>
         <h3>Start Building Your Page</h3>
         <p>Drag layouts from the sidebar to begin</p>
@@ -189,6 +193,7 @@ const EmptyCanvas: React.FC<{ onAddLayout: () => void }> = ({ onAddLayout }) => 
           Add Layout
         </button>
       </div>
+      )}
     </div>
   );
 };
@@ -214,7 +219,7 @@ const LayoutContainer: React.FC<{
   isLast: boolean;
   draggingType: string | null;
 }> = ({ layout, isFirst, isLast, draggingType }) => {
-  const { elements, selectedElementId, selectElement, reorderLayout } = useBuilderStore();
+  const { elements, selectedElementId, selectElement, reorderLayout, isPreviewMode } = useBuilderStore();
   const rows = elements.filter(el => el.type === 'row' && el.parentId === layout.id);
 
   const isSelected = selectedElementId === layout.id;
@@ -241,6 +246,7 @@ const LayoutContainer: React.FC<{
   });
 
   const handleLayoutClick = (e: React.MouseEvent) => {
+    if (isPreviewMode) return;
     e.stopPropagation();
     selectElement(layout.id);
   };
@@ -270,7 +276,7 @@ const LayoutContainer: React.FC<{
   const showDragIndicator = isLayoutOver && isNewLayoutDragging;
   
   // Only show drop zones when dragging new layouts from sidebar
-  const shouldShowDropZones = isNewLayoutDragging;
+  const shouldShowDropZones = isNewLayoutDragging && !isPreviewMode;
 
   return (
     <div className={styles.layoutWrapper}>
@@ -279,15 +285,16 @@ const LayoutContainer: React.FC<{
       <div 
         ref={setLayoutRef}
         className={`${styles.layout} ${isSelected ? styles.selected : ''} ${showDragIndicator ? styles.dragOverLayout : ''}`}
-        style={layout.styles}
         onClick={handleLayoutClick}
       >
         {/* Always show layout label */}
+        {!isPreviewMode && (
         <div className={`${styles.layoutLabel} ${isSelected ? styles.selected : ''}`}>
           {getLayoutName()}
         </div>
+        )}
         
-        {isSelected && (
+        {isSelected && !isPreviewMode && (
           <div className={styles.layoutControls}>
             <div className={styles.moveButtons}>
               <button 
@@ -309,11 +316,13 @@ const LayoutContainer: React.FC<{
             </div>
           </div>
         )}
-        {showDragIndicator && <div className={styles.dragOverIndicator}>Drop here to add layout</div>}
+        {showDragIndicator && !isPreviewMode && <div className={styles.dragOverIndicator}>Drop here to add layout</div>}
         
-        {rows.map(row => (
-          <Row key={row.id} row={row} />
-        ))}
+        <div className={styles.layoutContent} style={layout.styles}>
+          {rows.map(row => (
+            <Row key={row.id} row={row} />
+          ))}
+        </div>
       </div>
       
       {isLast && shouldShowDropZones && <LayoutDropZone position="below" layoutId={layout.id} />}

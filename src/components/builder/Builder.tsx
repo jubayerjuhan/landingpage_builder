@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { DndContext, DragOverlay } from '@dnd-kit/core';
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
+import { Eye } from 'lucide-react';
 import { TopBar } from './TopBar/TopBar';
 import { Sidebar } from './Sidebar/Sidebar';
 import { Canvas } from './Canvas/Canvas';
@@ -12,20 +13,24 @@ export const Builder: React.FC = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [draggingType, setDraggingType] = useState<string | null>(null);
   const [draggedLabel, setDraggedLabel] = useState<string | null>(null);
-  const { addElement, addLayout, updateElement, selectElement, deleteElement, selectedElementId, reorderElements } = useBuilderStore();
+  const { addElement, addLayout, updateElement, selectElement, deleteElement, selectedElementId, reorderElements, isPreviewMode, setPreviewMode } = useBuilderStore();
 
   // Handle keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      // Escape to deselect
+      // Escape to deselect or exit preview
       if (event.key === 'Escape') {
-        selectElement(null);
+        if (isPreviewMode) {
+          setPreviewMode(false);
+        } else {
+          selectElement(null);
+        }
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [selectElement]);
+  }, [selectElement, isPreviewMode, setPreviewMode]);
 
   const handleDragStart = (event: DragStartEvent) => {
     setIsDragging(true);
@@ -166,10 +171,26 @@ export const Builder: React.FC = () => {
       <div className={`${styles.builder} ${isDragging ? 'dnd-cursor-grabbing' : ''}`}>
         <TopBar />
         <div className={styles.builderMain}>
-          <Sidebar />
+          {!isPreviewMode && <Sidebar />}
           <Canvas draggingType={draggingType} />
-          <PropertiesSidebar />
+          {!isPreviewMode && <PropertiesSidebar />}
         </div>
+        
+        {/* Preview Mode Banner */}
+        {isPreviewMode && (
+          <div className={styles.previewBanner}>
+            <div className={styles.previewBannerText}>
+              <Eye size={16} />
+              <span>Preview Mode</span>
+            </div>
+            <button 
+              className={styles.exitPreviewBtn}
+              onClick={() => setPreviewMode(false)}
+            >
+              Exit Preview (ESC)
+            </button>
+          </div>
+        )}
       </div>
       
       <DragOverlay>

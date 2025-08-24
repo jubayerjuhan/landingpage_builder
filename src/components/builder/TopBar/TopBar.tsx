@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { Save, Eye, Undo, Redo, Monitor, Tablet, Smartphone, Zap, Settings } from 'lucide-react';
+import { Save, Eye, EyeOff, Undo, Redo, Monitor, Tablet, Smartphone, Zap, Settings } from 'lucide-react';
+import { useBuilderStore } from '../../../stores/builderStore';
 import styles from './TopBar.module.scss';
 
 type Viewport = 'desktop' | 'tablet' | 'mobile';
 
 export const TopBar: React.FC = () => {
   const [currentViewport, setCurrentViewport] = useState<Viewport>('desktop');
+  const { isPreviewMode, togglePreviewMode } = useBuilderStore();
 
   const viewports = [
     { id: 'desktop' as Viewport, label: 'Desktop', icon: Monitor },
@@ -30,8 +32,7 @@ export const TopBar: React.FC = () => {
   };
 
   const handlePreview = () => {
-    // TODO: Implement preview mode
-    window.open('/?preview=true', '_blank');
+    togglePreviewMode();
   };
 
   const handleSave = () => {
@@ -105,12 +106,12 @@ export const TopBar: React.FC = () => {
 
         <div className={styles.actionGroup}>
           <button 
-            className={`${styles.button} ${styles.previewButton}`}
+            className={`${styles.button} ${styles.previewButton} ${isPreviewMode ? styles.active : ''}`}
             onClick={handlePreview}
-            title="Preview your page"
+            title={isPreviewMode ? "Exit preview mode" : "Preview your page"}
           >
-            <Eye size={16} />
-            <span>Preview</span>
+            {isPreviewMode ? <EyeOff size={16} /> : <Eye size={16} />}
+            <span>{isPreviewMode ? 'Exit Preview' : 'Preview'}</span>
           </button>
           
           <button 

@@ -811,3 +811,68 @@
   color: #991b1b;
   font-size: 14px;
 }
+
+// ============================================================================
+// PREVIEW MODE - Clean Element Appearance
+// ============================================================================
+
+.element.previewMode {
+  // Remove all editor visual feedback
+  cursor: default !important;
+  outline: none !important;
+  outline-offset: 0 !important;
+  
+  // Remove hover effects
+  &:hover {
+    outline: none !important;
+    outline-offset: 0 !important;
+  }
+  
+  // Remove selection effects
+  &.selected {
+    outline: none !important;
+    outline-offset: 0 !important;
+  }
+  
+  // Clean list appearance
+  .listItemText {
+    &[contenteditable="true"] {
+      background: transparent !important;
+      border: none !important;
+      cursor: default !important;
+      padding: 0 !important;
+      
+      &:hover,
+      &:focus {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+      }
+    }
+  }
+  
+  .listItemControls {
+    display: none !important;
+  }
+  
+  .addListItemBtn {
+    display: none !important;
+  }
+  
+  // Clean quote appearance
+  .quoteContent {
+    &[contenteditable="true"] {
+      background: transparent !important;
+      border: none !important;
+      cursor: default !important;
+      padding: 0 !important;
+      
+      &:hover,
+      &:focus {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+      }
+    }
+  }
+}

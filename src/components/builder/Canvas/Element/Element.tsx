@@ -19,7 +19,7 @@ export const Element: React.FC<ElementProps> = ({ element }) => {
   const textRef = useRef<HTMLSpanElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const quoteRef = useRef<HTMLDivElement>(null);
-  const { updateElement, selectedElementId, selectElement } = useBuilderStore();
+  const { updateElement, selectedElementId, selectElement, isPreviewMode } = useBuilderStore();
 
   const isSelected = selectedElementId === element.id;
 
@@ -40,6 +40,7 @@ export const Element: React.FC<ElementProps> = ({ element }) => {
 
   // Handle element selection
   const handleClick = (e: React.MouseEvent) => {
+    if (isPreviewMode) return;
     e.stopPropagation();
     selectElement(element.id);
   };
@@ -174,7 +175,7 @@ export const Element: React.FC<ElementProps> = ({ element }) => {
               <div className={styles.listItemContent}>
                 <span 
                   className={styles.listItemText}
-                  contentEditable={isSelected}
+                  contentEditable={isSelected && !isPreviewMode}
                   suppressContentEditableWarning
                   onBlur={(e) => updateListItem(index, (e.target as HTMLElement).textContent || '')}
                   onKeyDown={(e) => {
@@ -187,7 +188,7 @@ export const Element: React.FC<ElementProps> = ({ element }) => {
                   {item}
                 </span>
                 
-                {isSelected && (
+                {isSelected && !isPreviewMode && (
                   <div className={styles.listItemControls}>
                     <button 
                       className={styles.listControlBtn}
@@ -220,7 +221,7 @@ export const Element: React.FC<ElementProps> = ({ element }) => {
           ))}
         </ListTag>
         
-        {isSelected && (
+        {isSelected && !isPreviewMode && (
           <button 
             className={styles.addListItemBtn}
             onClick={addListItem}
@@ -259,7 +260,7 @@ export const Element: React.FC<ElementProps> = ({ element }) => {
     
     switch (element.type) {
       case 'heading':
-        return isSelected ? (
+        return isSelected && !isPreviewMode ? (
           <h2 
             ref={headingRef}
             className={styles.heading} 
@@ -288,7 +289,7 @@ export const Element: React.FC<ElementProps> = ({ element }) => {
         );
       
       case 'paragraph':
-        return isSelected ? (
+        return isSelected && !isPreviewMode ? (
           <p 
             ref={paragraphRef}
             className={styles.paragraph} 
@@ -317,7 +318,7 @@ export const Element: React.FC<ElementProps> = ({ element }) => {
         );
       
       case 'text':
-        return isSelected ? (
+        return isSelected && !isPreviewMode ? (
           <span 
             ref={textRef}
             className={styles.text} 
@@ -346,7 +347,7 @@ export const Element: React.FC<ElementProps> = ({ element }) => {
         );
       
       case 'button':
-        return isSelected ? (
+        return isSelected && !isPreviewMode ? (
           <button 
             ref={buttonRef}
             className={styles.button} 
@@ -403,7 +404,7 @@ export const Element: React.FC<ElementProps> = ({ element }) => {
       case 'quote':
         return (
           <blockquote className={styles.quote} style={elementStyles}>
-            {isSelected ? (
+            {isSelected && !isPreviewMode ? (
               <div 
                 ref={quoteRef}
                 className={styles.quoteContent}
@@ -684,17 +685,17 @@ export const Element: React.FC<ElementProps> = ({ element }) => {
 
   return (
     <div
-      className={`${styles.element} ${isSelected ? styles.selected : ''} ${isDragging ? styles.dragging : ''}`}
+      className={`${styles.element} ${isSelected && !isPreviewMode ? styles.selected : ''} ${isDragging ? styles.dragging : ''} ${isPreviewMode ? styles.previewMode : ''}`}
       style={dragStyle}
       onClick={handleClick}
       onDoubleClick={handleDoubleClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      title={['heading', 'paragraph', 'text', 'button', 'quote'].includes(element.type) ? 'Select and click text to edit' : ''}
+      onMouseEnter={() => !isPreviewMode && setIsHovered(true)}
+      onMouseLeave={() => !isPreviewMode && setIsHovered(false)}
+      title={!isPreviewMode && ['heading', 'paragraph', 'text', 'button', 'quote'].includes(element.type) ? 'Select and click text to edit' : ''}
     >
       {renderElement()}
       
-      {(isSelected || isHovered) && !isEditing && (
+      {(isSelected || isHovered) && !isEditing && !isPreviewMode && (
         <>
           <div className={styles.elementLabel}>
             {element.type}
