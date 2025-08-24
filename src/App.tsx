@@ -1,5 +1,5 @@
 import React from 'react';
-import { Builder } from './components/Builder/Builder';
+import { Builder } from './components/builder/Builder';
 import './styles/global.scss';
 
 function App() {
