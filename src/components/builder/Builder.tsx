@@ -17,15 +17,6 @@ export const Builder: React.FC = () => {
   // Handle keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      // Delete selected element
-      if (event.key === 'Delete' || event.key === 'Backspace') {
-        if (selectedElementId) {
-          event.preventDefault();
-          deleteElement(selectedElementId);
-          selectElement(null);
-        }
-      }
-      
       // Escape to deselect
       if (event.key === 'Escape') {
         selectElement(null);
@@ -34,7 +25,7 @@ export const Builder: React.FC = () => {
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [selectedElementId, deleteElement, selectElement]);
+  }, [selectElement]);
 
   const handleDragStart = (event: DragStartEvent) => {
     setIsDragging(true);
