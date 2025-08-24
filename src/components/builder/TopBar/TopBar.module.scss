@@ -1,88 +1,346 @@
+@import '../../../styles/variables';
+
+// ============================================================================
+// PROFESSIONAL TOP BAR - SaaS Style
+// ============================================================================
+
 .topBar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 56px;
-  background: white;
-  border-bottom: 1px solid #e5e7eb;
-  padding: 0 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  height: $header-height;
+  background: $background;
+  border-bottom: 1px solid $border-light;
+  padding: 0 $space-6;
+  position: relative;
+  z-index: $z-sticky;
+  backdrop-filter: blur(8px);
+  
+  // Subtle gradient for depth
+  background: linear-gradient(to bottom, $background 0%, $background-secondary 100%);
+  
+  // Professional shadow
+  box-shadow: 0 1px 0 $border-light, 0 1px 3px rgba(0, 0, 0, 0.02);
 }
+
+// ============================================================================
+// LEFT SECTION - Logo & Navigation
+// ============================================================================
 
 .left {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: $space-8;
+  flex-shrink: 0;
 }
 
 .logo {
-  font-size: 20px;
-  font-weight: 600;
-  color: #111827;
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  font-size: $font-lg;
+  font-weight: $font-weight-bold;
+  color: $text-primary;
+  text-decoration: none;
+  transition: color $transition-base;
+  
+  &:hover {
+    color: $primary;
+  }
+  
+  // Add a modern logo icon placeholder
+  &::before {
+    content: '';
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(135deg, $primary 0%, $primary-light 100%);
+    border-radius: $radius-base;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: $space-1;
+  }
 }
+
+.projectName {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  color: $text-secondary;
+  font-size: $font-sm;
+  
+  &::before {
+    content: '/';
+    color: $text-tertiary;
+  }
+}
+
+// ============================================================================
+// CENTER SECTION - Controls & Viewport Switcher
+// ============================================================================
 
 .center {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: $space-3;
+  flex: 1;
+  justify-content: center;
+  max-width: 400px;
 }
+
+.historyControls {
+  display: flex;
+  align-items: center;
+  gap: $space-1;
+  padding: $space-1;
+  background: $background-secondary;
+  border-radius: $radius-base;
+  border: 1px solid $border-light;
+}
+
+.viewportSwitcher {
+  display: flex;
+  align-items: center;
+  background: $background-secondary;
+  border-radius: $radius-base;
+  padding: $space-1;
+  border: 1px solid $border-light;
+  margin-left: $space-4;
+}
+
+.viewportButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-1;
+  padding: $space-2 $space-3;
+  min-width: 70px;
+  font-size: $font-xs;
+  font-weight: $font-weight-medium;
+  color: $text-secondary;
+  background: transparent;
+  border: none;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  transition: all $transition-base;
+  
+  &:hover {
+    color: $text-primary;
+    background: rgba($primary, 0.05);
+  }
+  
+  &.active {
+    color: $primary;
+    background: $background;
+    box-shadow: $shadow-xs;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+// ============================================================================
+// RIGHT SECTION - Actions
+// ============================================================================
 
 .right {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: $space-3;
+  flex-shrink: 0;
 }
+
+.actionGroup {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+// ============================================================================
+// BUTTON VARIANTS
+// ============================================================================
 
 .iconButton {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  color: #6b7280;
+  width: $btn-height-sm;
+  height: $btn-height-sm;
+  background: transparent;
+  border: none;
+  border-radius: $radius-base;
+  color: $text-secondary;
   cursor: pointer;
-  transition: all 0.2s;
-
+  transition: all $transition-base;
+  position: relative;
+  
   &:hover {
-    background: #f9fafb;
-    color: #111827;
+    background: $background-secondary;
+    color: $text-primary;
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    
+    &:hover {
+      transform: none;
+      background: transparent;
+    }
+  }
+  
+  // Tooltip positioning helper
+  &[title] {
+    &:hover::after {
+      content: attr(title);
+      position: absolute;
+      top: calc(100% + $space-2);
+      left: 50%;
+      transform: translateX(-50%);
+      background: $gray-800;
+      color: $white;
+      padding: $space-1 $space-2;
+      font-size: $font-xs;
+      border-radius: $radius-sm;
+      white-space: nowrap;
+      z-index: $z-tooltip;
+      animation: fadeInUp 0.2s ease-out;
+    }
   }
 }
 
 .button {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  color: #374151;
-  font-size: 14px;
-  font-weight: 500;
+  gap: $space-2;
+  padding: 0 $space-4;
+  height: $btn-height-sm;
+  background: $background;
+  border: 1px solid $border;
+  border-radius: $radius-base;
+  color: $text-primary;
+  font-size: $font-sm;
+  font-weight: $font-weight-medium;
   cursor: pointer;
-  transition: all 0.2s;
-
+  transition: all $transition-base;
+  white-space: nowrap;
+  
   &:hover {
-    background: #f9fafb;
+    background: $background-secondary;
+    border-color: $border-dark;
+    box-shadow: $shadow-sm;
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+    box-shadow: $shadow-xs;
+  }
+  
+  // Icon styling within button
+  svg {
+    width: 16px;
+    height: 16px;
+    opacity: 0.8;
   }
 }
 
 .primaryButton {
-  padding: 8px 20px;
-  background: #5457ff;
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: 0 $space-5;
+  height: $btn-height-sm;
+  background: linear-gradient(135deg, $primary 0%, $primary-hover 100%);
   border: none;
-  border-radius: 6px;
-  color: white;
-  font-size: 14px;
-  font-weight: 500;
+  border-radius: $radius-base;
+  color: $white;
+  font-size: $font-sm;
+  font-weight: $font-weight-semibold;
   cursor: pointer;
-  transition: all 0.2s;
-
+  transition: all $transition-base;
+  box-shadow: $shadow-sm;
+  white-space: nowrap;
+  
   &:hover {
-    background: #4144d9;
+    background: linear-gradient(135deg, $primary-hover 0%, $primary-dark 100%);
+    box-shadow: $shadow-primary;
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+    box-shadow: $shadow-xs;
+  }
+  
+  // Subtle shine effect
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+  }
+  
+  &:hover::before {
+    left: 100%;
+  }
+}
+
+// Special preview button styling
+.previewButton {
+  background: linear-gradient(135deg, $success 0%, #16a34a 100%);
+  
+  &:hover {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+    box-shadow: 0 4px 14px 0 rgba(34, 197, 94, 0.3);
+  }
+}
+
+// ============================================================================
+// ANIMATIONS
+// ============================================================================
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+// ============================================================================
+// RESPONSIVE DESIGN
+// ============================================================================
+
+@media (max-width: $breakpoint-md) {
+  .topBar {
+    padding: 0 $space-4;
+  }
+  
+  .viewportSwitcher {
+    display: none; // Hide on mobile
+  }
+  
+  .projectName {
+    display: none; // Hide project name on small screens
+  }
+  
+  .button {
+    span {
+      display: none; // Show only icons on mobile
+    }
   }
 }

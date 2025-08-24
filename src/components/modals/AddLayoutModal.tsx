@@ -1,5 +1,5 @@
 import React from 'react';
-import { Columns, Columns2, Columns3, Columns4, X } from 'lucide-react';
+import { Square, Columns2, Columns3, Columns4, X } from 'lucide-react';
 import styles from './AddLayoutModal.module.scss';
 
 interface AddLayoutModalProps {
@@ -16,7 +16,7 @@ export const AddLayoutModal: React.FC<AddLayoutModalProps> = ({
   if (!isOpen) return null;
 
   const layoutOptions = [
-    { count: 1, icon: <Columns size={32} />, label: 'Single Column', description: 'Perfect for headers and content blocks' },
+    { count: 1, icon: <Square size={32} />, label: 'Single Column', description: 'Perfect for headers and content blocks' },
     { count: 2, icon: <Columns2 size={32} />, label: '2 Columns', description: 'Great for side-by-side content' },
     { count: 3, icon: <Columns3 size={32} />, label: '3 Columns', description: 'Ideal for feature lists or cards' },
     { count: 4, icon: <Columns4 size={32} />, label: '4 Columns', description: 'Perfect for grid layouts' }

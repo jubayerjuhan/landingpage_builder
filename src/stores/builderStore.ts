@@ -13,7 +13,7 @@ export interface BuilderElement {
 interface BuilderStore {
   elements: BuilderElement[];
   selectedElementId: string | null;
-  addElement: (element: Partial<BuilderElement>) => void;
+  addElement: (element: Partial<BuilderElement>) => string;
   updateElement: (id: string, updates: Partial<BuilderElement>) => void;
   deleteElement: (id: string) => void;
   selectElement: (id: string | null) => void;
@@ -30,18 +30,26 @@ export const useBuilderStore = create<BuilderStore>((set, get) => ({
   selectedElementId: null,
 
   addElement: (element) => {
+    const { elements } = get();
+    
+    // Calculate the order for the new element
+    const siblingElements = elements.filter(el => el.parentId === element.parentId);
+    const maxOrder = siblingElements.reduce((max, el) => Math.max(max, el.order || 0), -1);
+    
     const newElement: BuilderElement = {
       id: uuidv4(),
       type: element.type || 'text',
       content: element.content || '',
       parentId: element.parentId || null,
-      order: element.order || 0,
+      order: element.order || (maxOrder + 1),
       styles: element.styles || {}
     };
 
     set((state) => ({
       elements: [...state.elements, newElement]
     }));
+    
+    return newElement.id; // Return the new element ID for further operations
   },
 
   updateElement: (id, updates) => {
@@ -202,38 +210,49 @@ export const useBuilderStore = create<BuilderStore>((set, get) => ({
     const sourceElement = elements.find(el => el.id === elementId);
     const targetElement = elements.find(el => el.id === targetElementId);
     
-    if (!sourceElement || !targetElement) return;
+    if (!sourceElement || !targetElement) {
+      console.error('Cannot reorder: source or target element not found', { elementId, targetElementId });
+      return;
+    }
+    
+    // If moving to a different column, update parent first
+    if (sourceElement.parentId !== targetElement.parentId) {
+      sourceElement.parentId = targetElement.parentId;
+    }
     
     // Get all elements in the target column
     const columnElements = elements
-      .filter(el => el.parentId === targetElement.parentId)
-      .sort((a, b) => a.order - b.order);
+      .filter(el => el.parentId === targetElement.parentId && el.id !== elementId)
+      .sort((a, b) => (a.order || 0) - (b.order || 0));
     
-    const sourceIndex = columnElements.findIndex(el => el.id === elementId);
     const targetIndex = columnElements.findIndex(el => el.id === targetElementId);
     
-    // Create new array with element moved
-    const newElements = [...columnElements];
-    newElements.splice(sourceIndex, 1);
-    
-    let insertIndex;
-    if (position === 'above') {
-      insertIndex = targetIndex > sourceIndex ? targetIndex - 1 : targetIndex;
-    } else {
-      insertIndex = targetIndex >= sourceIndex ? targetIndex : targetIndex + 1;
-    }
-    
-    newElements.splice(insertIndex, 0, sourceElement);
+    // Insert source element at the correct position
+    const insertIndex = position === 'above' ? targetIndex : targetIndex + 1;
+    columnElements.splice(insertIndex, 0, sourceElement);
     
     // Update orders for all elements in the column
     set((state) => ({
       elements: state.elements.map(el => {
-        if (el.parentId === targetElement.parentId) {
-          const newIndex = newElements.findIndex(e => e.id === el.id);
-          return { ...el, order: newIndex };
+        if (el.parentId === targetElement.parentId || el.id === elementId) {
+          const newIndex = columnElements.findIndex(e => e.id === el.id);
+          if (newIndex !== -1) {
+            return { 
+              ...el, 
+              parentId: targetElement.parentId,
+              order: newIndex 
+            };
+          }
         }
         return el;
       })
     }));
+    
+    console.log('Reordered elements:', { 
+      sourceId: elementId, 
+      targetId: targetElementId, 
+      position,
+      newOrder: columnElements.map(e => ({ id: e.id, order: columnElements.findIndex(el => el.id === e.id) }))
+    });
   }
 }));

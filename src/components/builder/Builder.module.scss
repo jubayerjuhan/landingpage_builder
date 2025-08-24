@@ -1,12 +1,78 @@
+@import '../../styles/variables';
+
+// ============================================================================
+// MAIN BUILDER CONTAINER - Professional Layout
+// ============================================================================
+
 .builder {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: #f9fafb;
+  background: $gray-50;
+  position: relative;
+  
+  // Subtle animated gradient background
+  background: linear-gradient(-45deg, $gray-50, $background, $gray-100, $background);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
 }
 
 .builderMain {
   display: flex;
   flex: 1;
   overflow: hidden;
+  position: relative;
+  
+  // Smooth transitions between panels
+  transition: all $transition-base;
+}
+
+// ============================================================================
+// ANIMATIONS
+// ============================================================================
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+// Loading state animations (for future use)
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Panel resize animations
+.builderMain > * {
+  transition: width $transition-base, transform $transition-base;
+}
+
+// ============================================================================
+// RESPONSIVE BEHAVIOR
+// ============================================================================
+
+@media (max-width: $breakpoint-lg) {
+  .builderMain {
+    // Could add mobile-specific panel behavior here
+  }
 }

@@ -12,7 +12,7 @@ export const Builder: React.FC = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [draggingType, setDraggingType] = useState<string | null>(null);
   const [draggedLabel, setDraggedLabel] = useState<string | null>(null);
-  const { addElement, addLayout, updateElement, selectElement, deleteElement, selectedElementId } = useBuilderStore();
+  const { addElement, addLayout, updateElement, selectElement, deleteElement, selectedElementId, reorderElements } = useBuilderStore();
 
   // Handle keyboard shortcuts
   useEffect(() => {
@@ -74,6 +74,18 @@ export const Builder: React.FC = () => {
       // Handle existing element movement
       if (elementType === 'existing-element') {
         const element = active.data.current.element;
+        
+        // Handle element reordering within column
+        if (targetId.startsWith('element-above-') || targetId.startsWith('element-below-')) {
+          const position = targetId.startsWith('element-above-') ? 'above' : 'below';
+          const targetElementId = targetId.replace(`element-${position}-`, '');
+          console.log('Reordering element:', element.id, 'to', position, 'of', targetElementId);
+          reorderElements(element.id, targetElementId, position);
+          selectElement(element.id); // Keep element selected after reorder
+          return;
+        }
+        
+        // Handle moving to different column
         if (targetId.startsWith('column-')) {
           const newParentId = targetId.replace('column-', '');
           if (element.parentId !== newParentId) {
@@ -106,6 +118,40 @@ export const Builder: React.FC = () => {
       }
 
       // Handle regular element drops
+      
+      // Handle dropping new element on element drop zone
+      if (targetId.startsWith('element-above-') || targetId.startsWith('element-below-')) {
+        const position = targetId.startsWith('element-above-') ? 'above' : 'below';
+        const targetElementId = targetId.replace(`element-${position}-`, '');
+        
+        // Find the target element to get its parent column
+        const { elements } = useBuilderStore.getState();
+        const targetElement = elements.find(el => el.id === targetElementId);
+        
+        if (targetElement) {
+          const newElement = {
+            type: elementType,
+            content: elementType === 'heading' ? 'Your Heading Here' : 
+                     elementType === 'paragraph' ? 'Your paragraph text here' : 
+                     'Your text here',
+            parentId: targetElement.parentId
+          };
+          
+          // Add new element to the column
+          const newElementId = addElement(newElement);
+          
+          // Then reorder it to the desired position
+          if (newElementId) {
+            setTimeout(() => {
+              reorderElements(newElementId, targetElementId, position);
+              selectElement(newElementId);
+            }, 10); // Small delay to ensure element is added before reordering
+          }
+        }
+        return;
+      }
+      
+      // Handle dropping directly on column
       const newElement = {
         type: elementType,
         content: elementType === 'heading' ? 'Your Heading Here' : 
@@ -118,8 +164,14 @@ export const Builder: React.FC = () => {
     }
   };
 
+  const handleDragOver = (event: any) => {
+    if (event.over) {
+      console.log('Dragging over:', event.over.id);
+    }
+  };
+
   return (
-    <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+    <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} onDragOver={handleDragOver}>
       <div className={`${styles.builder} ${isDragging ? 'dnd-cursor-grabbing' : ''}`}>
         <TopBar />
         <div className={styles.builderMain}>

@@ -1,32 +1,266 @@
-* {
+// ============================================================================
+// GLOBAL STYLES - Professional Landing Page Builder
+// ============================================================================
+
+@import './variables';
+
+// ============================================================================
+// MODERN RESET & BASE STYLES
+// ============================================================================
+
+*, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: $font-primary;
+  font-size: $font-sm;
+  font-weight: $font-weight-regular;
+  line-height: $leading-normal;
+  color: $text-primary;
+  background-color: $background;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow: hidden;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'kern' 1, 'liga' 1;
 }
 
 #root {
   height: 100vh;
   overflow: hidden;
+  background: $background;
+}
+
+// ============================================================================
+// TYPOGRAPHY ENHANCEMENTS
+// ============================================================================
+
+h1, h2, h3, h4, h5, h6 {
+  color: $text-primary;
+  font-weight: $font-weight-semibold;
+  line-height: $leading-tight;
+  letter-spacing: -0.025em;
+  margin: 0;
+}
+
+h1 { font-size: $font-3xl; }
+h2 { font-size: $font-2xl; }
+h3 { font-size: $font-xl; }
+h4 { font-size: $font-lg; }
+h5 { font-size: $font-base; }
+h6 { font-size: $font-sm; }
+
+p {
+  color: $text-secondary;
+  line-height: $leading-relaxed;
+  margin: 0;
+}
+
+strong, b {
+  font-weight: $font-weight-semibold;
+  color: $text-primary;
+}
+
+small {
+  font-size: $font-xs;
+  color: $text-tertiary;
+}
+
+// ============================================================================
+// FORM ELEMENTS
+// ============================================================================
+
+button, input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  margin: 0;
 }
 
 button {
-  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+  transition: all $transition-base;
+  
+  &:focus {
+    outline: none;
+  }
+  
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
 }
 
-input, textarea {
-  font-family: inherit;
+input, textarea, select {
+  border: 1px solid $border;
+  background: $background;
+  color: $text-primary;
+  
+  &:focus {
+    outline: none;
+    border-color: $primary;
+    box-shadow: $focus-ring;
+  }
+  
+  &::placeholder {
+    color: $text-placeholder;
+  }
+  
+  &:disabled {
+    background: $background-secondary;
+    color: $text-disabled;
+    cursor: not-allowed;
+  }
 }
 
-// Drag and drop cursor styles
+// ============================================================================
+// PROFESSIONAL BUTTON SYSTEM
+// ============================================================================
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  padding: 0 $space-4;
+  height: $btn-height-base;
+  font-size: $font-sm;
+  font-weight: $font-weight-medium;
+  line-height: 1;
+  text-decoration: none;
+  border-radius: $radius-base;
+  border: 1px solid transparent;
+  transition: all $transition-base;
+  cursor: pointer;
+  white-space: nowrap;
+  
+  &:focus {
+    outline: none;
+    box-shadow: $focus-ring;
+  }
+  
+  // Sizes
+  &--sm {
+    height: $btn-height-sm;
+    padding: 0 $space-3;
+    font-size: $font-xs;
+  }
+  
+  &--lg {
+    height: $btn-height-lg;
+    padding: 0 $space-6;
+    font-size: $font-base;
+  }
+  
+  // Variants
+  &--primary {
+    background: $primary;
+    color: $white;
+    border-color: $primary;
+    box-shadow: $shadow-sm;
+    
+    &:hover:not(:disabled) {
+      background: $primary-hover;
+      border-color: $primary-hover;
+      box-shadow: $shadow-primary;
+      transform: translateY(-1px);
+    }
+    
+    &:active {
+      transform: translateY(0);
+      box-shadow: $shadow-xs;
+    }
+  }
+  
+  &--secondary {
+    background: $background;
+    color: $text-primary;
+    border-color: $border;
+    
+    &:hover:not(:disabled) {
+      background: $background-secondary;
+      border-color: $border-dark;
+    }
+  }
+  
+  &--ghost {
+    background: transparent;
+    color: $text-secondary;
+    
+    &:hover:not(:disabled) {
+      background: $background-secondary;
+      color: $text-primary;
+    }
+  }
+  
+  &--danger {
+    background: $error;
+    color: $white;
+    border-color: $error;
+    
+    &:hover:not(:disabled) {
+      background: #dc2626;
+      border-color: #dc2626;
+    }
+  }
+}
+
+// Icon button variant
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: $btn-height-base;
+  height: $btn-height-base;
+  padding: 0;
+  background: transparent;
+  color: $text-secondary;
+  border: none;
+  border-radius: $radius-base;
+  transition: all $transition-base;
+  cursor: pointer;
+  
+  &:hover:not(:disabled) {
+    background: $background-secondary;
+    color: $text-primary;
+  }
+  
+  &:focus {
+    outline: none;
+    box-shadow: $focus-ring;
+  }
+  
+  &--sm {
+    width: $btn-height-sm;
+    height: $btn-height-sm;
+  }
+  
+  &--primary {
+    background: $primary-100;
+    color: $primary;
+    
+    &:hover:not(:disabled) {
+      background: $primary-200;
+      color: $primary-dark;
+    }
+  }
+}
+
+// ============================================================================
+// DRAG & DROP ENHANCEMENTS
+// ============================================================================
+
 .dnd-cursor-grabbing * {
   cursor: grabbing !important;
 }
@@ -35,15 +269,132 @@ input, textarea {
   cursor: grabbing !important;
 }
 
-// Custom drag overlay styles
+// Professional drag overlay
 .drag-overlay {
-  background: rgba(84, 87, 255, 0.1);
-  border: 2px solid #5457ff;
-  border-radius: 8px;
-  padding: 12px;
-  color: #5457ff;
-  font-weight: 600;
-  box-shadow: 0 8px 25px rgba(84, 87, 255, 0.3);
-  transform: rotate(5deg);
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-3 $space-4;
+  background: $white;
+  border: 2px solid $primary;
+  border-radius: $radius-md;
+  color: $primary;
+  font-size: $font-sm;
+  font-weight: $font-weight-semibold;
+  box-shadow: $shadow-lg;
+  transform: rotate(2deg);
   z-index: 9999;
+  animation: dragFloat 0.3s ease-out;
+  backdrop-filter: $glass-blur;
+}
+
+@keyframes dragFloat {
+  0% {
+    opacity: 0;
+    transform: rotate(0deg) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(2deg) scale(1);
+  }
+}
+
+// ============================================================================
+// UTILITY CLASSES
+// ============================================================================
+
+// Text utilities
+.text-xs { font-size: $font-xs; }
+.text-sm { font-size: $font-sm; }
+.text-base { font-size: $font-base; }
+.text-lg { font-size: $font-lg; }
+.text-xl { font-size: $font-xl; }
+.text-2xl { font-size: $font-2xl; }
+
+.text-primary { color: $text-primary; }
+.text-secondary { color: $text-secondary; }
+.text-tertiary { color: $text-tertiary; }
+.text-accent { color: $text-accent; }
+.text-success { color: $success; }
+.text-error { color: $error; }
+.text-warning { color: $warning; }
+
+.font-medium { font-weight: $font-weight-medium; }
+.font-semibold { font-weight: $font-weight-semibold; }
+.font-bold { font-weight: $font-weight-bold; }
+
+// Layout utilities
+.flex { display: flex; }
+.inline-flex { display: inline-flex; }
+.grid { display: grid; }
+.block { display: block; }
+.inline-block { display: inline-block; }
+.hidden { display: none; }
+
+.items-center { align-items: center; }
+.items-start { align-items: flex-start; }
+.items-end { align-items: flex-end; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.justify-end { justify-content: flex-end; }
+
+.gap-1 { gap: $space-1; }
+.gap-2 { gap: $space-2; }
+.gap-3 { gap: $space-3; }
+.gap-4 { gap: $space-4; }
+.gap-6 { gap: $space-6; }
+
+// Shadow utilities
+.shadow-sm { box-shadow: $shadow-sm; }
+.shadow { box-shadow: $shadow-base; }
+.shadow-md { box-shadow: $shadow-md; }
+.shadow-lg { box-shadow: $shadow-lg; }
+.shadow-none { box-shadow: none; }
+
+// Border radius utilities
+.rounded-sm { border-radius: $radius-sm; }
+.rounded { border-radius: $radius-base; }
+.rounded-md { border-radius: $radius-md; }
+.rounded-lg { border-radius: $radius-lg; }
+.rounded-full { border-radius: $radius-full; }
+
+// Transition utilities
+.transition { transition: all $transition-base; }
+.transition-fast { transition: all $transition-fast; }
+.transition-slow { transition: all $transition-slow; }
+
+// ============================================================================
+// SCROLLBAR STYLING
+// ============================================================================
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $gray-300;
+  border-radius: $radius-full;
+  
+  &:hover {
+    background: $gray-400;
+  }
+}
+
+// ============================================================================
+// SELECTION STYLING
+// ============================================================================
+
+::selection {
+  background: $primary-200;
+  color: $primary-dark;
+}
+
+::-moz-selection {
+  background: $primary-200;
+  color: $primary-dark;
 }

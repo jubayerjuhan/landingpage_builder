@@ -56,22 +56,25 @@
   right: 0;
   background: #5457ff;
   color: white;
-  padding: 4px;
-  border-radius: 3px;
+  padding: 4px 6px;
+  border-radius: 4px;
   cursor: grab;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
   z-index: 10;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   
   &:hover {
     background: #4144d9;
     transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
   }
   
   &:active {
     cursor: grabbing;
+    transform: scale(0.95);
   }
 }
 

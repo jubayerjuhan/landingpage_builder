@@ -1,123 +1,368 @@
+@import '../../../styles/variables';
+
+// ============================================================================
+// PROFESSIONAL CANVAS - Design Tool Style
+// ============================================================================
+
 .canvas {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: #f5f5f5;
+  background: $gray-50;
   overflow: hidden;
+  position: relative;
+  
+  // Professional dot pattern background
+  background-image: 
+    radial-gradient(circle at 1px 1px, $gray-200 1px, transparent 0),
+    radial-gradient(circle at 20px 20px, $gray-100 1px, transparent 0);
+  background-size: 20px 20px, 40px 40px;
 }
+
+// ============================================================================
+// CANVAS HEADER - Modern Controls
+// ============================================================================
 
 .canvasHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
-  background: white;
-  border-bottom: 1px solid #e5e7eb;
+  padding: $space-4 $space-6;
+  background: $background;
+  border-bottom: 1px solid $border-light;
+  backdrop-filter: blur(8px);
+  position: relative;
+  z-index: $z-sticky;
+  
+  // Subtle gradient
+  background: linear-gradient(to bottom, $background 0%, $background-secondary 100%);
 }
 
-.canvasHeader span {
-  font-size: 14px;
-  font-weight: 600;
-  color: #374151;
+.canvasTitle {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+}
+
+.canvasTitleText {
+  font-size: $font-sm;
+  font-weight: $font-weight-semibold;
+  color: $text-primary;
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  
+  &::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: $primary;
+    border-radius: $radius-full;
+  }
+}
+
+.canvasControls {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+}
+
+.controlGroup {
+  display: flex;
+  align-items: center;
+  gap: $space-1;
+  padding: $space-1;
+  background: $background-secondary;
+  border-radius: $radius-base;
+  border: 1px solid $border-light;
+}
+
+.zoomControls {
+  display: flex;
+  align-items: center;
+  gap: $space-1;
+}
+
+.zoomButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: none;
+  border-radius: $radius-sm;
+  color: $text-secondary;
+  cursor: pointer;
+  transition: all $transition-base;
+  
+  &:hover {
+    background: $background;
+    color: $text-primary;
+  }
+  
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.zoomLevel {
+  min-width: 60px;
+  text-align: center;
+  font-size: $font-xs;
+  font-weight: $font-weight-medium;
+  color: $text-secondary;
+  padding: $space-1 $space-2;
+}
+
+.viewControls {
+  display: flex;
+  align-items: center;
+  gap: $space-1;
+}
+
+.viewButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: none;
+  border-radius: $radius-sm;
+  color: $text-secondary;
+  cursor: pointer;
+  transition: all $transition-base;
+  
+  &:hover {
+    background: $background;
+    color: $text-primary;
+  }
+  
+  &.active {
+    background: $primary-100;
+    color: $primary;
+  }
 }
 
 .addButton {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background: #5457ff;
+  gap: $space-2;
+  padding: $space-2 $space-4;
+  background: linear-gradient(135deg, $primary 0%, $primary-hover 100%);
   border: none;
-  border-radius: 6px;
-  color: white;
-  font-size: 13px;
-  font-weight: 500;
+  border-radius: $radius-base;
+  color: $white;
+  font-size: $font-xs;
+  font-weight: $font-weight-semibold;
   cursor: pointer;
-  transition: all 0.2s;
-
+  transition: all $transition-base;
+  box-shadow: $shadow-sm;
+  
   &:hover {
-    background: #4144d9;
+    background: linear-gradient(135deg, $primary-hover 0%, $primary-dark 100%);
+    box-shadow: $shadow-primary;
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+    box-shadow: $shadow-xs;
   }
 }
 
+// ============================================================================
+// CANVAS CONTENT AREA
+// ============================================================================
+
 .canvasContent {
   flex: 1;
-  overflow-y: auto;
-  padding: 20px;
+  overflow: auto;
+  position: relative;
+  
+  // Enhanced scrollbar styling
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: $background-secondary;
+    border-radius: $radius-full;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: $gray-400;
+    border-radius: $radius-full;
+    
+    &:hover {
+      background: $gray-500;
+    }
+  }
+  
+  &::-webkit-scrollbar-corner {
+    background: $background-secondary;
+  }
 }
 
+.canvasInner {
+  min-height: 100%;
+  padding: $space-8;
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+
+.canvasWorkspace {
+  width: 100%;
+  max-width: 1200px;
+  background: $background;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-lg;
+  position: relative;
+  overflow: hidden;
+  
+  // Paper-like shadow effect
+  &::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
+    background: linear-gradient(135deg, $gray-100 0%, transparent 50%, $gray-100 100%);
+    border-radius: $radius-lg;
+    z-index: -1;
+  }
+}
+
+// ============================================================================
+// EMPTY CANVAS STATE - Professional Design
+// ============================================================================
+
 .emptyCanvas {
-  min-height: 400px;
-  background: white;
-  border: 2px dashed #e5e7eb;
-  border-radius: 8px;
+  min-height: 600px;
+  background: $background;
+  border: 2px dashed $border;
+  border-radius: $radius-xl;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
-
+  transition: all $transition-base;
+  position: relative;
+  overflow: hidden;
+  
+  // Subtle pattern background
+  background-image: radial-gradient(circle at 20px 20px, $gray-100 1px, transparent 0);
+  background-size: 40px 40px;
+  
   &.dragOver {
-    border-color: #5457ff;
-    background: #f8f9ff;
+    border-color: $primary;
+    background: $primary-50;
+    box-shadow: inset 0 0 0 1px $primary-200;
+    
+    // Animated pulse effect
+    &::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border: 2px solid $primary;
+      border-radius: $radius-xl;
+      opacity: 0.6;
+      animation: pulse 2s ease-in-out infinite;
+    }
   }
 }
 
 .emptyContent {
   text-align: center;
+  z-index: 1;
   
   h3 {
-    font-size: 20px;
-    font-weight: 600;
-    color: #111827;
-    margin-bottom: 8px;
+    font-size: $font-2xl;
+    font-weight: $font-weight-bold;
+    color: $text-primary;
+    margin-bottom: $space-2;
+    line-height: $leading-tight;
   }
   
   p {
-    font-size: 14px;
-    color: #6b7280;
-    margin-bottom: 20px;
+    font-size: $font-base;
+    color: $text-secondary;
+    margin-bottom: $space-8;
+    max-width: 400px;
+    line-height: $leading-relaxed;
   }
 }
 
 .primaryButton {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 20px;
-  background: #5457ff;
+  gap: $space-2;
+  padding: $space-3 $space-6;
+  background: linear-gradient(135deg, $primary 0%, $primary-hover 100%);
   border: none;
-  border-radius: 6px;
-  color: white;
-  font-size: 14px;
-  font-weight: 500;
+  border-radius: $radius-base;
+  color: $white;
+  font-size: $font-sm;
+  font-weight: $font-weight-semibold;
   cursor: pointer;
-  transition: all 0.2s;
-
+  transition: all $transition-base;
+  box-shadow: $shadow-md;
+  
   &:hover {
-    background: #4144d9;
+    background: linear-gradient(135deg, $primary-hover 0%, $primary-dark 100%);
+    box-shadow: $shadow-primary;
+    transform: translateY(-2px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+    box-shadow: $shadow-sm;
   }
 }
+
+// ============================================================================
+// LAYOUTS & CONTENT STRUCTURE
+// ============================================================================
 
 .layouts {
   display: flex;
   flex-direction: column;
+  gap: $space-6;
+  padding: 0;
 }
 
 .layoutWrapper {
   position: relative;
+  animation: slideInUp 0.4s ease-out;
+  animation-fill-mode: both;
+  
+  @for $i from 1 through 5 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{$i * 0.1}s;
+    }
+  }
 }
 
 .layoutDropZone {
-  height: 8px;
-  margin: 4px 0;
-  border-radius: 4px;
-  transition: all 0.2s;
+  height: 4px;
+  margin: $space-2 0;
+  border-radius: $radius-full;
+  transition: all $transition-base;
   position: relative;
+  opacity: 0;
 
   &.active {
-    height: 20px;
-    background: rgba(84, 87, 255, 0.1);
-    border: 2px dashed #5457ff;
+    opacity: 1;
+    height: 32px;
+    background: $primary-100;
+    border: 2px dashed $primary;
+    border-radius: $radius-base;
+    
+    // Pulse animation
+    animation: dropZonePulse 2s ease-in-out infinite;
   }
 }
 
@@ -126,139 +371,195 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: #5457ff;
-  color: white;
-  padding: 4px 12px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 500;
+  background: $primary;
+  color: $white;
+  padding: $space-2 $space-4;
+  border-radius: $radius-base;
+  font-size: $font-xs;
+  font-weight: $font-weight-semibold;
   white-space: nowrap;
+  box-shadow: $shadow-md;
   
   &::before {
-    content: 'Drop layout here';
+    content: '✨ Drop layout here';
+  }
+  
+  // Arrow indicators
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -8px;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-right: 8px solid $primary;
   }
 }
 
 .layout {
   position: relative;
   min-height: 120px;
-  margin: 8px 0;
-  transition: all 0.2s;
-  border: 2px dashed transparent;
-  border-radius: 8px;
-  padding: 0;
+  margin: $space-2 0;
+  transition: all $transition-base;
+  border: 2px solid transparent;
+  border-radius: $radius-lg;
+  padding: $space-8 0 0 0; // Add top padding for label and controls
+  background: $background;
+  box-shadow: $shadow-xs;
+  overflow: visible; // Changed to visible so controls can show
 
   &.selected {
-    border-color: #5457ff;
-    border-style: solid;
-    background: rgba(84, 87, 255, 0.05);
+    border-color: $primary;
+    background: $primary-50;
+    box-shadow: $shadow-primary;
+    transform: translateY(-2px);
   }
 
   &:hover:not(.selected) {
-    border-color: #e5e7eb;
-    border-style: dashed;
+    border-color: $border-dark;
+    box-shadow: $shadow-sm;
+    transform: translateY(-1px);
   }
 
   &.dragOverLayout {
-    border-color: #10b981;
-    border-style: solid;
-    background: rgba(16, 185, 129, 0.05);
+    border-color: $success;
+    background: rgba($success, 0.05);
+    box-shadow: 0 4px 14px 0 rgba($success, 0.2);
+    // Removed transform to prevent layout jumping
   }
 }
 
+// ============================================================================
+// LAYOUT CONTROLS - Modern Design
+// ============================================================================
+
 .layoutLabel {
   position: absolute;
-  top: -12px;
-  left: 12px;
-  background: #5457ff;
-  color: white;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 4px 8px;
-  border-radius: 4px;
+  top: $space-2;
+  left: $space-4;
+  background: linear-gradient(135deg, $primary 0%, $primary-hover 100%);
+  color: $white;
+  font-size: 10px;
+  font-weight: $font-weight-bold;
+  padding: $space-1 $space-2;
+  border-radius: $radius-sm;
   text-transform: uppercase;
+  letter-spacing: 0.05em;
   z-index: 10;
+  box-shadow: $shadow-sm;
 }
 
 .layoutControls {
   position: absolute;
-  top: -12px;
-  right: 12px;
+  top: $space-2;
+  right: $space-4;
   z-index: 10;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: all $transition-base;
+  
+  .layout.selected &,
+  .layout:hover & {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-
 
 .moveButtons {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: $space-1;
+  background: $background;
+  padding: $space-1;
+  border-radius: $radius-base;
+  border: 1px solid $border-light;
+  box-shadow: $shadow-md;
 }
 
 .moveButton {
-  background: #5457ff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 6px;
+  background: $background;
+  color: $text-secondary;
+  border: 1px solid $border-light;
+  border-radius: $radius-sm;
+  padding: $space-1;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: all $transition-base;
   width: 24px;
   height: 24px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
   &:hover:not(.disabled) {
-    background: #4144d9;
+    background: $primary-100;
+    border-color: $primary-200;
+    color: $primary;
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: $shadow-sm;
   }
 
   &:active:not(.disabled) {
     transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: none;
   }
 
   &.disabled {
-    background: #d1d5db;
-    color: #9ca3af;
+    background: $background-secondary;
+    border-color: $border;
+    color: $text-placeholder;
     cursor: not-allowed;
-    box-shadow: none;
   }
 }
+
+// ============================================================================
+// DRAG INDICATORS & VISUAL FEEDBACK
+// ============================================================================
 
 .dragOverIndicator {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: #10b981;
-  color: white;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
+  background: linear-gradient(135deg, $success 0%, #16a34a 100%);
+  color: $white;
+  padding: $space-3 $space-5;
+  border-radius: $radius-base;
+  font-size: $font-sm;
+  font-weight: $font-weight-bold;
   z-index: 20;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 8px 25px rgba($success, 0.4);
+  
+  // Pulsing animation
+  animation: dragIndicatorPulse 1.5s ease-in-out infinite;
 }
 
+// ============================================================================
+// ROWS & COLUMNS - Professional Layout
+// ============================================================================
+
 .row {
-  padding: 12px;
+  padding: $space-3;
+  position: relative;
 }
 
 .column {
-  padding: 12px;
-  border: 1px dashed #e5e7eb;
-  border-radius: 6px;
-  min-height: 80px;
-  transition: all 0.2s;
-  background: transparent;
+  padding: $space-4;
+  border: 2px dashed $border-light;
+  border-radius: $radius-base;
+  min-height: 120px;
+  transition: all $transition-base;
+  background: rgba($background-secondary, 0.3);
+  position: relative;
 
   &.dragOver {
-    border-color: #5457ff;
+    border-color: $primary;
     border-style: solid;
-    background: rgba(84, 87, 255, 0.05);
+    background: $primary-50;
+    box-shadow: inset 0 0 0 1px $primary-200;
+    // Removed transform to prevent layout jumping
   }
 }
 
@@ -266,63 +567,231 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 60px;
-  color: #9ca3af;
-  font-size: 13px;
+  min-height: 100px;
+  color: $text-placeholder;
+  font-size: $font-sm;
   position: relative;
+  font-weight: $font-weight-medium;
+  
+  // Subtle pattern for empty state
+  &::before {
+    content: '';
+    position: absolute;
+    inset: $space-4;
+    background-image: radial-gradient(circle at 2px 2px, $border 1px, transparent 0);
+    background-size: 16px 16px;
+    border-radius: $radius-sm;
+    opacity: 0.3;
+  }
 }
 
 .dropMessage {
-  color: #5457ff;
-  font-weight: 500;
+  color: $primary;
+  font-weight: $font-weight-semibold;
   z-index: 10;
-  background: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(84, 87, 255, 0.2);
+  background: $background;
+  padding: $space-2 $space-3;
+  border-radius: $radius-base;
+  box-shadow: $shadow-primary;
+  border: 1px solid $primary-200;
+  animation: dropMessageBounce 0.3s ease-out;
 }
 
 .columnElements {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: $space-4;
 }
 
 .elementWrapper {
   display: block;
+  position: relative;
+  margin: $space-1 0; // Add some spacing between elements
 }
+
+// ============================================================================
+// INSERTION INDICATORS - Enhanced Visual Feedback
+// ============================================================================
 
 .insertionLine {
   height: 3px;
-  background: #5457ff;
-  border-radius: 2px;
-  margin: 4px 0;
+  background: linear-gradient(90deg, $primary 0%, $primary-light 100%);
+  border-radius: $radius-full;
+  margin: $space-2 0;
   position: relative;
-  box-shadow: 0 0 8px rgba(84, 87, 255, 0.5);
+  box-shadow: 0 0 12px rgba($primary, 0.6);
+  animation: insertionGlow 1.5s ease-in-out infinite;
   
   &::before {
     content: '';
     position: absolute;
-    left: -6px;
+    left: -8px;
     top: 50%;
     transform: translateY(-50%);
-    width: 8px;
-    height: 8px;
-    background: #5457ff;
-    border-radius: 50%;
-    box-shadow: 0 0 4px rgba(84, 87, 255, 0.5);
+    width: 12px;
+    height: 12px;
+    background: $primary;
+    border: 2px solid $background;
+    border-radius: $radius-full;
+    box-shadow: 0 0 8px rgba($primary, 0.8);
   }
   
   &::after {
     content: '';
     position: absolute;
-    right: -6px;
+    right: -8px;
     top: 50%;
     transform: translateY(-50%);
+    width: 12px;
+    height: 12px;
+    background: $primary;
+    border: 2px solid $background;
+    border-radius: $radius-full;
+    box-shadow: 0 0 8px rgba($primary, 0.8);
+  }
+}
+
+// ============================================================================
+// ANIMATIONS - Professional Motion Design
+// ============================================================================
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes dropZonePulse {
+  0%, 100% {
+    background: $primary-100;
+    border-color: $primary;
+  }
+  50% {
+    background: $primary-200;
+    border-color: $primary-hover;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dragIndicatorPulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow: 0 8px 25px rgba($success, 0.4);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.05);
+    box-shadow: 0 12px 35px rgba($success, 0.6);
+  }
+}
+
+@keyframes dropMessageBounce {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes insertionGlow {
+  0%, 100% {
+    box-shadow: 0 0 12px rgba($primary, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba($primary, 0.8);
+  }
+}
+
+// ============================================================================
+// RESPONSIVE DESIGN
+// ============================================================================
+
+@media (max-width: $breakpoint-md) {
+  .canvasInner {
+    padding: $space-4;
+  }
+  
+  .canvasWorkspace {
+    max-width: 100%;
+  }
+  
+  .layouts {
+    padding: 0;
+    gap: $space-4;
+  }
+  
+  .column {
+    padding: $space-3;
+    min-height: 100px;
+  }
+}
+
+// ============================================================================
+// ELEMENT DROP ZONES - Professional Reordering
+// ============================================================================
+
+.elementDropZone {
+  width: 100%;
+  transition: all $transition-base;
+  border-radius: $radius-sm;
+  position: relative;
+  
+  &.active {
+    background: $primary-50;
+    border: 1px solid $primary;
+  }
+}
+
+.dropIndicatorLine {
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, $primary 0%, $primary-hover 100%);
+  border-radius: $radius-full;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  box-shadow: 0 0 4px rgba($primary, 0.3);
+  
+  &::before {
+    content: '';
+    position: absolute;
+    left: -4px;
+    top: -2px;
     width: 8px;
-    height: 8px;
-    background: #5457ff;
-    border-radius: 50%;
-    box-shadow: 0 0 4px rgba(84, 87, 255, 0.5);
+    height: 6px;
+    background: $primary;
+    border-radius: $radius-full;
+  }
+  
+  &::after {
+    content: '';
+    position: absolute;
+    right: -4px;
+    top: -2px;
+    width: 8px;
+    height: 6px;
+    background: $primary;
+    border-radius: $radius-full;
   }
 }

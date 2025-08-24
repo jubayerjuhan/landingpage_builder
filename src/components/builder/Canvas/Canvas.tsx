@@ -1,6 +1,17 @@
 import React, { useState } from 'react';
 import { useDroppable } from '@dnd-kit/core';
-import { Plus, ChevronUp, ChevronDown } from 'lucide-react';
+import { 
+  Plus, 
+  ChevronUp, 
+  ChevronDown, 
+  ZoomIn, 
+  ZoomOut, 
+  Grid3X3, 
+  Ruler as Rulers, 
+  Move,
+  RotateCcw,
+  Eye
+} from 'lucide-react';
 import { useBuilderStore } from '../../../stores/builderStore';
 import { Element } from './Element/Element';
 import { AddLayoutModal } from '../../modals/AddLayoutModal';
@@ -13,6 +24,9 @@ interface CanvasProps {
 export const Canvas: React.FC<CanvasProps> = ({ draggingType }) => {
   const { elements, addLayout } = useBuilderStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [zoom, setZoom] = useState(100);
+  const [showGrid, setShowGrid] = useState(false);
+  const [showRulers, setShowRulers] = useState(false);
   
   // Get root layouts ordered by their order property
   const layouts = elements
@@ -27,33 +41,128 @@ export const Canvas: React.FC<CanvasProps> = ({ draggingType }) => {
     addLayout(columnCount);
   };
 
+  const handleZoomIn = () => {
+    setZoom(prev => Math.min(200, prev + 25));
+  };
+
+  const handleZoomOut = () => {
+    setZoom(prev => Math.max(25, prev - 25));
+  };
+
+  const handleZoomReset = () => {
+    setZoom(100);
+  };
+
+  const toggleGrid = () => {
+    setShowGrid(!showGrid);
+  };
+
+  const toggleRulers = () => {
+    setShowRulers(!showRulers);
+  };
+
   return (
     <div className={styles.canvas}>
+      {/* Modern Canvas Header */}
       <div className={styles.canvasHeader}>
-        <span>Canvas</span>
-        <button className={styles.addButton} onClick={handleAddLayout}>
-          <Plus size={16} />
-          Add Layout
-        </button>
+        <div className={styles.canvasTitle}>
+          <div className={styles.canvasTitleText}>
+            Untitled Landing Page
+          </div>
+        </div>
+
+        <div className={styles.canvasControls}>
+          {/* Zoom Controls */}
+          <div className={styles.controlGroup}>
+            <div className={styles.zoomControls}>
+              <button 
+                className={styles.zoomButton}
+                onClick={handleZoomOut}
+                title="Zoom Out"
+                disabled={zoom <= 25}
+              >
+                <ZoomOut size={14} />
+              </button>
+              
+              <div className={styles.zoomLevel} onClick={handleZoomReset} title="Reset Zoom">
+                {zoom}%
+              </div>
+              
+              <button 
+                className={styles.zoomButton}
+                onClick={handleZoomIn}
+                title="Zoom In"
+                disabled={zoom >= 200}
+              >
+                <ZoomIn size={14} />
+              </button>
+            </div>
+          </div>
+
+          {/* View Controls */}
+          <div className={styles.controlGroup}>
+            <div className={styles.viewControls}>
+              <button 
+                className={`${styles.viewButton} ${showGrid ? styles.active : ''}`}
+                onClick={toggleGrid}
+                title="Toggle Grid"
+              >
+                <Grid3X3 size={14} />
+              </button>
+              
+              <button 
+                className={`${styles.viewButton} ${showRulers ? styles.active : ''}`}
+                onClick={toggleRulers}
+                title="Toggle Rulers"
+              >
+                <Rulers size={14} />
+              </button>
+              
+              <button 
+                className={styles.viewButton}
+                title="Pan Mode"
+              >
+                <Move size={14} />
+              </button>
+            </div>
+          </div>
+
+          {/* Add Layout Button */}
+          <button className={styles.addButton} onClick={handleAddLayout}>
+            <Plus size={16} />
+            Add Section
+          </button>
+        </div>
       </div>
 
+      {/* Canvas Content with Professional Layout */}
       <div className={styles.canvasContent}>
-        {layouts.length === 0 ? (
-          <EmptyCanvas onAddLayout={handleAddLayout} />
-        ) : (
-          <div className={styles.layouts}>
-            {layouts.map((layout, index) => (
-              <LayoutContainer 
-                key={layout.id} 
-                layout={layout} 
-                isFirst={index === 0}
-                isLast={index === layouts.length - 1}
-                draggingType={draggingType}
-              />
-            ))}
-            {draggingType?.includes('column') && <LayoutDropZone position="below" />}
+        <div className={styles.canvasInner}>
+          <div 
+            className={styles.canvasWorkspace}
+            style={{ 
+              transform: `scale(${zoom / 100})`,
+              transformOrigin: 'center top'
+            }}
+          >
+            {layouts.length === 0 ? (
+              <EmptyCanvas onAddLayout={handleAddLayout} />
+            ) : (
+              <div className={styles.layouts}>
+                {layouts.map((layout, index) => (
+                  <LayoutContainer 
+                    key={layout.id} 
+                    layout={layout} 
+                    isFirst={index === 0}
+                    isLast={index === layouts.length - 1}
+                    draggingType={draggingType}
+                  />
+                ))}
+                {draggingType?.includes('column') && <LayoutDropZone position="below" />}
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
       
       <AddLayoutModal 
@@ -215,7 +324,9 @@ const Column: React.FC<{ column: any }> = ({ column }) => {
     id: `column-${column.id}`
   });
   
-  const columnElements = elements.filter(el => el.parentId === column.id);
+  const columnElements = elements
+    .filter(el => el.parentId === column.id)
+    .sort((a, b) => (a.order || 0) - (b.order || 0));
 
   return (
     <div 
@@ -235,15 +346,56 @@ const Column: React.FC<{ column: any }> = ({ column }) => {
         </div>
       ) : (
         <div className={styles.columnElements}>
-          {isOver && <div className={styles.insertionLine} />}
           {columnElements.map((element, index) => (
             <div key={element.id} className={styles.elementWrapper}>
+              {/* Drop zone above element */}
+              <ElementDropZone 
+                position="above" 
+                targetElementId={element.id}
+                isFirst={index === 0}
+              />
               <Element element={element} />
+              {/* Drop zone below last element */}
+              {index === columnElements.length - 1 && (
+                <ElementDropZone 
+                  position="below" 
+                  targetElementId={element.id}
+                  isLast={true}
+                />
+              )}
             </div>
           ))}
-          {isOver && <div className={styles.insertionLine} />}
         </div>
       )}
+    </div>
+  );
+};
+
+const ElementDropZone: React.FC<{ 
+  position: 'above' | 'below'; 
+  targetElementId: string;
+  isFirst?: boolean;
+  isLast?: boolean;
+}> = ({ position, targetElementId, isFirst, isLast }) => {
+  const dropId = `element-${position}-${targetElementId}`;
+  const { setNodeRef, isOver } = useDroppable({
+    id: dropId
+  });
+
+  return (
+    <div 
+      ref={setNodeRef}
+      className={`${styles.elementDropZone} ${isOver ? styles.active : ''}`}
+      style={{
+        height: isOver ? '20px' : '2px',
+        marginTop: position === 'above' && !isFirst ? '2px' : '0',
+        marginBottom: position === 'below' && !isLast ? '2px' : '0',
+        backgroundColor: isOver ? 'rgba(84, 87, 255, 0.1)' : 'transparent',
+        border: isOver ? '1px dashed #5457ff' : 'none',
+        transition: 'all 0.2s ease'
+      }}
+    >
+      {isOver && <div className={styles.dropIndicatorLine} />}
     </div>
   );
 };

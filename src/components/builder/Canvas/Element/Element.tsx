@@ -155,7 +155,6 @@ export const Element: React.FC<ElementProps> = ({ element }) => {
 
   return (
     <div
-      ref={setDragRef}
       className={`${styles.element} ${isSelected ? styles.selected : ''} ${isDragging ? styles.dragging : ''}`}
       style={dragStyle}
       onClick={handleClick}
@@ -172,6 +171,7 @@ export const Element: React.FC<ElementProps> = ({ element }) => {
             {element.type}
           </div>
           <div 
+            ref={setDragRef}
             className={styles.dragHandle}
             {...attributes}
             {...listeners}
