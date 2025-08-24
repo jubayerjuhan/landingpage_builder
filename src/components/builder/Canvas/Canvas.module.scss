@@ -440,8 +440,9 @@
   position: absolute;
   top: $space-2;
   left: $space-4;
-  background: linear-gradient(135deg, $primary 0%, $primary-hover 100%);
-  color: $white;
+  background: transparent;
+  color: $primary;
+  border: 1px solid $primary;
   font-size: 10px;
   font-weight: $font-weight-bold;
   padding: $space-1 $space-2;
@@ -449,7 +450,14 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   z-index: 10;
-  box-shadow: $shadow-sm;
+  transition: all $transition-base;
+  
+  &.selected {
+    background: linear-gradient(135deg, $primary 0%, $primary-hover 100%);
+    color: $white;
+    border: 1px solid transparent;
+    box-shadow: $shadow-sm;
+  }
 }
 
 .layoutControls {

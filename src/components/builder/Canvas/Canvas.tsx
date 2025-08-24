@@ -219,6 +219,22 @@ const LayoutContainer: React.FC<{
 
   const isSelected = selectedElementId === layout.id;
 
+  // Get column count to determine layout name
+  const getLayoutName = () => {
+    if (rows.length === 0) return 'Layout';
+    const firstRow = rows[0];
+    const columns = elements.filter(el => el.type === 'column' && el.parentId === firstRow.id);
+    const columnCount = columns.length;
+    
+    switch (columnCount) {
+      case 1: return 'Single Column';
+      case 2: return '2 Columns';
+      case 3: return '3 Columns';
+      case 4: return '4 Columns';
+      default: return `${columnCount} Columns`;
+    }
+  };
+
   // Make layout droppable for new elements only
   const { setNodeRef: setLayoutRef, isOver: isLayoutOver } = useDroppable({
     id: `layout-${layout.id}`
@@ -266,30 +282,32 @@ const LayoutContainer: React.FC<{
         style={layout.styles}
         onClick={handleLayoutClick}
       >
+        {/* Always show layout label */}
+        <div className={`${styles.layoutLabel} ${isSelected ? styles.selected : ''}`}>
+          {getLayoutName()}
+        </div>
+        
         {isSelected && (
-          <>
-            <div className={styles.layoutLabel}>Layout</div>
-            <div className={styles.layoutControls}>
-              <div className={styles.moveButtons}>
-                <button 
-                  className={`${styles.moveButton} ${isFirst ? styles.disabled : ''}`}
-                  onClick={handleMoveUp}
-                  disabled={isFirst}
-                  title="Move up"
-                >
-                  <ChevronUp size={16} />
-                </button>
-                <button 
-                  className={`${styles.moveButton} ${isLast ? styles.disabled : ''}`}
-                  onClick={handleMoveDown}
-                  disabled={isLast}
-                  title="Move down"
-                >
-                  <ChevronDown size={16} />
-                </button>
-              </div>
+          <div className={styles.layoutControls}>
+            <div className={styles.moveButtons}>
+              <button 
+                className={`${styles.moveButton} ${isFirst ? styles.disabled : ''}`}
+                onClick={handleMoveUp}
+                disabled={isFirst}
+                title="Move up"
+              >
+                <ChevronUp size={16} />
+              </button>
+              <button 
+                className={`${styles.moveButton} ${isLast ? styles.disabled : ''}`}
+                onClick={handleMoveDown}
+                disabled={isLast}
+                title="Move down"
+              >
+                <ChevronDown size={16} />
+              </button>
             </div>
-          </>
+          </div>
         )}
         {showDragIndicator && <div className={styles.dragOverIndicator}>Drop here to add layout</div>}
         

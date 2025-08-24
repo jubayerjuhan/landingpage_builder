@@ -192,8 +192,89 @@
 
 .layoutGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: $space-3;
+}
+
+.layoutCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $space-3;
+  padding: $space-4 $space-3;
+  background: $white;
+  border: 1px solid $border-light;
+  border-radius: $radius-base;
+  cursor: grab;
+  transition: all $transition-base;
+  position: relative;
+  overflow: hidden;
+  min-height: 80px;
+  text-align: center;
+  
+  &:hover {
+    background: $gray-50;
+    border-color: $primary;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+    transform: translateY(-1px);
+    
+    .layoutIcon {
+      color: $primary;
+      transform: scale(1.1);
+    }
+  }
+  
+  &:active {
+    transform: translateY(0);
+    box-shadow: $shadow-xs;
+  }
+  
+  &.dragging {
+    opacity: 0.6;
+    cursor: grabbing;
+    transform: rotate(2deg);
+    z-index: $z-modal;
+  }
+}
+
+.layoutIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: $gray-100;
+  border-radius: $radius-sm;
+  color: $text-secondary;
+  flex-shrink: 0;
+  transition: all $transition-base;
+}
+
+.layoutInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+  text-align: center;
+  min-width: 0;
+}
+
+.layoutLabel {
+  font-size: 13px;
+  font-weight: $font-weight-semibold;
+  color: $text-primary;
+  line-height: 1.2;
+}
+
+.layoutDescription {
+  font-size: 11px;
+  color: $text-tertiary;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 // ============================================================================

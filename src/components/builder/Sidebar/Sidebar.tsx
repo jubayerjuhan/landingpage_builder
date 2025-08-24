@@ -90,12 +90,37 @@ const DraggableItem: React.FC<DraggableItemProps> = ({ id, type, icon, label, de
   );
 };
 
+const LayoutCard: React.FC<DraggableItemProps> = ({ id, type, icon, label, description }) => {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id,
+    data: { type }
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      {...listeners}
+      {...attributes}
+      className={`${styles.layoutCard} ${isDragging ? styles.dragging : ''}`}
+      title={description}
+    >
+      <div className={styles.layoutIcon}>
+        {icon}
+      </div>
+      <div className={styles.layoutInfo}>
+        <span className={styles.layoutLabel}>{label}</span>
+        <span className={styles.layoutDescription}>{description}</span>
+      </div>
+    </div>
+  );
+};
+
 const LayoutTab: React.FC<{ searchTerm: string }> = ({ searchTerm }) => {
   const layouts = [
-    { id: 'single-column-layout', type: 'single-column', icon: <SingleColumnIcon size={20} />, label: 'Single Column', description: 'One column layout' },
-    { id: 'two-column-layout', type: 'two-column', icon: <Columns2 size={20} />, label: '2 Columns', description: 'Two equal columns' },
-    { id: 'three-column-layout', type: 'three-column', icon: <Columns3 size={20} />, label: '3 Columns', description: 'Three equal columns' },
-    { id: 'four-column-layout', type: 'four-column', icon: <Columns4 size={20} />, label: '4 Columns', description: 'Four equal columns' },
+    { id: 'single-column-layout', type: 'single-column', icon: <SingleColumnIcon size={32} />, label: 'Single Column', description: 'One column layout' },
+    { id: 'two-column-layout', type: 'two-column', icon: <Columns2 size={32} />, label: '2 Columns', description: 'Two equal columns' },
+    { id: 'three-column-layout', type: 'three-column', icon: <Columns3 size={32} />, label: '3 Columns', description: 'Three equal columns' },
+    { id: 'four-column-layout', type: 'four-column', icon: <Columns4 size={32} />, label: '4 Columns', description: 'Four equal columns' },
   ];
 
   const filteredLayouts = layouts.filter(layout => 
@@ -106,7 +131,7 @@ const LayoutTab: React.FC<{ searchTerm: string }> = ({ searchTerm }) => {
     <div className={styles.tabContent}>
       <div className={styles.layoutGrid}>
         {filteredLayouts.map(layout => (
-          <DraggableItem key={layout.id} {...layout} />
+          <LayoutCard key={layout.id} {...layout} />
         ))}
       </div>
       {filteredLayouts.length === 0 && (
