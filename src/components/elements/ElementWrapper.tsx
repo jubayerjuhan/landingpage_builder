@@ -118,7 +118,7 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
           style={{
             position: 'absolute',
             top: '-12px',
-            left: '16px',
+            right: '-12px', // Moved to right side
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

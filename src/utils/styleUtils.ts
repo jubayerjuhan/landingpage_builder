@@ -7,7 +7,7 @@ export const getElementStyles = (
   element: BuilderElement, 
   viewportMode: ViewportMode
 ): React.CSSProperties => {
-  const styles = element.styles[viewportMode] || {};
+  const styles = element.styles?.[viewportMode] || {};
   const properties = element.properties || {};
   
   const cssStyles: React.CSSProperties = { ...styles };

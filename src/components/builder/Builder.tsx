@@ -4,16 +4,23 @@ import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 import { Eye } from 'lucide-react';
 import { TopBar } from './TopBar/TopBar';
 import { Sidebar } from './Sidebar/Sidebar';
-import { EnhancedCanvas } from '../Canvas';
+import { OldStyleCanvas } from '../Canvas/OldStyleCanvas';
 import { PropertiesSidebar } from './PropertiesSidebar/PropertiesSidebar';
+import { ModalContainer } from '../modals/ModalContainer';
 import { useBuilderStore } from '../../stores/builderStore';
+import useElementStore from '../../stores/elementStore';
+import useModalStore from '../../stores/modalStore';
+import { ComponentType } from '../../types/builder';
+import { v4 as uuidv4 } from 'uuid';
 import styles from './Builder.module.scss';
 
 export const Builder: React.FC = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [draggingType, setDraggingType] = useState<string | null>(null);
   const [draggedLabel, setDraggedLabel] = useState<string | null>(null);
-  const { addElement, addLayout, updateElement, selectElement, deleteElement, selectedElementId, reorderElements, isPreviewMode, setPreviewMode } = useBuilderStore();
+  const { addElement, addLayout, updateElement, deleteElement, selectedElementId, reorderElements, isPreviewMode, setPreviewMode } = useBuilderStore();
+  const { addElementWithChildren, selectElement } = useElementStore();
+  const { openAddSectionModal } = useModalStore();
 
   // Handle keyboard shortcuts
   useEffect(() => {
@@ -99,16 +106,56 @@ export const Builder: React.FC = () => {
                            elementType === 'two-column' ? 2 :
                            elementType === 'three-column' ? 3 : 4;
         
+        // Create a layout with a row and columns (old style)
+        const layoutId = uuidv4();
+        const rowId = uuidv4();
+        const columnIds = Array.from({ length: columnCount }, () => uuidv4());
+        
+        // Get current layouts to determine order
+        const layouts = useElementStore.getState().elements.filter(el => el.type === 'layout');
+        const maxOrder = layouts.reduce((max, el) => Math.max(max, el.order || 0), -1);
+        
+        const layout = {
+          id: layoutId,
+          type: 'layout' as ComponentType,
+          name: 'Layout',
+          content: '',
+          order: maxOrder + 1,
+          properties: {},
+          children: [{
+            id: rowId,
+            type: 'row' as ComponentType,
+            name: 'Row',
+            content: '',
+            properties: {
+              display: 'flex',
+              gap: '20px'
+            },
+            children: columnIds.map((colId, index) => ({
+              id: colId,
+              type: 'column' as ComponentType,
+              name: `Column ${index + 1}`,
+              content: '',
+              properties: {
+                flex: '1',
+                minHeight: '100px'
+              },
+              children: []
+            }))
+          }]
+        };
+        
         // Handle drop zones for ordering
         if (targetId === 'main-canvas' || targetId === 'main-canvas-below') {
-          addLayout(columnCount);
+          addElementWithChildren(layout);
         } else if (targetId.startsWith('above-') || targetId.startsWith('below-')) {
-          const [position, layoutId] = targetId.split('-', 2);
-          addLayout(columnCount, position as 'above' | 'below', layoutId);
-        } else if (targetId.startsWith('layout-')) {
-          // Drop on existing layout - add below it
-          const layoutId = targetId.replace('layout-', '');
-          addLayout(columnCount, 'below', layoutId);
+          const [position, layoutTargetId] = targetId.split('-').slice(0, 2);
+          // TODO: Handle reordering when dropping above/below existing layouts
+          addElementWithChildren(layout);
+        } else if (targetId.startsWith('column-')) {
+          // If dropping on a column, don't create a layout
+          console.log('Cannot drop layout on a column');
+          return;
         }
         return;
       }
@@ -148,15 +195,27 @@ export const Builder: React.FC = () => {
       }
       
       // Handle dropping directly on column
-      const newElement = {
-        type: elementType,
-        content: elementType === 'heading' ? 'Your Heading Here' : 
-                 elementType === 'paragraph' ? 'Your paragraph text here' : 
-                 'Your text here',
-        parentId: targetId.startsWith('column-') ? targetId.replace('column-', '') : null
-      };
+      if (targetId.startsWith('column-')) {
+        const columnId = targetId.replace('column-', '');
+        const elementId = uuidv4();
+        
+        const newElement = {
+          id: elementId,
+          type: elementType as ComponentType,
+          name: elementType.charAt(0).toUpperCase() + elementType.slice(1),
+          content: elementType === 'heading' ? 'Your Heading Here' : 
+                   elementType === 'paragraph' ? 'Your paragraph text here' : 
+                   elementType === 'text' ? 'Your text here' :
+                   elementType === 'button' ? 'Click Me' :
+                   elementType === 'image' ? '' : 
+                   '',
+          properties: {},
+          children: []
+        };
 
-      addElement(newElement);
+        addElementWithChildren(newElement, columnId);
+        selectElement(elementId);
+      }
     }
   };
 
@@ -172,9 +231,12 @@ export const Builder: React.FC = () => {
         <TopBar />
         <div className={styles.builderMain}>
           {!isPreviewMode && <Sidebar />}
-          <EnhancedCanvas />
+          <OldStyleCanvas draggingType={draggingType} />
           {!isPreviewMode && <PropertiesSidebar />}
         </div>
+        
+        {/* Modal Container for Section/Row Modals */}
+        <ModalContainer />
         
         {/* Preview Mode Banner */}
         {isPreviewMode && (

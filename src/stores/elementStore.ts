@@ -95,8 +95,8 @@ const useElementStore = create<ElementStore>((set, get) => ({
               styles: {
                 ...element.styles,
                 [viewport]: {
-                  ...element.styles[viewport],
-                  ...updates.styles[viewport]
+                  ...element.styles?.[viewport],
+                  ...updates.styles?.[viewport]
                 }
               }
             };

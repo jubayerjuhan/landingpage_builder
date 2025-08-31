@@ -82,7 +82,7 @@ export const SectionCanvas: React.FC = () => {
   const DroppableColumn: React.FC<{ column: BuilderElement }> = ({ column }) => {
     const columnElements = elements.filter(el => el.parentId === column.id);
     const { isOver, setNodeRef } = useDroppable({
-      id: `container-${column.id}`,
+      id: `column-${column.id}`,
     });
 
     // Pass the droppable ref to a wrapper div that contains the column

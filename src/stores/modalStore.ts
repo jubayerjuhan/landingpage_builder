@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { createSectionFromConfig, createRowWithColumns } from '../utils/elementFactory';
+import { createSectionFromConfig, createLayoutFromConfig, createRowWithColumns } from '../utils/elementFactory';
 import useElementStore from './elementStore';
 
 export interface SectionConfig {
@@ -106,27 +106,36 @@ const useModalStore = create<ModalStore>((set, get) => ({
     const { sectionConfig, targetParentId } = get();
     if (sectionConfig) {
       try {
-        // Create the section element
-        const sectionElement = createSectionFromConfig(sectionConfig);
+        // Map section config to column count for layout
+        const columnMap = {
+          'full-width': 1,
+          'wide': 1,
+          'medium': 2,
+          'small': 3
+        };
+        const columns = columnMap[sectionConfig.type] || 1;
+        
+        // Create the layout element (old style)
+        const layoutElement = createLayoutFromConfig({ columns });
         
         // Add to element store
         const elementStore = useElementStore.getState();
         
         if (targetParentId) {
           // Add as child to specific parent
-          elementStore.addElementWithChildren(sectionElement, targetParentId);
+          elementStore.addElementWithChildren(layoutElement, targetParentId);
         } else {
           // Add to root level
-          elementStore.addElementWithChildren(sectionElement);
+          elementStore.addElementWithChildren(layoutElement);
         }
         
-        // Select the newly created section
-        elementStore.selectElement(sectionElement.id);
+        // Select the newly created layout
+        elementStore.selectElement(layoutElement.id);
         
-        console.log('✅ Section created:', sectionElement);
+        console.log('✅ Layout created:', layoutElement);
         get().closeAddSectionModal();
       } catch (error) {
-        console.error('❌ Failed to create section:', error);
+        console.error('❌ Failed to create layout:', error);
       }
     }
   },

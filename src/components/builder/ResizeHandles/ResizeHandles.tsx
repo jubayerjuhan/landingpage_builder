@@ -155,7 +155,7 @@ export const ResizeHandles: React.FC<ResizeHandlesProps> = ({
       styles: {
         ...element.styles,
         [viewport]: {
-          ...element.styles[viewport],
+          ...element.styles?.[viewport],
           width: `${dimensions.width}px`,
           height: `${dimensions.height}px`
         }

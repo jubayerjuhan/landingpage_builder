@@ -188,6 +188,50 @@ export const createSectionFromConfig = (config: SectionConfig, overrides?: Parti
 };
 
 /**
+ * Creates a layout element with row and columns (old style)
+ */
+export const createLayoutFromConfig = (config: SectionConfig | { columns: number }, overrides?: Partial<BuilderElement>): BuilderElement => {
+  const columnCount = 'columns' in config ? config.columns : 1;
+  
+  // Create columns
+  const columns: BuilderElement[] = [];
+  for (let i = 0; i < columnCount; i++) {
+    columns.push(createElement(ComponentType.COLUMN, {
+      name: `Column ${i + 1}`,
+      content: '',
+      properties: {
+        flex: '1',
+        minHeight: '100px'
+      },
+      order: i
+    }));
+  }
+  
+  // Create row with columns
+  const row = createElement(ComponentType.ROW, {
+    name: 'Row',
+    content: '',
+    properties: {
+      display: 'flex',
+      gap: '20px'
+    },
+    children: columns,
+    order: 0
+  });
+  
+  // Create layout with row
+  const layout = createElement(ComponentType.LAYOUT, {
+    name: 'Layout',
+    content: '',
+    properties: {},
+    children: [row],
+    ...overrides
+  });
+  
+  return layout;
+};
+
+/**
  * Creates a row element with automatic column generation
  */
 export const createRowWithColumns = (config: RowConfig, overrides?: Partial<BuilderElement>): BuilderElement => {

@@ -29,15 +29,8 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
   }
   
-  // Hide the handle when parent is not hovered or selected
-  opacity: 0;
-  pointer-events: none;
-  
-  .elementWrapper:hover &,
-  .elementWrapper.selected & {
-    opacity: 1;
-    pointer-events: auto;
-  }
+  // Handle is visible when parent is hovered or selected
+  // Removed the default opacity: 0 to make it always visible when rendered
 }
 
 .deleteButton {

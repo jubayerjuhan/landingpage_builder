@@ -20,7 +20,7 @@ export const DragHandle: React.FC<DragHandleProps> = ({
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `drag-handle-${element.id}`,
     data: {
-      type: element.type,
+      type: 'existing-element', // Fixed: Always mark as existing element for drag
       element,
       isFromPalette: false,
       isElementDrag: true,
@@ -44,7 +44,7 @@ export const DragHandle: React.FC<DragHandleProps> = ({
   const dragHandleStyles: React.CSSProperties = {
     position: 'absolute',
     top: '-12px',
-    left: '-12px',
+    right: '20px', // Moved to right side
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',

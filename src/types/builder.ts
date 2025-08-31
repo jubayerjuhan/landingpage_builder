@@ -20,6 +20,7 @@ export interface BuilderElement {
 // Component type enumeration
 export enum ComponentType {
   // Layout Components
+  LAYOUT = 'layout',
   SECTION = 'section',
   CONTAINER = 'container', 
   ROW = 'row',
