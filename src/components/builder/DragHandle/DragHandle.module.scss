@@ -39,3 +39,33 @@
     pointer-events: auto;
   }
 }
+
+.deleteButton {
+  position: absolute;
+  top: -12px;
+  left: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background-color: #ff4444;
+  border: 2px solid white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  
+  &:hover {
+    background-color: #ee3333;
+    transform: scale(1.1);
+  }
+  
+  &:active {
+    background-color: #dd2222;
+    transform: scale(0.95);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  }
+}

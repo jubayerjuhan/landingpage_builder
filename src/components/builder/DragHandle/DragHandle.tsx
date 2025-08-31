@@ -15,21 +15,16 @@ export const DragHandle: React.FC<DragHandleProps> = ({
   element,
   isVisible,
   onDragStart,
-  onDragEnd
+  onDragEnd,
 }) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    isDragging
-  } = useDraggable({
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `drag-handle-${element.id}`,
     data: {
       type: element.type,
       element,
       isFromPalette: false,
-      isElementDrag: true
-    }
+      isElementDrag: true,
+    },
   });
 
   const handleMouseDown = useCallback(() => {
@@ -41,7 +36,6 @@ export const DragHandle: React.FC<DragHandleProps> = ({
       onDragEnd?.();
     }
   }, [isDragging, onDragEnd]);
-
 
   if (!isVisible) {
     return null;
@@ -61,14 +55,16 @@ export const DragHandle: React.FC<DragHandleProps> = ({
     borderRadius: '6px',
     cursor: isDragging ? 'grabbing' : 'grab',
     transition: 'all 0.2s ease',
-    zIndex: 1000, // Increased z-index to ensure visibility
+    zIndex: 1000,
     color: 'white',
     boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
-    ...(isDragging ? {
-      backgroundColor: '#3b3fd1',
-      transform: 'scale(0.95)',
-      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)'
-    } : {})
+    ...(isDragging
+      ? {
+          backgroundColor: '#3b3fd1',
+          transform: 'scale(0.95)',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)',
+        }
+      : {}),
   };
 
   return (

@@ -57,6 +57,18 @@
   }
 }
 
+.deleteButton {
+  &:hover {
+    background-color: #ee3333 !important;
+    transform: scale(1.1);
+  }
+  
+  &:active {
+    background-color: #dd2222 !important;
+    transform: scale(0.95);
+  }
+}
+
 .elementLabel {
   position: absolute;
   top: -24px;

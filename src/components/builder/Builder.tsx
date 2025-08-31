@@ -4,7 +4,7 @@ import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 import { Eye } from 'lucide-react';
 import { TopBar } from './TopBar/TopBar';
 import { Sidebar } from './Sidebar/Sidebar';
-import { Canvas } from './Canvas/Canvas';
+import { EnhancedCanvas } from '../Canvas';
 import { PropertiesSidebar } from './PropertiesSidebar/PropertiesSidebar';
 import { useBuilderStore } from '../../stores/builderStore';
 import styles from './Builder.module.scss';
@@ -172,7 +172,7 @@ export const Builder: React.FC = () => {
         <TopBar />
         <div className={styles.builderMain}>
           {!isPreviewMode && <Sidebar />}
-          <Canvas draggingType={draggingType} />
+          <EnhancedCanvas />
           {!isPreviewMode && <PropertiesSidebar />}
         </div>
         

@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { Trash2 } from 'lucide-react';
 import type { BuilderElement } from '../../types/builder';
 import useElementStore from '../../stores/elementStore';
 import useCanvasStore from '../../stores/canvasStore';
@@ -19,7 +20,7 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   
-  const { selectedElementIds, hoveredElementId, selectElement, setHoveredElement } =
+  const { selectedElementIds, hoveredElementId, selectElement, setHoveredElement, deleteElement } =
     useElementStore();
   const { previewMode } = useCanvasStore();
 
@@ -84,6 +85,11 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
     } : {})
   };
 
+  // Handle element deletion
+  const handleDelete = () => {
+    deleteElement(element.id);
+  };
+
   // Determine if we should show editing UI
   const showDragHandle = !isPreviewMode && (isSelected || isHovered);
   const showResizeHandles = !isPreviewMode && isSelected && !isTextElement;
@@ -104,6 +110,39 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
         element={element}
         isVisible={showDragHandle}
       />
+      
+      {/* Delete Button */}
+      {showDragHandle && (
+        <div
+          className={styles.deleteButton}
+          style={{
+            position: 'absolute',
+            top: '-12px',
+            left: '16px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '24px',
+            height: '24px',
+            backgroundColor: '#ff4444',
+            border: '2px solid white',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+            zIndex: 1001,
+            color: 'white',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            handleDelete();
+          }}
+          title="Delete element"
+        >
+          <Trash2 size={12} />
+        </div>
+      )}
       
       {/* Resize Handles for non-text elements */}
       {showResizeHandles && (
