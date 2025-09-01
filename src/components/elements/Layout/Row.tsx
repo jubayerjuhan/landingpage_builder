@@ -1,6 +1,6 @@
 import React from 'react';
 import type { BuilderElement } from '../../../types/builder';
-import { getElementStyles } from '../../../utils/styleUtils';
+import { getCompleteElementStyles } from '../../../utils/styleUtils';
 import useCanvasStore from '../../../stores/canvasStore';
 
 interface RowProps {
@@ -10,7 +10,7 @@ interface RowProps {
 
 export const Row: React.FC<RowProps> = ({ element, children }) => {
   const { viewportMode } = useCanvasStore();
-  const styles = getElementStyles(element, viewportMode);
+  const styles = getCompleteElementStyles(element, viewportMode);
   
   const rowStyles: React.CSSProperties = {
     display: 'flex',

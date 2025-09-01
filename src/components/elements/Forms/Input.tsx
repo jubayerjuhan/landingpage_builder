@@ -1,7 +1,7 @@
 import React from 'react';
 import type { BuilderElement } from '../../../types/builder';
 import { ElementWrapper } from '../ElementWrapper';
-import { getElementStyles, getElementContent } from '../../../utils/styleUtils';
+import { getCompleteElementStyles, getElementContent } from '../../../utils/styleUtils';
 import useCanvasStore from '../../../stores/canvasStore';
 
 interface InputProps {
@@ -10,7 +10,7 @@ interface InputProps {
 
 export const Input: React.FC<InputProps> = ({ element }) => {
   const { viewportMode } = useCanvasStore();
-  const styles = getElementStyles(element, viewportMode);
+  const styles = getCompleteElementStyles(element, viewportMode);
   const content = getElementContent(element);
   
   const inputType = (element.properties?.form as any)?.type || 'text';

@@ -1,7 +1,7 @@
 import React from 'react';
 import type { BuilderElement } from '../../../types/builder';
 import { ElementWrapper } from '../ElementWrapper';
-import { getElementStyles } from '../../../utils/styleUtils';
+import { getCompleteElementStyles } from '../../../utils/styleUtils';
 import useCanvasStore from '../../../stores/canvasStore';
 
 interface GalleryProps {
@@ -10,7 +10,7 @@ interface GalleryProps {
 
 export const Gallery: React.FC<GalleryProps> = ({ element }) => {
   const { viewportMode } = useCanvasStore();
-  const styles = getElementStyles(element, viewportMode);
+  const styles = getCompleteElementStyles(element, viewportMode);
   
   const galleryStyles: React.CSSProperties = {
     display: 'grid',

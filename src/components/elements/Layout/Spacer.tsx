@@ -1,6 +1,6 @@
 import React from 'react';
 import type { BuilderElement } from '../../../types/builder';
-import { getElementStyles } from '../../../utils/styleUtils';
+import { getCompleteElementStyles } from '../../../utils/styleUtils';
 import useCanvasStore from '../../../stores/canvasStore';
 
 interface SpacerProps {
@@ -9,7 +9,7 @@ interface SpacerProps {
 
 export const Spacer: React.FC<SpacerProps> = ({ element }) => {
   const { viewportMode, previewMode } = useCanvasStore();
-  const styles = getElementStyles(element, viewportMode);
+  const styles = getCompleteElementStyles(element, viewportMode);
   
   const spacerStyles: React.CSSProperties = {
     width: '100%',

@@ -1,6 +1,6 @@
 import React from 'react';
 import type { BuilderElement } from '../../../types/builder';
-import { getElementStyles } from '../../../utils/styleUtils';
+import { getCompleteElementStyles } from '../../../utils/styleUtils';
 import useCanvasStore from '../../../stores/canvasStore';
 
 interface ContainerProps {
@@ -10,7 +10,7 @@ interface ContainerProps {
 
 export const Container: React.FC<ContainerProps> = ({ element, children }) => {
   const { viewportMode } = useCanvasStore();
-  const styles = getElementStyles(element, viewportMode);
+  const styles = getCompleteElementStyles(element, viewportMode);
   
   const containerStyles: React.CSSProperties = {
     display: 'flex',

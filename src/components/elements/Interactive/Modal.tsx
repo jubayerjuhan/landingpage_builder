@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import type { BuilderElement } from '../../../types/builder';
 import { ElementWrapper } from '../ElementWrapper';
-import { getElementStyles } from '../../../utils/styleUtils';
+import { getCompleteElementStyles } from '../../../utils/styleUtils';
 import useCanvasStore from '../../../stores/canvasStore';
 import { X } from 'lucide-react';
 
@@ -11,7 +11,7 @@ interface ModalProps {
 
 export const Modal: React.FC<ModalProps> = ({ element }) => {
   const { viewportMode, previewMode } = useCanvasStore();
-  const styles = getElementStyles(element, viewportMode);
+  const styles = getCompleteElementStyles(element, viewportMode);
   const [isOpen, setIsOpen] = useState(false);
   
   const triggerText = (element.properties?.component as any)?.triggerText || 'Open Modal';

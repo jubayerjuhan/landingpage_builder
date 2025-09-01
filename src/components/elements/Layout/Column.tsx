@@ -1,6 +1,6 @@
 import React from 'react';
 import type { BuilderElement } from '../../../types/builder';
-import { getElementStyles } from '../../../utils/styleUtils';
+import { getCompleteElementStyles } from '../../../utils/styleUtils';
 import useCanvasStore from '../../../stores/canvasStore';
 
 interface ColumnProps {
@@ -10,7 +10,7 @@ interface ColumnProps {
 
 export const Column: React.FC<ColumnProps> = ({ element, children }) => {
   const { viewportMode } = useCanvasStore();
-  const styles = getElementStyles(element, viewportMode);
+  const styles = getCompleteElementStyles(element, viewportMode);
   
   const columnStyles: React.CSSProperties = {
     flex: '1',
@@ -18,7 +18,6 @@ export const Column: React.FC<ColumnProps> = ({ element, children }) => {
     flexDirection: 'column',
     gap: '1rem',
     minHeight: '60px',
-    padding: '1rem',
     overflow: 'visible', // Ensure child elements can show drag handles
     position: 'relative', // Ensure proper stacking context
     ...styles,

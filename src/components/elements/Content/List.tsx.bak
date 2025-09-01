@@ -1,7 +1,7 @@
 import React from 'react';
 import type { BuilderElement } from '../../../types/builder';
 import { ElementWrapper } from '../ElementWrapper';
-import { getCompleteElementStyles, getElementContent } from '../../../utils/styleUtils';
+import { getElementStyles, getElementContent } from '../../../utils/styleUtils';
 import useCanvasStore from '../../../stores/canvasStore';
 
 interface ListProps {
@@ -10,7 +10,7 @@ interface ListProps {
 
 export const List: React.FC<ListProps> = ({ element }) => {
   const { viewportMode } = useCanvasStore();
-  const styles = getCompleteElementStyles(element, viewportMode);
+  const styles = getElementStyles(element, viewportMode);
   const content = getElementContent(element);
   
   const listStyles: React.CSSProperties = {

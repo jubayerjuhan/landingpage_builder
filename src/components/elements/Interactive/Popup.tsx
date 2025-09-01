@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import type { BuilderElement } from '../../../types/builder';
 import { ElementWrapper } from '../ElementWrapper';
-import { getElementStyles } from '../../../utils/styleUtils';
+import { getCompleteElementStyles } from '../../../utils/styleUtils';
 import useCanvasStore from '../../../stores/canvasStore';
 
 interface PopupProps {
@@ -10,7 +10,7 @@ interface PopupProps {
 
 export const Popup: React.FC<PopupProps> = ({ element }) => {
   const { viewportMode, previewMode } = useCanvasStore();
-  const styles = getElementStyles(element, viewportMode);
+  const styles = getCompleteElementStyles(element, viewportMode);
   const [isVisible, setIsVisible] = useState(false);
   
   const triggerText = (element.properties?.component as any)?.triggerText || 'Show Popup';

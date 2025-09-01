@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import type { BuilderElement } from '../../../types/builder';
 import { ElementWrapper } from '../ElementWrapper';
-import { getElementStyles } from '../../../utils/styleUtils';
+import { getCompleteElementStyles } from '../../../utils/styleUtils';
 import useCanvasStore from '../../../stores/canvasStore';
 
 interface TabsProps {
@@ -10,7 +10,7 @@ interface TabsProps {
 
 export const Tabs: React.FC<TabsProps> = ({ element }) => {
   const { viewportMode, previewMode } = useCanvasStore();
-  const styles = getElementStyles(element, viewportMode);
+  const styles = getCompleteElementStyles(element, viewportMode);
   const [activeTab, setActiveTab] = useState(0);
   
   const tabs = (element.properties?.component as any)?.tabs || [

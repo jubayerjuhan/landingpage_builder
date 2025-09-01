@@ -1,7 +1,7 @@
 import React from 'react';
 import type { BuilderElement } from '../../../types/builder';
 import { ElementWrapper } from '../ElementWrapper';
-import { getCompleteElementStyles, getElementContent } from '../../../utils/styleUtils';
+import { getElementStyles, getElementContent } from '../../../utils/styleUtils';
 import useCanvasStore from '../../../stores/canvasStore';
 
 interface TextareaProps {
@@ -10,7 +10,7 @@ interface TextareaProps {
 
 export const Textarea: React.FC<TextareaProps> = ({ element }) => {
   const { viewportMode } = useCanvasStore();
-  const styles = getCompleteElementStyles(element, viewportMode);
+  const styles = getElementStyles(element, viewportMode);
   const content = getElementContent(element);
   
   const rows = (element.properties?.component as any)?.rows || 4;

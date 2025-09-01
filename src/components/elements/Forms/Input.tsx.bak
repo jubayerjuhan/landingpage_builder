@@ -1,39 +1,40 @@
 import React from 'react';
 import type { BuilderElement } from '../../../types/builder';
 import { ElementWrapper } from '../ElementWrapper';
-import { getCompleteElementStyles, getElementContent } from '../../../utils/styleUtils';
+import { getElementStyles, getElementContent } from '../../../utils/styleUtils';
 import useCanvasStore from '../../../stores/canvasStore';
 
-interface TextareaProps {
+interface InputProps {
   element: BuilderElement;
 }
 
-export const Textarea: React.FC<TextareaProps> = ({ element }) => {
+export const Input: React.FC<InputProps> = ({ element }) => {
   const { viewportMode } = useCanvasStore();
-  const styles = getCompleteElementStyles(element, viewportMode);
+  const styles = getElementStyles(element, viewportMode);
   const content = getElementContent(element);
   
-  const rows = (element.properties?.component as any)?.rows || 4;
+  const inputType = (element.properties?.form as any)?.type || 'text';
   const required = (element.properties?.form as any)?.required || false;
+  const disabled = (element.properties?.form as any)?.disabled || false;
   
-  const textareaStyles: React.CSSProperties = {
+  const inputStyles: React.CSSProperties = {
     width: '100%',
     padding: '0.75rem',
     border: '1px solid #d1d5db',
     borderRadius: '6px',
     fontSize: '1rem',
-    resize: 'vertical',
-    fontFamily: 'inherit',
+    backgroundColor: disabled ? '#f9fafb' : 'white',
     ...styles,
   };
   
   return (
     <ElementWrapper element={element}>
-      <textarea
-        placeholder={content.placeholder || 'Enter your message...'}
+      <input
+        type={inputType}
+        placeholder={content.placeholder || 'Enter text...'}
         required={required}
-        rows={rows}
-        style={textareaStyles}
+        disabled={disabled}
+        style={inputStyles}
         readOnly
       />
     </ElementWrapper>
