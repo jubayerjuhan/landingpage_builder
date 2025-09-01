@@ -18,10 +18,13 @@ export const Row: React.FC<RowProps> = ({ element, children }) => {
           margin, marginTop, marginRight, marginBottom, marginLeft,
           backgroundColor, borderRadius, border, boxShadow, ...remainingStyles } = styles;
   
+  // Get gap from properties or default to 16px (1rem)
+  const gap = element.properties?.layout?.gap || '16px';
+  
   const rowStyles: React.CSSProperties = {
     display: 'flex',
     flexDirection: 'row',
-    gap: '1rem',
+    gap: gap,
     width: '100%',
     minHeight: '60px',
     ...remainingStyles, // Only apply non-wrapper styles

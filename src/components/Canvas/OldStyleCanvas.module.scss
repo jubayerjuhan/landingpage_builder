@@ -346,6 +346,15 @@
   &.columnOver {
     border-color: #5457ff;
     background: #f8f8ff;
+    
+    .emptyColumn {
+      border-color: #4338ca;
+      background: rgba(84, 87, 255, 0.15);
+      color: #4338ca;
+      font-weight: 600;
+      scale: 1.02;
+      box-shadow: 0 4px 12px rgba(84, 87, 255, 0.2);
+    }
   }
 }
 
@@ -353,10 +362,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 60px;
+  min-height: 100px;
+  height: 100px;
   color: #9ca3af;
   font-size: 12px;
-  font-style: italic;
+  font-weight: 500;
+  border: 2px dashed #5457ff;
+  border-radius: 8px;
+  background: rgba(84, 87, 255, 0.05);
+  transition: all 0.2s ease;
+  margin: 8px;
+  
+  &:hover {
+    background: rgba(84, 87, 255, 0.1);
+    color: #5457ff;
+    border-color: #4338ca;
+  }
 }
 
 // Drop Zones

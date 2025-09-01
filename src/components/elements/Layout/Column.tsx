@@ -3,6 +3,7 @@ import type { BuilderElement } from '../../../types/builder';
 import { ElementWrapper } from '../ElementWrapper';
 import { getCompleteElementStyles } from '../../../utils/styleUtils';
 import useCanvasStore from '../../../stores/canvasStore';
+import useElementStore from '../../../stores/elementStore';
 
 interface ColumnProps {
   element: BuilderElement;
@@ -11,7 +12,15 @@ interface ColumnProps {
 
 export const Column: React.FC<ColumnProps> = ({ element, children }) => {
   const { viewportMode } = useCanvasStore();
+  const { elements } = useElementStore();
   const styles = getCompleteElementStyles(element, viewportMode);
+  
+  // Calculate dynamic width based on sibling columns
+  const siblingColumns = element.parentId 
+    ? elements.filter(el => el.parentId === element.parentId && el.type === 'column')
+    : [element];
+  const columnCount = siblingColumns.length;
+  const calculatedWidth = columnCount > 0 ? `${100 / columnCount}%` : '100%';
   
   // Filter out styles that are handled by ElementWrapper (padding, margin, visual styles)
   const { padding, paddingTop, paddingRight, paddingBottom, paddingLeft,
@@ -19,7 +28,7 @@ export const Column: React.FC<ColumnProps> = ({ element, children }) => {
           backgroundColor, borderRadius, border, boxShadow, ...remainingStyles } = styles;
   
   const columnStyles: React.CSSProperties = {
-    flex: '1',
+    width: calculatedWidth, // Use calculated width instead of flex
     display: 'flex',
     flexDirection: 'column',
     gap: '1rem',

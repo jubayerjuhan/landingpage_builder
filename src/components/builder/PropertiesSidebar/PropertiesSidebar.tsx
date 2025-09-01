@@ -16,7 +16,8 @@ import {
   AlignRight,
   Bold,
   Italic,
-  Underline
+  Underline,
+  Grid
 } from 'lucide-react';
 import useElementStore from '../../../stores/elementStore';
 import useCanvasStore from '../../../stores/canvasStore';
@@ -209,6 +210,41 @@ export const PropertiesSidebar: React.FC = () => {
             </div>
           </div>
         </CollapsibleSection>
+
+        {/* Layout Properties - only show for rows */}
+        {selectedElement.type === 'row' && (
+          <CollapsibleSection 
+            title="Layout" 
+            icon={<Grid size={16} />}
+          >
+            <div className={styles.field}>
+              <label className={styles.fieldLabel}>Column Gap</label>
+              <select
+                value={selectedElement.properties?.layout?.gap || '16px'}
+                onChange={(e) => {
+                  const currentProperties = selectedElement.properties || {};
+                  updateElement(selectedElement.id, {
+                    properties: {
+                      ...currentProperties,
+                      layout: {
+                        ...currentProperties.layout,
+                        gap: e.target.value
+                      }
+                    }
+                  });
+                }}
+                className={styles.select}
+              >
+                <option value="0px">No Gap</option>
+                <option value="8px">8px</option>
+                <option value="16px">16px (Default)</option>
+                <option value="24px">24px</option>
+                <option value="32px">32px</option>
+                <option value="48px">48px</option>
+              </select>
+            </div>
+          </CollapsibleSection>
+        )}
 
         {/* Content Properties */}
         {['heading', 'paragraph', 'text', 'button'].includes(selectedElement.type) && (
