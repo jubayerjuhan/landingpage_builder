@@ -43,6 +43,9 @@ const useElementStore = create<ElementStore>((set, get) => ({
   },
 
   addElementWithChildren: (element, parentId, index) => {
+    const state = get();
+    const beforeSnapshot = createSnapshot(state.elements, state.selectedElementIds);
+    
     const elementsToAdd: BuilderElement[] = [];
     
     // Recursively add element and its children
@@ -76,6 +79,19 @@ const useElementStore = create<ElementStore>((set, get) => ({
     set(state => ({
       elements: [...state.elements, ...elementsToAdd]
     }));
+
+    // Track history after state change
+    const afterState = get();
+    const afterSnapshot = createSnapshot(afterState.elements, afterState.selectedElementIds);
+    
+    // Import history store dynamically to avoid circular dependency
+    import('./historyStore').then(({ default: useHistoryStore }) => {
+      useHistoryStore.getState().pushHistory({
+        ...historyActions.createElement(newElementId, `Add ${element.type} with children`),
+        beforeState: beforeSnapshot,
+        afterState: afterSnapshot
+      });
+    });
 
     return newElementId;
   },
@@ -131,10 +147,13 @@ const useElementStore = create<ElementStore>((set, get) => ({
   },
 
   deleteElement: (id) => {
-    set(state => {
-      const elementToDelete = state.elements.find(el => el.id === id);
-      if (!elementToDelete) return state;
+    const state = get();
+    const elementToDelete = state.elements.find(el => el.id === id);
+    if (!elementToDelete) return;
+    
+    const beforeSnapshot = createSnapshot(state.elements, state.selectedElementIds);
 
+    set(state => {
       // Recursively find all children to delete
       const getElementAndChildren = (elementId: string): string[] => {
         const children = state.elements
@@ -150,6 +169,19 @@ const useElementStore = create<ElementStore>((set, get) => ({
         selectedElementIds: state.selectedElementIds.filter(selectedId => !idsToDelete.includes(selectedId))
       };
     });
+    
+    // Track history after state change
+    const afterState = get();
+    const afterSnapshot = createSnapshot(afterState.elements, afterState.selectedElementIds);
+    
+    // Import history store dynamically to avoid circular dependency
+    import('./historyStore').then(({ default: useHistoryStore }) => {
+      useHistoryStore.getState().pushHistory({
+        ...historyActions.deleteElement(id, `Delete ${elementToDelete.type}`),
+        beforeState: beforeSnapshot,
+        afterState: afterSnapshot
+      });
+    });
   },
 
   deleteElements: (ids) => {
@@ -160,6 +192,8 @@ const useElementStore = create<ElementStore>((set, get) => ({
     const state = get();
     const element = state.getElementById(id);
     if (!element) return '';
+    
+    const beforeSnapshot = createSnapshot(state.elements, state.selectedElementIds);
 
     const duplicateWithChildren = (el: BuilderElement, newParentId?: string): BuilderElement => {
       const newId = uuidv4();
@@ -183,6 +217,20 @@ const useElementStore = create<ElementStore>((set, get) => ({
     };
 
     const duplicated = duplicateWithChildren(element);
+    
+    // Track history after state change
+    const afterState = get();
+    const afterSnapshot = createSnapshot(afterState.elements, afterState.selectedElementIds);
+    
+    // Import history store dynamically to avoid circular dependency
+    import('./historyStore').then(({ default: useHistoryStore }) => {
+      useHistoryStore.getState().pushHistory({
+        ...historyActions.duplicateElement(duplicated.id, `Duplicate ${element.type}`),
+        beforeState: beforeSnapshot,
+        afterState: afterSnapshot
+      });
+    });
+    
     return duplicated.id;
   },
 

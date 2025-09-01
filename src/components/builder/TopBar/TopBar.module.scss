@@ -182,13 +182,15 @@
     transform: translateY(0);
   }
   
-  &:disabled {
+  &:disabled,
+  &.disabled {
     opacity: 0.4;
     cursor: not-allowed;
     
     &:hover {
       transform: none;
       background: transparent;
+      color: $text-secondary;
     }
   }
   

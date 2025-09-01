@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Save, Eye, EyeOff, Undo, Redo, Monitor, Tablet, Smartphone, Zap, Settings } from 'lucide-react';
 import { useBuilderStore } from '../../../stores/builderStore';
+import useHistoryStore from '../../../stores/historyStore';
 import styles from './TopBar.module.scss';
 
 type Viewport = 'desktop' | 'tablet' | 'mobile';
@@ -8,6 +9,14 @@ type Viewport = 'desktop' | 'tablet' | 'mobile';
 export const TopBar: React.FC = () => {
   const [currentViewport, setCurrentViewport] = useState<Viewport>('desktop');
   const { isPreviewMode, togglePreviewMode } = useBuilderStore();
+  const { 
+    undo, 
+    redo, 
+    canUndo, 
+    canRedo, 
+    getUndoDescription, 
+    getRedoDescription 
+  } = useHistoryStore();
 
   const viewports = [
     { id: 'desktop' as Viewport, label: 'Desktop', icon: Monitor },
@@ -22,13 +31,11 @@ export const TopBar: React.FC = () => {
   };
 
   const handleUndo = () => {
-    // TODO: Implement undo functionality
-    console.log('Undo');
+    undo();
   };
 
   const handleRedo = () => {
-    // TODO: Implement redo functionality
-    console.log('Redo');
+    redo();
   };
 
   const handlePreview = () => {
@@ -62,16 +69,18 @@ export const TopBar: React.FC = () => {
         {/* History Controls */}
         <div className={styles.historyControls}>
           <button 
-            className={styles.iconButton} 
+            className={`${styles.iconButton} ${!canUndo() ? styles.disabled : ''}`} 
             onClick={handleUndo}
-            title="Undo (⌘Z)"
+            disabled={!canUndo()}
+            title={canUndo() ? `Undo: ${getUndoDescription() || 'Last action'} (⌘Z)` : 'Nothing to undo (⌘Z)'}
           >
             <Undo size={16} />
           </button>
           <button 
-            className={styles.iconButton} 
+            className={`${styles.iconButton} ${!canRedo() ? styles.disabled : ''}`} 
             onClick={handleRedo}
-            title="Redo (⌘⇧Z)"
+            disabled={!canRedo()}
+            title={canRedo() ? `Redo: ${getRedoDescription() || 'Last undone action'} (⌘⇧Z)` : 'Nothing to redo (⌘⇧Z)'}
           >
             <Redo size={16} />
           </button>
