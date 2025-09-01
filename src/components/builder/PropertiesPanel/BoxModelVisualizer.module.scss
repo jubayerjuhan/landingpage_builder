@@ -1,0 +1,192 @@
+@import '../../../styles/variables';
+
+.boxModel {
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.marginBox {
+  position: relative;
+  width: 240px;
+  height: 180px;
+  background: rgba($primary, 0.05);
+  border: 2px dashed rgba($primary, 0.2);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.paddingBox {
+  position: relative;
+  width: 180px;
+  height: 120px;
+  background: rgba($primary, 0.1);
+  border: 2px dashed rgba($primary, 0.3);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.contentBox {
+  width: 100px;
+  height: 60px;
+  background: linear-gradient(135deg, $primary-light, $primary);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 12px rgba($primary, 0.3);
+}
+
+.label {
+  position: absolute;
+  top: 4px;
+  left: 8px;
+  font-size: 9px;
+  font-weight: 700;
+  color: $text-tertiary;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.7;
+}
+
+.contentLabel {
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+// Margin inputs
+.marginTop,
+.marginRight,
+.marginBottom,
+.marginLeft {
+  position: absolute;
+  width: 36px;
+  height: 22px;
+  padding: 0 4px;
+  border: 1px solid $border-light;
+  border-radius: 4px;
+  background: white;
+  font-size: 11px;
+  text-align: center;
+  color: $text-primary;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    border-color: $primary-light;
+  }
+  
+  &:focus {
+    outline: none;
+    border-color: $primary;
+    box-shadow: 0 0 0 2px rgba($primary, 0.1);
+  }
+  
+  &:disabled {
+    background: $background-secondary;
+    color: $text-tertiary;
+    cursor: not-allowed;
+  }
+  
+  // Hide number spinner
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  -moz-appearance: textfield;
+}
+
+.marginTop {
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.marginRight {
+  right: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.marginBottom {
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.marginLeft {
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+// Padding inputs
+.paddingTop,
+.paddingRight,
+.paddingBottom,
+.paddingLeft {
+  position: absolute;
+  width: 32px;
+  height: 20px;
+  padding: 0 2px;
+  border: 1px solid rgba($primary, 0.2);
+  border-radius: 3px;
+  background: rgba(white, 0.9);
+  font-size: 10px;
+  text-align: center;
+  color: $text-primary;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    border-color: $primary-light;
+    background: white;
+  }
+  
+  &:focus {
+    outline: none;
+    border-color: $primary;
+    background: white;
+    box-shadow: 0 0 0 2px rgba($primary, 0.1);
+  }
+  
+  // Hide number spinner
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  -moz-appearance: textfield;
+}
+
+.paddingTop {
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.paddingRight {
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.paddingBottom {
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.paddingLeft {
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+}

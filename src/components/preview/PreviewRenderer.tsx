@@ -1,6 +1,6 @@
 import React from 'react';
 import type { BuilderElement } from '../../types/builder';
-import { getElementStyles } from '../../utils/styleUtils';
+import { getCompleteElementStyles } from '../../utils/styleUtils';
 
 interface PreviewRendererProps {
   elements: BuilderElement[];
@@ -29,8 +29,8 @@ export const PreviewRenderer: React.FC<PreviewRendererProps> = ({
    * This is the core function that generates clean HTML from our element tree
    */
   const renderElement = (element: BuilderElement): React.ReactNode => {
-    // Get user-defined styles for this viewport
-    const elementStyles = getElementStyles(element, viewportMode);
+    // Get COMPLETE styles (defaults + custom) for this viewport
+    const elementStyles = getCompleteElementStyles(element, viewportMode);
     
     // Helper to get child elements
     const getChildren = (parentId: string) => 
@@ -52,16 +52,12 @@ export const PreviewRenderer: React.FC<PreviewRendererProps> = ({
         );
       
       case 'row':
-        // Render as flexbox container
+        // Render as flexbox container with complete styles
         const columns = getChildren(element.id);
         return (
           <div 
             key={element.id}
-            style={{
-              display: 'flex',
-              width: '100%',
-              ...elementStyles
-            }}
+            style={elementStyles}
             data-row-id={element.id}
           >
             {columns.map(col => renderElement(col))}
@@ -69,15 +65,12 @@ export const PreviewRenderer: React.FC<PreviewRendererProps> = ({
         );
       
       case 'column':
-        // Render as flex item
+        // Render as flex item with complete styles
         const columnChildren = getChildren(element.id);
         return (
           <div 
             key={element.id}
-            style={{
-              flex: 1,
-              ...elementStyles
-            }}
+            style={elementStyles}
             data-column-id={element.id}
           >
             {columnChildren.map(child => renderElement(child))}

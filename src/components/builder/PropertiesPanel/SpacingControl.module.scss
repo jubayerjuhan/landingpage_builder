@@ -1,0 +1,234 @@
+@import '../../../styles/variables';
+
+.spacingControl {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid $border-light;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 600;
+  color: $text-primary;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.linkButton,
+.resetButton {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $background-secondary;
+  border: 1px solid $border-light;
+  border-radius: 6px;
+  color: $text-secondary;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: $background-tertiary;
+    color: $text-primary;
+    border-color: $border;
+  }
+  
+  &.linked {
+    background: $primary;
+    color: white;
+    border-color: $primary;
+    
+    &:hover {
+      background: $primary-hover;
+      border-color: $primary-hover;
+    }
+  }
+}
+
+// Box Model Visual
+.boxModel {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+.boxOuter {
+  position: relative;
+  width: 200px;
+  height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.boxMiddle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 60px;
+}
+
+.boxCenter {
+  width: 80px;
+  height: 40px;
+  background: linear-gradient(135deg, $primary-light, $primary);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba($primary, 0.2);
+}
+
+.boxLabel {
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+// Input fields
+.inputTop,
+.inputBottom,
+.inputLeft,
+.inputRight {
+  position: absolute;
+  width: 40px;
+  height: 24px;
+  padding: 0 4px;
+  border: 1px solid $border-light;
+  border-radius: 4px;
+  background: white;
+  font-size: 12px;
+  text-align: center;
+  color: $text-primary;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    border-color: $primary-light;
+  }
+  
+  &:focus {
+    outline: none;
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba($primary, 0.1);
+  }
+  
+  &:disabled {
+    background: $background-secondary;
+    color: $text-tertiary;
+    cursor: not-allowed;
+  }
+  
+  // Hide number spinner
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  -moz-appearance: textfield;
+}
+
+.inputTop {
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.inputBottom {
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.inputLeft {
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.inputRight {
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+// Unit Selector
+.unitSelector {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: $background-secondary;
+  border-radius: 6px;
+}
+
+.unitButton {
+  flex: 1;
+  padding: 6px 8px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: $text-secondary;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: rgba($primary, 0.1);
+    color: $primary;
+  }
+  
+  &.active {
+    background: white;
+    color: $primary;
+    box-shadow: $shadow-xs;
+  }
+}
+
+// Presets
+.presets {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.presetButton {
+  padding: 6px 12px;
+  background: $background-secondary;
+  border: 1px solid $border-light;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: $text-secondary;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: $primary-light;
+    color: $primary;
+    border-color: $primary-light;
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}

@@ -74,6 +74,7 @@
   position: relative;
   height: 100%;
   min-height: calc(100vh - 116px);
+  background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
 }
 
 // Empty state
@@ -153,7 +154,7 @@
   background: white;
   border: 2px solid transparent;
   border-radius: 8px;
-  margin-bottom: 1rem;
+  margin-bottom: 24px;
   transition: all 0.2s;
   position: relative;
 
@@ -213,7 +214,7 @@
 }
 
 .sectionContent {
-  padding: 1rem;
+  padding: 24px;
   min-height: 120px;
 }
 
@@ -289,8 +290,8 @@
 
 .rowContent {
   display: flex;
-  gap: 0.75rem;
-  padding: 0.75rem;
+  gap: 16px;
+  padding: 16px;
 }
 
 // Column styles
@@ -335,7 +336,7 @@
 }
 
 .columnContent {
-  padding: 0.75rem;
+  padding: 16px;
   min-height: 60px;
 }
 
@@ -368,5 +369,7 @@
 }
 
 .sectionsContainer {
-  padding: 2rem;
+  padding: 32px;
+  max-width: 1400px;
+  margin: 0 auto;
 }

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import type { BuilderElement } from '../../../types/builder';
 import { ElementWrapper } from '../ElementWrapper';
-import { getElementStyles, getElementContent } from '../../../utils/styleUtils';
+import { getCompleteElementStyles, getElementContent } from '../../../utils/styleUtils';
 import useCanvasStore from '../../../stores/canvasStore';
 import useElementStore from '../../../stores/elementStore';
 
@@ -17,20 +17,17 @@ export const Heading: React.FC<HeadingProps> = ({ element }) => {
   const { updateElement } = useElementStore();
   const { previewMode } = useCanvasStore();
   
-  const styles = getElementStyles(element, viewportMode);
+  const styles = getCompleteElementStyles(element, viewportMode);
   const content = getElementContent(element);
   
   // Get heading level from properties or default to H2
-  const level = (element.properties?.typography as any)?.level || '2';
+  const level = (element.properties?.typography as any)?.level || element.properties?.level || '2';
   const headingLevel = Math.max(1, Math.min(6, parseInt(level))) as 1 | 2 | 3 | 4 | 5 | 6;
   
+  // Complete styles already include defaults, just add edit-specific styles
   const headingStyles: React.CSSProperties = {
-    margin: '0 0 1rem 0',
-    fontWeight: 'bold',
-    color: '#333',
     ...styles,
     cursor: previewMode === 'preview' ? 'default' : 'text',
-    position: 'relative',
   };
   
   const text = content.text || element.content || 'Your Heading Here';

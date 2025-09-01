@@ -1,35 +1,70 @@
 import type { BuilderElement, ViewportMode, ComponentProperties } from '../types/builder';
+import { getDefaultStyles, getHeadingStyles, mergeStyles } from './defaultComponentStyles';
 
 /**
- * Converts BuilderElement properties and styles to CSS styles for a given viewport
+ * Get complete element styles including defaults and custom styles
+ * This is the SINGLE SOURCE OF TRUTH for both builder and preview
+ */
+export const getCompleteElementStyles = (
+  element: BuilderElement, 
+  viewportMode: ViewportMode
+): React.CSSProperties => {
+  // 1. Start with component default styles
+  let baseStyles = getDefaultStyles(element.type);
+  
+  // Special handling for headings based on level
+  if (element.type === 'heading') {
+    const level = element.properties?.level || 2;
+    baseStyles = mergeStyles(baseStyles, getHeadingStyles(level as 1 | 2 | 3 | 4 | 5 | 6));
+  }
+  
+  // 2. Get viewport-specific custom styles
+  const customStyles = element.styles?.[viewportMode] || {};
+  
+  // 3. Get properties-based styles
+  const propertyStyles: React.CSSProperties = {};
+  const properties = element.properties || {};
+  
+  // Apply spacing properties
+  if (properties.spacing) {
+    const { spacing } = properties;
+    if (spacing.margin) propertyStyles.margin = spacing.margin;
+    if (spacing.marginTop) propertyStyles.marginTop = spacing.marginTop;
+    if (spacing.marginRight) propertyStyles.marginRight = spacing.marginRight;
+    if (spacing.marginBottom) propertyStyles.marginBottom = spacing.marginBottom;
+    if (spacing.marginLeft) propertyStyles.marginLeft = spacing.marginLeft;
+    if (spacing.padding) propertyStyles.padding = spacing.padding;
+    if (spacing.paddingTop) propertyStyles.paddingTop = spacing.paddingTop;
+    if (spacing.paddingRight) propertyStyles.paddingRight = spacing.paddingRight;
+    if (spacing.paddingBottom) propertyStyles.paddingBottom = spacing.paddingBottom;
+    if (spacing.paddingLeft) propertyStyles.paddingLeft = spacing.paddingLeft;
+  }
+  
+  // Apply layout properties
+  if (properties.layout) {
+    Object.assign(propertyStyles, properties.layout);
+  }
+  
+  // 4. Merge all styles (order matters: defaults -> custom -> properties)
+  return mergeStyles(mergeStyles(baseStyles, customStyles), propertyStyles);
+};
+
+/**
+ * DEPRECATED: Use getCompleteElementStyles instead
+ * Keeping for backward compatibility
  */
 export const getElementStyles = (
   element: BuilderElement, 
   viewportMode: ViewportMode
 ): React.CSSProperties => {
-  const styles = element.styles?.[viewportMode] || {};
-  const properties = element.properties || {};
-  
-  const cssStyles: React.CSSProperties = { ...styles };
-  
-  // Apply properties-based styles
-  if (properties.layout) {
-    Object.assign(cssStyles, properties.layout);
-  }
-  
-  if (properties.spacing) {
-    const { spacing } = properties;
-    if (spacing.margin) cssStyles.margin = spacing.margin;
-    if (spacing.marginTop) cssStyles.marginTop = spacing.marginTop;
-    if (spacing.marginRight) cssStyles.marginRight = spacing.marginRight;
-    if (spacing.marginBottom) cssStyles.marginBottom = spacing.marginBottom;
-    if (spacing.marginLeft) cssStyles.marginLeft = spacing.marginLeft;
-    if (spacing.padding) cssStyles.padding = spacing.padding;
-    if (spacing.paddingTop) cssStyles.paddingTop = spacing.paddingTop;
-    if (spacing.paddingRight) cssStyles.paddingRight = spacing.paddingRight;
-    if (spacing.paddingBottom) cssStyles.paddingBottom = spacing.paddingBottom;
-    if (spacing.paddingLeft) cssStyles.paddingLeft = spacing.paddingLeft;
-  }
+  return getCompleteElementStyles(element, viewportMode);
+};
+
+/**
+ * Convert element properties to CSS styles
+ */
+export const propertiesToStyles = (properties: ComponentProperties): React.CSSProperties => {
+  const cssStyles: React.CSSProperties = {};
   
   if (properties.typography) {
     const { typography } = properties;

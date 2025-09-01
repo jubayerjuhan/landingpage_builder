@@ -19,6 +19,8 @@ import {
   Underline
 } from 'lucide-react';
 import { useBuilderStore } from '../../../stores/builderStore';
+import useElementStore from '../../../stores/elementStore';
+import { SpacingControl } from '../PropertiesPanel/SpacingControl';
 import styles from './PropertiesSidebar.module.scss';
 
 interface CollapsibleSectionProps {
@@ -59,6 +61,7 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
 
 export const PropertiesSidebar: React.FC = () => {
   const { selectedElementId, elements, updateElement, deleteElement } = useBuilderStore();
+  const elementStore = useElementStore();
   
   const selectedElement = selectedElementId 
     ? elements.find(el => el.id === selectedElementId)
@@ -328,59 +331,15 @@ export const PropertiesSidebar: React.FC = () => {
           title="Spacing" 
           icon={<Ruler size={16} />}
         >
-          {/* Margin */}
-          <div className={styles.field}>
-            <label className={styles.fieldLabel}>Margin</label>
-            <div className={styles.spacingGrid}>
-              <div className={styles.field}>
-                <label className={styles.fieldLabel}>Top</label>
-                <input
-                  type="number"
-                  value={selectedElement.styles?.marginTop?.replace('px', '') || ''}
-                  onChange={(e) => handleStyleChange('marginTop', `${e.target.value}px`)}
-                  className={styles.input}
-                  placeholder="0"
-                />
-              </div>
-              <div className={styles.field}>
-                <label className={styles.fieldLabel}>Bottom</label>
-                <input
-                  type="number"
-                  value={selectedElement.styles?.marginBottom?.replace('px', '') || ''}
-                  onChange={(e) => handleStyleChange('marginBottom', `${e.target.value}px`)}
-                  className={styles.input}
-                  placeholder="0"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Padding */}
-          <div className={styles.field}>
-            <label className={styles.fieldLabel}>Padding</label>
-            <div className={styles.spacingGrid}>
-              <div className={styles.field}>
-                <label className={styles.fieldLabel}>Top</label>
-                <input
-                  type="number"
-                  value={selectedElement.styles?.paddingTop?.replace('px', '') || ''}
-                  onChange={(e) => handleStyleChange('paddingTop', `${e.target.value}px`)}
-                  className={styles.input}
-                  placeholder="0"
-                />
-              </div>
-              <div className={styles.field}>
-                <label className={styles.fieldLabel}>Bottom</label>
-                <input
-                  type="number"
-                  value={selectedElement.styles?.paddingBottom?.replace('px', '') || ''}
-                  onChange={(e) => handleStyleChange('paddingBottom', `${e.target.value}px`)}
-                  className={styles.input}
-                  placeholder="0"
-                />
-              </div>
-            </div>
-          </div>
+          <SpacingControl
+            element={selectedElement}
+            onUpdate={(updates) => {
+              const currentStyles = selectedElement.styles || {};
+              elementStore.updateElement(selectedElement.id, {
+                styles: { ...currentStyles, ...updates }
+              });
+            }}
+          />
         </CollapsibleSection>
 
         {/* Style Properties */}

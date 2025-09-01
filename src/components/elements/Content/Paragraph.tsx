@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import type { BuilderElement } from '../../../types/builder';
 import { ElementWrapper } from '../ElementWrapper';
-import { getElementStyles, getElementContent } from '../../../utils/styleUtils';
+import { getCompleteElementStyles, getElementContent } from '../../../utils/styleUtils';
 import useCanvasStore from '../../../stores/canvasStore';
 import useElementStore from '../../../stores/elementStore';
 
@@ -17,17 +17,13 @@ export const Paragraph: React.FC<ParagraphProps> = ({ element }) => {
   const { viewportMode, previewMode } = useCanvasStore();
   const { updateElement } = useElementStore();
   
-  const styles = getElementStyles(element, viewportMode);
+  const styles = getCompleteElementStyles(element, viewportMode);
   const content = getElementContent(element);
   
+  // Complete styles already include defaults
   const paragraphStyles: React.CSSProperties = {
-    margin: '0 0 1rem 0',
-    lineHeight: '1.6',
-    color: '#666',
-    fontSize: '1rem',
     ...styles,
     cursor: previewMode === 'preview' ? 'default' : 'text',
-    position: 'relative',
   };
   
   const text = content.text || element.content || 'Add your paragraph content here. You can write as much text as you need.';

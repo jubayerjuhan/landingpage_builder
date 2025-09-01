@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import type { BuilderElement } from '../../../types/builder';
 import { ElementWrapper } from '../ElementWrapper';
-import { getElementStyles, getElementContent } from '../../../utils/styleUtils';
+import { getCompleteElementStyles, getElementContent } from '../../../utils/styleUtils';
 import useCanvasStore from '../../../stores/canvasStore';
 import useElementStore from '../../../stores/elementStore';
 
@@ -17,14 +17,13 @@ export const Text: React.FC<TextProps> = ({ element }) => {
   const { viewportMode, previewMode } = useCanvasStore();
   const { updateElement } = useElementStore();
   
-  const styles = getElementStyles(element, viewportMode);
+  const styles = getCompleteElementStyles(element, viewportMode);
   const content = getElementContent(element);
   
+  // Complete styles already include defaults
   const textStyles: React.CSSProperties = {
-    display: 'inline-block',
     ...styles,
     cursor: previewMode === 'preview' ? 'default' : 'text',
-    position: 'relative',
   };
   
   const text = content.text || element.content || 'Text content';
