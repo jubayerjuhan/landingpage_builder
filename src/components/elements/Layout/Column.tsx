@@ -22,6 +22,9 @@ export const Column: React.FC<ColumnProps> = ({ element, children }) => {
   const columnCount = siblingColumns.length;
   const calculatedWidth = columnCount > 0 ? `${100 / columnCount}%` : '100%';
   
+  // Debug logging to verify width calculation
+  console.log(`🔍 Column ${element.id.slice(-8)}: ${columnCount} columns, width: ${calculatedWidth}`);
+  
   // Filter out styles that are handled by ElementWrapper (padding, margin, visual styles)
   const { padding, paddingTop, paddingRight, paddingBottom, paddingLeft,
           margin, marginTop, marginRight, marginBottom, marginLeft,
@@ -29,12 +32,14 @@ export const Column: React.FC<ColumnProps> = ({ element, children }) => {
   
   const columnStyles: React.CSSProperties = {
     width: calculatedWidth, // Use calculated width instead of flex
+    flex: 'none', // Explicitly prevent flex from overriding width
     display: 'flex',
     flexDirection: 'column',
     gap: '1rem',
     minHeight: '60px',
     overflow: 'visible', // Ensure child elements can show drag handles
     position: 'relative', // Ensure proper stacking context
+    boxSizing: 'border-box', // Ensure padding/margin don't affect width calculation
     ...remainingStyles, // Only apply non-wrapper styles
   };
   

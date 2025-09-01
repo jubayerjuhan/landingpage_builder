@@ -181,8 +181,8 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
       {/* Element Content */}
       {children}
 
-      {/* Element label - hide for row elements */}
-      {(isSelected || isHovered) && element.type !== 'row' && (
+      {/* Element label - hide for layout elements (row, column, layout) */}
+      {(isSelected || isHovered) && element.type !== 'row' && element.type !== 'column' && element.type !== 'layout' && (
         <div
           className={styles.elementLabel}
           style={{
