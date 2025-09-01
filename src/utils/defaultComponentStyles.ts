@@ -14,16 +14,16 @@ export const defaultComponentStyles: Record<ComponentType, React.CSSProperties> 
   
   layout: {
     width: '100%',
-    padding: `${layout.section.paddingY} ${layout.section.paddingX}`,
-    minHeight: layout.section.minHeight,
+    margin: '0',
+    padding: '0',
     position: 'relative' as const,
     boxSizing: 'border-box' as const,
   },
   
   section: {
     width: '100%',
-    padding: `${layout.section.paddingY} ${layout.section.paddingX}`,
-    minHeight: layout.section.minHeight,
+    margin: '0',
+    padding: '0',
     position: 'relative' as const,
     boxSizing: 'border-box' as const,
   },
@@ -31,8 +31,8 @@ export const defaultComponentStyles: Record<ComponentType, React.CSSProperties> 
   container: {
     width: '100%',
     maxWidth: layout.container.maxWidth,
-    margin: '0 auto',
-    padding: layout.container.padding,
+    margin: '0',
+    padding: '0',
     position: 'relative' as const,
     boxSizing: 'border-box' as const,
   },
@@ -40,18 +40,19 @@ export const defaultComponentStyles: Record<ComponentType, React.CSSProperties> 
   row: {
     display: 'flex',
     width: '100%',
-    gap: layout.grid.gap,
+    gap: '0',
     flexWrap: 'wrap' as const,
     alignItems: 'stretch' as const,
-    minHeight: '80px',
+    margin: '0',
+    padding: '0',
     position: 'relative' as const,
     boxSizing: 'border-box' as const,
   },
   
   column: {
     flex: '1 1 0%',
-    padding: layout.column.padding,
-    minHeight: layout.column.minHeight,
+    margin: '0',
+    padding: '0',
     position: 'relative' as const,
     boxSizing: 'border-box' as const,
   },
@@ -66,7 +67,7 @@ export const defaultComponentStyles: Record<ComponentType, React.CSSProperties> 
     width: '100%',
     height: '1px',
     backgroundColor: colors.neutral[200],
-    margin: `${spacing.lg} 0`,
+    margin: '0',
     border: 'none',
   },
   
@@ -75,8 +76,8 @@ export const defaultComponentStyles: Record<ComponentType, React.CSSProperties> 
   // ============================================================================
   
   heading: {
-    marginTop: '0',
-    marginBottom: spacing.lg,
+    margin: '0',
+    padding: '0',
     fontWeight: typography.fontWeight.bold,
     lineHeight: typography.lineHeight.tight,
     color: colors.neutral[900],
@@ -84,8 +85,8 @@ export const defaultComponentStyles: Record<ComponentType, React.CSSProperties> 
   },
   
   paragraph: {
-    marginTop: '0',
-    marginBottom: spacing.md,
+    margin: '0',
+    padding: '0',
     lineHeight: typography.lineHeight.normal,
     color: colors.neutral[700],
     fontSize: typography.fontSize.base,
@@ -94,6 +95,8 @@ export const defaultComponentStyles: Record<ComponentType, React.CSSProperties> 
   
   text: {
     display: 'inline-block',
+    margin: '0',
+    padding: '0',
     lineHeight: typography.lineHeight.base,
     color: colors.neutral[700],
     fontSize: typography.fontSize.base,
@@ -101,19 +104,17 @@ export const defaultComponentStyles: Record<ComponentType, React.CSSProperties> 
   },
   
   list: {
-    marginTop: '0',
-    marginBottom: spacing.md,
-    paddingLeft: spacing.lg,
+    margin: '0',
+    padding: '0',
     lineHeight: typography.lineHeight.normal,
     color: colors.neutral[700],
     fontSize: typography.fontSize.base,
   },
   
   quote: {
-    marginTop: '0',
-    marginBottom: spacing.lg,
-    paddingLeft: spacing.lg,
-    borderLeft: `4px solid ${colors.primary[500]}`,
+    margin: '0',
+    padding: '0',
+    border: 'none',
     fontStyle: 'italic' as const,
     color: colors.neutral[600],
     fontSize: typography.fontSize.lg,
@@ -122,10 +123,9 @@ export const defaultComponentStyles: Record<ComponentType, React.CSSProperties> 
   
   code: {
     display: 'block',
-    padding: spacing.md,
+    padding: '0',
     marginTop: '0',
-    marginBottom: spacing.md,
-    backgroundColor: colors.neutral[100],
+        backgroundColor: colors.neutral[100],
     borderRadius: borders.radius.md,
     fontFamily: 'monospace',
     fontSize: typography.fontSize.sm,
@@ -142,8 +142,7 @@ export const defaultComponentStyles: Record<ComponentType, React.CSSProperties> 
     display: 'block',
     width: '100%',
     height: 'auto',
-    marginBottom: spacing.md,
-    borderRadius: borders.radius.lg,
+        borderRadius: borders.radius.lg,
     objectFit: 'cover' as const,
   },
   
@@ -151,8 +150,7 @@ export const defaultComponentStyles: Record<ComponentType, React.CSSProperties> 
     display: 'block',
     width: '100%',
     height: 'auto',
-    marginBottom: spacing.md,
-    borderRadius: borders.radius.lg,
+        borderRadius: borders.radius.lg,
   },
   
   icon: {
@@ -168,8 +166,7 @@ export const defaultComponentStyles: Record<ComponentType, React.CSSProperties> 
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
     gap: spacing.md,
-    marginBottom: spacing.lg,
-  },
+      },
   
   'background-video': {
     position: 'absolute' as const,
@@ -189,9 +186,8 @@ export const defaultComponentStyles: Record<ComponentType, React.CSSProperties> 
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: `${spacing.sm} ${spacing.lg}`,
-    marginBottom: spacing.sm,
-    backgroundColor: colors.primary[500],
+    padding: '0',
+        backgroundColor: colors.primary[500],
     color: 'white',
     border: 'none',
     borderRadius: borders.radius.md,
@@ -215,16 +211,14 @@ export const defaultComponentStyles: Record<ComponentType, React.CSSProperties> 
   
   accordion: {
     width: '100%',
-    marginBottom: spacing.md,
-    border: `1px solid ${colors.neutral[200]}`,
+        border: 'none',
     borderRadius: borders.radius.lg,
     overflow: 'hidden',
   },
   
   tabs: {
     width: '100%',
-    marginBottom: spacing.lg,
-  },
+      },
   
   modal: {
     position: 'fixed' as const,
@@ -233,7 +227,7 @@ export const defaultComponentStyles: Record<ComponentType, React.CSSProperties> 
     transform: 'translate(-50%, -50%)',
     backgroundColor: 'white',
     borderRadius: borders.radius.xl,
-    padding: spacing.xl,
+    padding: '0',
     boxShadow: shadows['2xl'],
     maxWidth: '500px',
     width: '90%',
@@ -244,9 +238,9 @@ export const defaultComponentStyles: Record<ComponentType, React.CSSProperties> 
     position: 'absolute' as const,
     backgroundColor: 'white',
     borderRadius: borders.radius.lg,
-    padding: spacing.md,
+    padding: '0',
     boxShadow: shadows.lg,
-    border: `1px solid ${colors.neutral[200]}`,
+    border: 'none',
     zIndex: 1060,
   },
   
@@ -256,10 +250,9 @@ export const defaultComponentStyles: Record<ComponentType, React.CSSProperties> 
   
   input: {
     width: '100%',
-    padding: `${spacing.sm} ${spacing.md}`,
-    marginBottom: spacing.md,
-    backgroundColor: 'white',
-    border: `1px solid ${colors.neutral[300]}`,
+    padding: '0',
+        backgroundColor: 'white',
+    border: 'none',
     borderRadius: borders.radius.md,
     fontSize: typography.fontSize.base,
     lineHeight: typography.lineHeight.base,
@@ -270,10 +263,9 @@ export const defaultComponentStyles: Record<ComponentType, React.CSSProperties> 
   
   textarea: {
     width: '100%',
-    padding: `${spacing.sm} ${spacing.md}`,
-    marginBottom: spacing.md,
-    backgroundColor: 'white',
-    border: `1px solid ${colors.neutral[300]}`,
+    padding: '0',
+        backgroundColor: 'white',
+    border: 'none',
     borderRadius: borders.radius.md,
     fontSize: typography.fontSize.base,
     lineHeight: typography.lineHeight.normal,
@@ -326,8 +318,7 @@ export const getHeadingStyles = (level: 1 | 2 | 3 | 4 | 5 | 6): React.CSSPropert
     fontSize: sizes[level],
     fontWeight: level <= 3 ? typography.fontWeight.bold : typography.fontWeight.semibold,
     lineHeight: typography.lineHeight.tight,
-    marginBottom: spacing.lg,
-  };
+      };
 };
 
 /**

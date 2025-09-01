@@ -182,14 +182,14 @@ export const COMPONENT_DEFINITIONS: Record<ComponentType, ComponentDefinition> =
           width: '100%'
         },
         spacing: {
-          padding: '4rem 0'
+          padding: '0'
         }
       },
       styles: {
         [ViewportMode.DESKTOP]: {
           display: 'block',
           width: '100%',
-          padding: '4rem 0'
+          padding: '0'
         }
       }
     },
@@ -246,14 +246,14 @@ export const COMPONENT_DEFINITIONS: Record<ComponentType, ComponentDefinition> =
           flexDirection: 'column'
         },
         spacing: {
-          padding: '1rem'
+          padding: '0'
         }
       },
       styles: {
         [ViewportMode.DESKTOP]: {
           display: 'flex',
           flexDirection: 'column',
-          padding: '1rem',
+          padding: '0',
           gap: '1rem'
         }
       }
@@ -359,7 +359,7 @@ export const COMPONENT_DEFINITIONS: Record<ComponentType, ComponentDefinition> =
       styles: {
         [ViewportMode.DESKTOP]: {
           flex: '1',
-          padding: '1rem'
+          padding: '0'
         }
       }
     },
@@ -417,7 +417,7 @@ export const COMPONENT_DEFINITIONS: Record<ComponentType, ComponentDefinition> =
         [ViewportMode.DESKTOP]: {
           height: '1px',
           backgroundColor: '#e0e0e0',
-          margin: '1rem 0'
+          margin: '0'
         }
       }
     },
@@ -449,7 +449,8 @@ export const COMPONENT_DEFINITIONS: Record<ComponentType, ComponentDefinition> =
         [ViewportMode.DESKTOP]: {
           fontSize: '2rem',
           fontWeight: 'bold',
-          marginBottom: '1rem',
+          margin: '0',
+          padding: '0',
           color: '#333'
         }
       }
@@ -529,7 +530,7 @@ export const COMPONENT_DEFINITIONS: Record<ComponentType, ComponentDefinition> =
           fontSize: '1rem',
           lineHeight: '1.6',
           color: '#666',
-          marginBottom: '1rem'
+          margin: '0', padding: '0'
         }
       }
     },
@@ -786,7 +787,7 @@ export const COMPONENT_DEFINITIONS: Record<ComponentType, ComponentDefinition> =
       },
       styles: {
         [ViewportMode.DESKTOP]: {
-          padding: '0.75rem 1.5rem',
+          padding: '0',
           backgroundColor: '#007bff',
           color: 'white',
           border: 'none',

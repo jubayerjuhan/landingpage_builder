@@ -69,6 +69,42 @@ export const PropertiesSidebar: React.FC = () => {
     ? elements.find(el => el.id === selectedElementId)
     : null;
 
+  // Initialize missing spacing values to ensure Properties panel shows truth
+  React.useEffect(() => {
+    if (selectedElement) {
+      const currentStyles = selectedElement.styles || {};
+      const viewportStyles = currentStyles[viewportMode] || {};
+      
+      // Check if any spacing values are missing
+      const spacingProperties = [
+        'marginTop', 'marginRight', 'marginBottom', 'marginLeft',
+        'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft'
+      ];
+      
+      const missingProps: any = {};
+      let hasMissing = false;
+      
+      spacingProperties.forEach(prop => {
+        if (viewportStyles[prop] === undefined) {
+          missingProps[prop] = '0';
+          hasMissing = true;
+        }
+      });
+      
+      if (hasMissing) {
+        updateElement(selectedElement.id, {
+          styles: {
+            ...currentStyles,
+            [viewportMode]: {
+              ...viewportStyles,
+              ...missingProps
+            }
+          }
+        });
+      }
+    }
+  }, [selectedElement?.id, viewportMode, updateElement]);
+
   if (!selectedElement) {
     return (
       <div className={styles.sidebar}>
