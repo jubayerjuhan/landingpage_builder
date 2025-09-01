@@ -22,9 +22,6 @@ export const Column: React.FC<ColumnProps> = ({ element, children }) => {
   const columnCount = siblingColumns.length;
   const calculatedWidth = columnCount > 0 ? `${100 / columnCount}%` : '100%';
   
-  // Debug logging to verify width calculation
-  console.log(`🔍 Column ${element.id.slice(-8)}: ${columnCount} columns, width: ${calculatedWidth}`);
-  
   // Filter out styles that are handled by ElementWrapper (padding, margin, visual styles)
   const { padding, paddingTop, paddingRight, paddingBottom, paddingLeft,
           margin, marginTop, marginRight, marginBottom, marginLeft,
