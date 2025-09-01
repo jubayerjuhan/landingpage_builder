@@ -99,11 +99,8 @@ export const Heading: React.FC<HeadingProps> = ({ element }) => {
         suppressContentEditableWarning
         style={{
           ...headingStyles,
-          outline: '2px solid #5457ff',
-          outlineOffset: '2px',
-          background: 'rgba(84, 87, 255, 0.05)',
-          padding: '4px',
-          borderRadius: '4px',
+          outline: '1px dashed rgba(84, 87, 255, 0.5)',
+          outlineOffset: '0px',
         }}
         onBlur={handleSave}
         onKeyDown={handleKeyDown}

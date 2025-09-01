@@ -1,0 +1,266 @@
+@import '../../styles/variables';
+
+// ============================================================================
+// PREVIEW CONTAINER - Fullscreen Preview Mode
+// ============================================================================
+
+.previewContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100vh;
+  background: white;
+  overflow-y: auto;
+  z-index: 10000;
+  
+  // Smooth entrance animation
+  animation: fadeIn 0.3s ease-out;
+}
+
+// ============================================================================
+// PREVIEW INDICATOR - Floating Pill
+// ============================================================================
+
+.previewIndicator {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, $primary, darken($primary, 10%));
+  color: white;
+  padding: 10px 20px;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  z-index: 10001;
+  box-shadow: 0 4px 20px rgba($primary, 0.3), 0 2px 8px rgba(0, 0, 0, 0.1);
+  animation: slideDown 0.4s ease-out;
+  backdrop-filter: blur(10px);
+  
+  &:hover {
+    transform: translateX(-50%) translateY(-2px);
+    box-shadow: 0 6px 24px rgba($primary, 0.4), 0 3px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.indicatorContent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.exitButton {
+  background: rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.35);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.05);
+  }
+  
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+// ============================================================================
+// WEBSITE CONTENT - Clean Production View
+// ============================================================================
+
+.websiteContent {
+  width: 100%;
+  min-height: 100vh;
+  background: white;
+  position: relative;
+}
+
+.pageWrapper {
+  width: 100%;
+  min-height: 100vh;
+}
+
+// Preview sections - Clean without builder styles
+.previewSection {
+  width: 100%;
+  position: relative;
+}
+
+.previewRow {
+  display: flex;
+  width: 100%;
+  gap: 20px;
+  padding: 0;
+}
+
+.previewColumn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: 60px; // Minimum height for empty columns
+}
+
+.previewElement {
+  width: 100%;
+  
+  // Remove all builder-specific styles
+  * {
+    // Reset any builder-specific properties
+    outline: none !important;
+    box-shadow: none !important;
+    
+    &::before,
+    &::after {
+      display: none !important; // Hide builder pseudo-elements
+    }
+  }
+}
+
+// ============================================================================
+// EMPTY STATE
+// ============================================================================
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 40px;
+  text-align: center;
+  color: $text-secondary;
+  
+  h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: $text-primary;
+    margin-bottom: 12px;
+  }
+  
+  p {
+    font-size: 16px;
+    color: $text-secondary;
+    max-width: 400px;
+  }
+}
+
+// ============================================================================
+// VIEWPORT MODES
+// ============================================================================
+
+.previewContainer {
+  &.desktop {
+    .pageWrapper {
+      width: 100%;
+    }
+  }
+  
+  &.tablet {
+    .pageWrapper {
+      max-width: 768px;
+      margin: 0 auto;
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.1);
+    }
+    
+    .previewRow {
+      max-width: 100%;
+      flex-direction: column;
+      
+      @media (min-width: 640px) {
+        flex-direction: row;
+      }
+    }
+  }
+  
+  &.mobile {
+    .pageWrapper {
+      max-width: 375px;
+      margin: 0 auto;
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    .previewRow {
+      max-width: 100%;
+      flex-direction: column;
+    }
+    
+    .previewColumn {
+      width: 100%;
+    }
+  }
+}
+
+// ============================================================================
+// ANIMATIONS
+// ============================================================================
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+// ============================================================================
+// RESPONSIVE DESIGN
+// ============================================================================
+
+@media (max-width: 640px) {
+  .previewIndicator {
+    top: 10px;
+    padding: 8px 16px;
+    gap: 12px;
+    
+    .indicatorContent {
+      font-size: 13px;
+      
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+    
+    .exitButton {
+      padding: 5px 12px;
+      font-size: 12px;
+    }
+  }
+  
+  .previewRow {
+    padding: 0 16px;
+    gap: 16px;
+  }
+}

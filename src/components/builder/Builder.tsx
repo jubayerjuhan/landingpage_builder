@@ -7,6 +7,7 @@ import { Sidebar } from './Sidebar/Sidebar';
 import { OldStyleCanvas } from '../Canvas/OldStyleCanvas';
 import { PropertiesSidebar } from './PropertiesSidebar/PropertiesSidebar';
 import { ModalContainer } from '../modals/ModalContainer';
+import { PreviewMode } from '../preview/PreviewMode';
 import { useBuilderStore } from '../../stores/builderStore';
 import useElementStore from '../../stores/elementStore';
 import useModalStore from '../../stores/modalStore';
@@ -225,34 +226,24 @@ export const Builder: React.FC = () => {
     }
   };
 
+  // Render preview mode separately
+  if (isPreviewMode) {
+    return <PreviewMode />;
+  }
+
+  // Normal builder interface
   return (
     <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} onDragOver={handleDragOver}>
       <div className={`${styles.builder} ${isDragging ? 'dnd-cursor-grabbing' : ''}`}>
         <TopBar />
         <div className={styles.builderMain}>
-          {!isPreviewMode && <Sidebar />}
+          <Sidebar />
           <OldStyleCanvas draggingType={draggingType} />
-          {!isPreviewMode && <PropertiesSidebar />}
+          <PropertiesSidebar />
         </div>
         
         {/* Modal Container for Section/Row Modals */}
         <ModalContainer />
-        
-        {/* Preview Mode Banner */}
-        {isPreviewMode && (
-          <div className={styles.previewBanner}>
-            <div className={styles.previewBannerText}>
-              <Eye size={16} />
-              <span>Preview Mode</span>
-            </div>
-            <button 
-              className={styles.exitPreviewBtn}
-              onClick={() => setPreviewMode(false)}
-            >
-              Exit Preview (ESC)
-            </button>
-          </div>
-        )}
       </div>
       
       <DragOverlay>

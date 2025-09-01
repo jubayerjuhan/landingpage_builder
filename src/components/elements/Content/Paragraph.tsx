@@ -92,11 +92,8 @@ export const Paragraph: React.FC<ParagraphProps> = ({ element }) => {
           suppressContentEditableWarning
           style={{
             ...paragraphStyles,
-            outline: '2px solid #5457ff',
-            outlineOffset: '2px',
-            background: 'rgba(84, 87, 255, 0.05)',
-            padding: '8px',
-            borderRadius: '4px',
+            outline: '1px dashed rgba(84, 87, 255, 0.5)',
+            outlineOffset: '0px',
           }}
           onBlur={handleSave}
           onKeyDown={handleKeyDown}

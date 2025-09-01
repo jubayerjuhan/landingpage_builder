@@ -29,8 +29,12 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
   const isPreviewMode = previewMode === 'preview';
   const isTextElement = ['heading', 'paragraph', 'text'].includes(element.type);
 
+  // In preview mode, render children without wrapper
+  if (isPreviewMode) {
+    return <>{children}</>;
+  }
+
   const handleClick = (e: React.MouseEvent) => {
-    if (isPreviewMode) return;
     // Don't interfere with double-click for text editing
     if (e.detail >= 2 && isTextElement) {
       e.stopPropagation();
@@ -43,13 +47,11 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
   };
 
   const handleMouseEnter = (e: React.MouseEvent) => {
-    if (isPreviewMode) return;
     e.stopPropagation();
     setHoveredElement(element.id);
   };
 
   const handleMouseLeave = (e: React.MouseEvent) => {
-    if (isPreviewMode) return;
     e.stopPropagation();
     if (hoveredElementId === element.id) {
       setHoveredElement(null);
@@ -73,7 +75,7 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
     display: 'block',
     width: '100%',
     transition: 'all 0.2s ease',
-    cursor: isPreviewMode ? 'default' : 'pointer',
+    cursor: 'pointer',
     borderRadius: '4px',
     ...(isSelected
       ? {
@@ -97,8 +99,8 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
   };
 
   // Determine if we should show editing UI
-  const showDragHandle = !isPreviewMode && (isSelected || isHovered);
-  const showResizeHandles = !isPreviewMode && isSelected && !isTextElement;
+  const showDragHandle = isSelected || isHovered;
+  const showResizeHandles = isSelected && !isTextElement;
 
   return (
     <div
