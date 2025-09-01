@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { useDroppable } from '@dnd-kit/core';
-import { 
-  Plus, 
-  ChevronUp, 
-  ChevronDown, 
-  ZoomIn, 
-  ZoomOut, 
-  Grid3X3, 
-  Ruler as Rulers, 
+import {
+  Plus,
+  ChevronUp,
+  ChevronDown,
+  ZoomIn,
+  ZoomOut,
+  Grid3X3,
+  Ruler as Rulers,
   Move,
   RotateCcw,
   Eye,
-  Trash2
+  Trash2,
 } from 'lucide-react';
 import useElementStore from '../../stores/elementStore';
 import useModalStore from '../../stores/modalStore';
@@ -28,7 +28,7 @@ const EmptyCanvas: React.FC = () => {
   });
 
   return (
-    <div 
+    <div
       ref={setNodeRef}
       className={`${styles.emptyCanvas} ${isOver ? styles.emptyCanvasOver : ''}`}
     >
@@ -42,17 +42,17 @@ const EmptyCanvas: React.FC = () => {
 };
 
 // Layout Drop Zone Component
-const LayoutDropZone: React.FC<{ position: 'above' | 'below'; layoutId?: string }> = ({ position, layoutId }) => {
+const LayoutDropZone: React.FC<{ position: 'above' | 'below'; layoutId?: string }> = ({
+  position,
+  layoutId,
+}) => {
   const dropId = layoutId ? `${position}-${layoutId}` : 'main-canvas-below';
   const { setNodeRef, isOver } = useDroppable({
     id: dropId,
   });
 
   return (
-    <div 
-      ref={setNodeRef}
-      className={`${styles.dropZone} ${isOver ? styles.dropZoneActive : ''}`}
-    >
+    <div ref={setNodeRef} className={`${styles.dropZone} ${isOver ? styles.dropZoneActive : ''}`}>
       <div className={styles.dropZoneLine} />
       <div className={styles.dropZoneLabel}>Drop here</div>
     </div>
@@ -60,16 +60,17 @@ const LayoutDropZone: React.FC<{ position: 'above' | 'below'; layoutId?: string 
 };
 
 // Layout Container Component
-const LayoutContainer: React.FC<{ 
-  layout: BuilderElement; 
+const LayoutContainer: React.FC<{
+  layout: BuilderElement;
   isFirst: boolean;
   isLast: boolean;
   draggingType: string | null;
 }> = ({ layout, isFirst, isLast, draggingType }) => {
-  const { elements, selectedElementIds, selectElement, deleteElement, moveElement } = useElementStore();
+  const { elements, selectedElementIds, selectElement, deleteElement, moveElement } =
+    useElementStore();
   const { previewMode } = useCanvasStore();
   const isPreviewMode = previewMode === 'preview';
-  
+
   const rows = elements.filter(el => el.type === 'row' && el.parentId === layout.id);
   const isSelected = selectedElementIds.includes(layout.id);
 
@@ -79,19 +80,24 @@ const LayoutContainer: React.FC<{
     const firstRow = rows[0];
     const columns = elements.filter(el => el.type === 'column' && el.parentId === firstRow.id);
     const columnCount = columns.length;
-    
+
     switch (columnCount) {
-      case 1: return 'Single Column';
-      case 2: return '2 Columns';
-      case 3: return '3 Columns';
-      case 4: return '4 Columns';
-      default: return `${columnCount} Columns`;
+      case 1:
+        return 'Single Column';
+      case 2:
+        return '2 Columns';
+      case 3:
+        return '3 Columns';
+      case 4:
+        return '4 Columns';
+      default:
+        return `${columnCount} Columns`;
     }
   };
 
   // Make layout droppable for new elements only
   const { setNodeRef: setLayoutRef, isOver: isLayoutOver } = useDroppable({
-    id: `layout-${layout.id}`
+    id: `layout-${layout.id}`,
   });
 
   const handleLayoutClick = (e: React.MouseEvent) => {
@@ -102,7 +108,9 @@ const LayoutContainer: React.FC<{
 
   const handleMoveUp = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const layouts = elements.filter(el => el.type === 'layout').sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    const layouts = elements
+      .filter(el => el.type === 'layout')
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     const currentIndex = layouts.findIndex(l => l.id === layout.id);
     if (currentIndex > 0) {
       const targetLayout = layouts[currentIndex - 1];
@@ -113,7 +121,9 @@ const LayoutContainer: React.FC<{
 
   const handleMoveDown = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const layouts = elements.filter(el => el.type === 'layout').sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    const layouts = elements
+      .filter(el => el.type === 'layout')
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     const currentIndex = layouts.findIndex(l => l.id === layout.id);
     if (currentIndex < layouts.length - 1) {
       const targetLayout = layouts[currentIndex + 1];
@@ -130,17 +140,19 @@ const LayoutContainer: React.FC<{
   // Always show drop zones when any dragging is happening
   const isDraggingSomething = draggingType !== null;
   const showDragIndicator = isLayoutOver && isDraggingSomething;
-  
+
   // Always show drop zones when dragging
   const shouldShowDropZones = isDraggingSomething && !isPreviewMode;
 
   return (
     <div className={styles.layoutWrapper}>
       {!isFirst && shouldShowDropZones && <LayoutDropZone position="above" layoutId={layout.id} />}
-      
-      <div 
+
+      <div
         ref={setLayoutRef}
-        className={`${styles.layout} ${isSelected ? styles.selected : ''} ${showDragIndicator ? styles.dragOverLayout : ''}`}
+        className={`${styles.layout} ${isSelected ? styles.selected : ''} ${
+          showDragIndicator ? styles.dragOverLayout : ''
+        }`}
         onClick={handleLayoutClick}
       >
         {/* Always show layout label */}
@@ -153,7 +165,7 @@ const LayoutContainer: React.FC<{
         {/* Layout controls when selected */}
         {isSelected && !isPreviewMode && (
           <div className={styles.layoutControls}>
-            <button 
+            <button
               className={styles.moveBtn}
               onClick={handleMoveUp}
               disabled={isFirst}
@@ -161,7 +173,7 @@ const LayoutContainer: React.FC<{
             >
               <ChevronUp size={14} />
             </button>
-            <button 
+            <button
               className={styles.moveBtn}
               onClick={handleMoveDown}
               disabled={isLast}
@@ -169,11 +181,7 @@ const LayoutContainer: React.FC<{
             >
               <ChevronDown size={14} />
             </button>
-            <button 
-              className={styles.deleteBtn}
-              onClick={handleDelete}
-              title="Delete layout"
-            >
+            <button className={styles.deleteBtn} onClick={handleDelete} title="Delete layout">
               <Trash2 size={14} />
             </button>
           </div>
@@ -182,7 +190,7 @@ const LayoutContainer: React.FC<{
         {/* Render rows and columns */}
         {rows.map(row => {
           const columns = elements.filter(el => el.type === 'column' && el.parentId === row.id);
-          
+
           return (
             <div key={row.id} className={styles.row}>
               {columns.map(column => {
@@ -192,8 +200,8 @@ const LayoutContainer: React.FC<{
                 });
 
                 return (
-                  <div 
-                    key={column.id} 
+                  <div
+                    key={column.id}
                     ref={setNodeRef}
                     className={`${styles.column} ${isOver ? styles.columnOver : ''}`}
                   >
@@ -206,9 +214,7 @@ const LayoutContainer: React.FC<{
                           </ElementWrapper>
                         ))
                     ) : (
-                      <div className={styles.emptyColumn}>
-                        Drop elements here
-                      </div>
+                      <div className={styles.emptyColumn}>Drop component here</div>
                     )}
                   </div>
                 );
@@ -217,7 +223,7 @@ const LayoutContainer: React.FC<{
           );
         })}
       </div>
-      
+
       {!isLast && shouldShowDropZones && <LayoutDropZone position="below" layoutId={layout.id} />}
     </div>
   );
@@ -230,12 +236,12 @@ interface OldStyleCanvasProps {
 export const OldStyleCanvas: React.FC<OldStyleCanvasProps> = ({ draggingType }) => {
   const { elements, clearSelection } = useElementStore();
   const { previewMode, showGrid } = useCanvasStore();
-  
+
   const [zoom, setZoom] = useState(100);
   const [showRulers, setShowRulers] = useState(false);
-  
+
   const isPreviewMode = previewMode === 'preview';
-  
+
   // Get root layouts ordered by their order property
   const layouts = elements
     .filter(el => el.type === 'layout' && !el.parentId)
@@ -273,16 +279,14 @@ export const OldStyleCanvas: React.FC<OldStyleCanvasProps> = ({ draggingType }) 
       {!isPreviewMode && (
         <div className={styles.canvasHeader}>
           <div className={styles.canvasTitle}>
-            <div className={styles.canvasTitleText}>
-              Untitled Landing Page
-            </div>
+            <div className={styles.canvasTitleText}>Untitled Landing Page</div>
           </div>
 
           <div className={styles.canvasControls}>
             {/* Zoom Controls */}
             <div className={styles.controlGroup}>
               <div className={styles.zoomControls}>
-                <button 
+                <button
                   className={styles.zoomButton}
                   onClick={handleZoomOut}
                   title="Zoom Out"
@@ -290,12 +294,12 @@ export const OldStyleCanvas: React.FC<OldStyleCanvasProps> = ({ draggingType }) 
                 >
                   <ZoomOut size={14} />
                 </button>
-                
+
                 <div className={styles.zoomLevel} onClick={handleZoomReset} title="Reset Zoom">
                   {zoom}%
                 </div>
-                
-                <button 
+
+                <button
                   className={styles.zoomButton}
                   onClick={handleZoomIn}
                   title="Zoom In"
@@ -309,26 +313,23 @@ export const OldStyleCanvas: React.FC<OldStyleCanvasProps> = ({ draggingType }) 
             {/* View Controls */}
             <div className={styles.controlGroup}>
               <div className={styles.viewControls}>
-                <button 
+                <button
                   className={`${styles.viewButton} ${showGrid ? styles.active : ''}`}
                   onClick={toggleGrid}
                   title="Toggle Grid"
                 >
                   <Grid3X3 size={14} />
                 </button>
-                
-                <button 
+
+                <button
                   className={`${styles.viewButton} ${showRulers ? styles.active : ''}`}
                   onClick={toggleRulers}
                   title="Toggle Rulers"
                 >
                   <Rulers size={14} />
                 </button>
-                
-                <button 
-                  className={styles.viewButton}
-                  title="Pan Mode"
-                >
+
+                <button className={styles.viewButton} title="Pan Mode">
                   <Move size={14} />
                 </button>
               </div>
@@ -342,11 +343,11 @@ export const OldStyleCanvas: React.FC<OldStyleCanvasProps> = ({ draggingType }) 
       {/* Canvas Content with Professional Layout */}
       <div className={styles.canvasContent} onClick={handleCanvasClick}>
         <div className={styles.canvasInner}>
-          <div 
+          <div
             className={styles.canvasWorkspace}
-            style={{ 
+            style={{
               transform: `scale(${zoom / 100})`,
-              transformOrigin: 'center top'
+              transformOrigin: 'center top',
             }}
           >
             {layouts.length === 0 ? (
@@ -354,9 +355,9 @@ export const OldStyleCanvas: React.FC<OldStyleCanvasProps> = ({ draggingType }) 
             ) : (
               <div className={styles.layouts}>
                 {layouts.map((layout, index) => (
-                  <LayoutContainer 
-                    key={layout.id} 
-                    layout={layout} 
+                  <LayoutContainer
+                    key={layout.id}
+                    layout={layout}
                     isFirst={index === 0}
                     isLast={index === layouts.length - 1}
                     draggingType={draggingType}
@@ -373,9 +374,7 @@ export const OldStyleCanvas: React.FC<OldStyleCanvasProps> = ({ draggingType }) 
       </div>
 
       {/* Grid overlay */}
-      {showGrid && !isPreviewMode && (
-        <div className={styles.gridOverlay} />
-      )}
+      {showGrid && !isPreviewMode && <div className={styles.gridOverlay} />}
     </div>
   );
 };

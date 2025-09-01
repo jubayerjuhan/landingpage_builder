@@ -1,7 +1,7 @@
 .dragHandle {
   position: absolute;
   top: -12px;
-  left: -12px;
+  right: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -15,12 +15,12 @@
   z-index: 10;
   color: white;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  
+
   &:hover {
     background-color: #4044d6;
     transform: scale(1.1);
   }
-  
+
   &:active,
   &.dragging {
     cursor: grabbing;
@@ -28,7 +28,7 @@
     transform: scale(0.95);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
   }
-  
+
   // Handle is visible when parent is hovered or selected
   // Removed the default opacity: 0 to make it always visible when rendered
 }
@@ -50,12 +50,12 @@
   z-index: 10;
   color: white;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  
+
   &:hover {
     background-color: #ee3333;
     transform: scale(1.1);
   }
-  
+
   &:active {
     background-color: #dd2222;
     transform: scale(0.95);

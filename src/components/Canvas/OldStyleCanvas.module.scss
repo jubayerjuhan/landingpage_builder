@@ -316,10 +316,14 @@
 }
 
 .deleteBtn {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: white;
+
   &:hover {
-    background: #fee;
+    background: #ef4444;
     border-color: #ef4444;
-    color: #ef4444;
+    color: white;
   }
 }
 
@@ -412,8 +416,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: 
-    repeating-linear-gradient(0deg, transparent, transparent 19px, #e5e7eb 19px, #e5e7eb 20px),
+  background-image: repeating-linear-gradient(0deg, transparent, transparent 19px, #e5e7eb 19px, #e5e7eb 20px),
     repeating-linear-gradient(90deg, transparent, transparent 19px, #e5e7eb 19px, #e5e7eb 20px);
   pointer-events: none;
   opacity: 0.2;

@@ -19,7 +19,7 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
   className = '',
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  
+
   const { selectedElementIds, hoveredElementId, selectElement, setHoveredElement, deleteElement } =
     useElementStore();
   const { previewMode } = useCanvasStore();
@@ -62,8 +62,10 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
     className,
     isSelected ? styles.selected : '',
     isHovered ? styles.hovered : '',
-    `element-${element.type}`
-  ].filter(Boolean).join(' ');
+    `element-${element.type}`,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   // Inline styles as fallback
   const inlineStyles: React.CSSProperties = {
@@ -73,16 +75,20 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
     transition: 'all 0.2s ease',
     cursor: isPreviewMode ? 'default' : 'pointer',
     borderRadius: '4px',
-    ...(isSelected ? {
-      outline: '2px solid #5457ff',
-      outlineOffset: '1px',
-      background: 'rgba(84, 87, 255, 0.05)',
-    } : {}),
-    ...(isHovered && !isSelected ? {
-      outline: '2px solid rgba(84, 87, 255, 0.3)',
-      outlineOffset: '1px',
-      background: 'rgba(84, 87, 255, 0.02)'
-    } : {})
+    ...(isSelected
+      ? {
+          outline: '2px solid #5457ff',
+          outlineOffset: '1px',
+          background: 'rgba(84, 87, 255, 0.05)',
+        }
+      : {}),
+    ...(isHovered && !isSelected
+      ? {
+          outline: '2px solid rgba(84, 87, 255, 0.3)',
+          outlineOffset: '1px',
+          background: 'rgba(84, 87, 255, 0.02)',
+        }
+      : {}),
   };
 
   // Handle element deletion
@@ -106,11 +112,8 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
       data-element-type={element.type}
     >
       {/* Drag Handle */}
-      <DragHandle
-        element={element}
-        isVisible={showDragHandle}
-      />
-      
+      <DragHandle element={element} isVisible={showDragHandle} />
+
       {/* Delete Button */}
       {showDragHandle && (
         <div
@@ -118,7 +121,7 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
           style={{
             position: 'absolute',
             top: '-12px',
-            right: '-12px', // Moved to right side
+            right: '-12px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -133,7 +136,7 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
             color: 'white',
             boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
           }}
-          onClick={(e) => {
+          onClick={e => {
             e.stopPropagation();
             e.preventDefault();
             handleDelete();
@@ -143,7 +146,7 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
           <Trash2 size={12} />
         </div>
       )}
-      
+
       {/* Resize Handles for non-text elements */}
       {showResizeHandles && (
         <ResizeHandles
@@ -158,7 +161,7 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
 
       {/* Element label */}
       {(isSelected || isHovered) && (
-        <div 
+        <div
           className={styles.elementLabel}
           style={{
             position: 'absolute',
@@ -174,7 +177,7 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
             zIndex: 1001,
             boxShadow: '0 1px 3px rgba(0, 0, 0, 0.2)',
             textTransform: 'capitalize',
-            letterSpacing: '0.5px'
+            letterSpacing: '0.5px',
           }}
         >
           {element.name || element.type}

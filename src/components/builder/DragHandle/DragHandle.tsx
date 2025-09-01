@@ -43,11 +43,6 @@ export const DragHandle: React.FC<DragHandleProps> = ({
 
   const dragHandleStyles: React.CSSProperties = {
     position: 'absolute',
-    top: '-12px',
-    right: '20px', // Moved to right side
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
     width: '24px',
     height: '24px',
     backgroundColor: '#5457ff',
@@ -71,7 +66,6 @@ export const DragHandle: React.FC<DragHandleProps> = ({
     <div
       ref={setNodeRef}
       className={`${styles.dragHandle} ${isDragging ? styles.dragging : ''}`}
-      style={dragHandleStyles}
       {...listeners}
       {...attributes}
       onMouseDown={handleMouseDown}
