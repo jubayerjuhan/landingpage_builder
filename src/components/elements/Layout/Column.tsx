@@ -13,6 +13,11 @@ export const Column: React.FC<ColumnProps> = ({ element, children }) => {
   const { viewportMode } = useCanvasStore();
   const styles = getCompleteElementStyles(element, viewportMode);
   
+  // Filter out styles that are handled by ElementWrapper (padding, margin, visual styles)
+  const { padding, paddingTop, paddingRight, paddingBottom, paddingLeft,
+          margin, marginTop, marginRight, marginBottom, marginLeft,
+          backgroundColor, borderRadius, border, boxShadow, ...remainingStyles } = styles;
+  
   const columnStyles: React.CSSProperties = {
     flex: '1',
     display: 'flex',
@@ -21,7 +26,7 @@ export const Column: React.FC<ColumnProps> = ({ element, children }) => {
     minHeight: '60px',
     overflow: 'visible', // Ensure child elements can show drag handles
     position: 'relative', // Ensure proper stacking context
-    ...styles,
+    ...remainingStyles, // Only apply non-wrapper styles
   };
   
   return (

@@ -13,11 +13,16 @@ export const Section: React.FC<SectionProps> = ({ element, children }) => {
   const { viewportMode } = useCanvasStore();
   const styles = getCompleteElementStyles(element, viewportMode);
   
+  // Filter out styles that are handled by ElementWrapper (padding, margin, visual styles)
+  const { padding, paddingTop, paddingRight, paddingBottom, paddingLeft,
+          margin, marginTop, marginRight, marginBottom, marginLeft,
+          backgroundColor, borderRadius, border, boxShadow, ...remainingStyles } = styles;
+  
   const sectionStyles: React.CSSProperties = {
     display: 'block',
     width: '100%',
     minHeight: '60px',
-    ...styles,
+    ...remainingStyles, // Only apply non-wrapper styles
   };
   
   return (

@@ -13,6 +13,11 @@ export const Container: React.FC<ContainerProps> = ({ element, children }) => {
   const { viewportMode } = useCanvasStore();
   const styles = getCompleteElementStyles(element, viewportMode);
   
+  // Filter out styles that are handled by ElementWrapper (padding, margin, visual styles)
+  const { padding, paddingTop, paddingRight, paddingBottom, paddingLeft,
+          margin, marginTop, marginRight, marginBottom, marginLeft,
+          backgroundColor, borderRadius, border, boxShadow, ...remainingStyles } = styles;
+  
   const containerStyles: React.CSSProperties = {
     display: 'flex',
     flexDirection: 'column',
@@ -20,7 +25,7 @@ export const Container: React.FC<ContainerProps> = ({ element, children }) => {
     minHeight: '60px',
     overflow: 'visible',
     position: 'relative',
-    ...styles,
+    ...remainingStyles, // Only apply non-wrapper styles
   };
   
   return (

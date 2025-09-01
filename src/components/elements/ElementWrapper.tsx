@@ -3,6 +3,7 @@ import { Trash2 } from 'lucide-react';
 import type { BuilderElement } from '../../types/builder';
 import useElementStore from '../../stores/elementStore';
 import useCanvasStore from '../../stores/canvasStore';
+import { getCompleteElementStyles } from '../../utils/styleUtils';
 import { DragHandle } from '../builder/DragHandle';
 import { ResizeHandles } from '../builder/ResizeHandles';
 import styles from './ElementWrapper.module.scss';
@@ -22,12 +23,40 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
 
   const { selectedElementIds, hoveredElementId, selectElement, setHoveredElement, deleteElement } =
     useElementStore();
-  const { previewMode } = useCanvasStore();
+  const { previewMode, viewportMode } = useCanvasStore();
 
   const isSelected = selectedElementIds.includes(element.id) && element.id.length > 0;
   const isHovered = hoveredElementId === element.id;
   const isPreviewMode = previewMode === 'preview';
   const isTextElement = ['heading', 'paragraph', 'text'].includes(element.type);
+  const isLayoutElement = ['section', 'row', 'column', 'container'].includes(element.type);
+
+  // For layout elements, get the complete styles to apply padding/margin to wrapper
+  const elementStyles = isLayoutElement ? getCompleteElementStyles(element, viewportMode) : null;
+  
+  // Extract layout-specific styles (padding/margin) for the wrapper
+  const layoutWrapperStyles: React.CSSProperties = {};
+  if (elementStyles && isLayoutElement) {
+    const { padding, paddingTop, paddingRight, paddingBottom, paddingLeft,
+            margin, marginTop, marginRight, marginBottom, marginLeft,
+            backgroundColor, borderRadius, border, boxShadow, ...restStyles } = elementStyles;
+    
+    // Apply spacing and visual styles to wrapper
+    if (padding !== undefined) layoutWrapperStyles.padding = padding;
+    if (paddingTop !== undefined) layoutWrapperStyles.paddingTop = paddingTop;
+    if (paddingRight !== undefined) layoutWrapperStyles.paddingRight = paddingRight;
+    if (paddingBottom !== undefined) layoutWrapperStyles.paddingBottom = paddingBottom;
+    if (paddingLeft !== undefined) layoutWrapperStyles.paddingLeft = paddingLeft;
+    if (margin !== undefined) layoutWrapperStyles.margin = margin;
+    if (marginTop !== undefined) layoutWrapperStyles.marginTop = marginTop;
+    if (marginRight !== undefined) layoutWrapperStyles.marginRight = marginRight;
+    if (marginBottom !== undefined) layoutWrapperStyles.marginBottom = marginBottom;
+    if (marginLeft !== undefined) layoutWrapperStyles.marginLeft = marginLeft;
+    if (backgroundColor !== undefined) layoutWrapperStyles.backgroundColor = backgroundColor;
+    if (borderRadius !== undefined) layoutWrapperStyles.borderRadius = borderRadius;
+    if (border !== undefined) layoutWrapperStyles.border = border;
+    if (boxShadow !== undefined) layoutWrapperStyles.boxShadow = boxShadow;
+  }
 
   // In preview mode, render children without wrapper
   if (isPreviewMode) {
@@ -78,6 +107,8 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
     transition: 'all 0.2s ease',
     cursor: 'pointer',
     borderRadius: '4px',
+    // Apply layout element styles to wrapper for proper visual representation
+    ...layoutWrapperStyles,
     ...(isSelected
       ? {
           outline: '2px solid #5457ff',
