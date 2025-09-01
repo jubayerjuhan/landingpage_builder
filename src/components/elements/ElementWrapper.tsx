@@ -29,7 +29,7 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
   const isHovered = hoveredElementId === element.id;
   const isPreviewMode = previewMode === 'preview';
   const isTextElement = ['heading', 'paragraph', 'text'].includes(element.type);
-  const isLayoutElement = ['section', 'row', 'column', 'container'].includes(element.type);
+  const isLayoutElement = ['layout', 'section', 'row', 'column', 'container'].includes(element.type);
 
   // For layout elements, get the complete styles to apply padding/margin to wrapper
   const elementStyles = isLayoutElement ? getCompleteElementStyles(element, viewportMode) : null;

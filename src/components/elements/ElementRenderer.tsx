@@ -34,6 +34,9 @@ export const ElementRenderer: React.FC<ElementRendererProps> = ({ element, child
   // Render the appropriate component based on type
   switch (element.type) {
     // Layout Components
+    case ComponentType.LAYOUT:
+      return <Section element={element}>{renderChildren()}</Section>;
+      
     case ComponentType.SECTION:
       return <Section element={element}>{renderChildren()}</Section>;
       
