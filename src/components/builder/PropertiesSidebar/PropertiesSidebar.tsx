@@ -19,6 +19,7 @@ import {
   Underline
 } from 'lucide-react';
 import useElementStore from '../../../stores/elementStore';
+import useCanvasStore from '../../../stores/canvasStore';
 import { SpacingControl } from '../PropertiesPanel/SpacingControl';
 import styles from './PropertiesSidebar.module.scss';
 
@@ -60,6 +61,7 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
 
 export const PropertiesSidebar: React.FC = () => {
   const { selectedElementIds, elements, updateElement, deleteElement } = useElementStore();
+  const { viewportMode } = useCanvasStore();
   
   // Get the first selected element (single selection for now)
   const selectedElementId = selectedElementIds.length > 0 ? selectedElementIds[0] : null;
@@ -95,8 +97,16 @@ export const PropertiesSidebar: React.FC = () => {
 
   const handleStyleChange = (styleProperty: string, value: string) => {
     const currentStyles = selectedElement.styles || {};
+    const viewportStyles = currentStyles[viewportMode] || {};
+    
     updateElement(selectedElement.id, {
-      styles: { ...currentStyles, [styleProperty]: value }
+      styles: {
+        ...currentStyles,
+        [viewportMode]: {
+          ...viewportStyles,
+          [styleProperty]: value
+        }
+      }
     });
   };
 
@@ -194,7 +204,7 @@ export const PropertiesSidebar: React.FC = () => {
                 <label className={styles.fieldLabel}>Font Size</label>
                 <input
                   type="number"
-                  value={selectedElement.styles?.fontSize?.replace('px', '') || ''}
+                  value={selectedElement.styles?.[viewportMode]?.fontSize?.replace('px', '') || ''}
                   onChange={(e) => handleStyleChange('fontSize', `${e.target.value}px`)}
                   className={styles.input}
                   placeholder="16"
@@ -203,7 +213,7 @@ export const PropertiesSidebar: React.FC = () => {
               <div className={styles.field}>
                 <label className={styles.fieldLabel}>Font Weight</label>
                 <select
-                  value={selectedElement.styles?.fontWeight || 'normal'}
+                  value={selectedElement.styles?.[viewportMode]?.fontWeight || 'normal'}
                   onChange={(e) => handleStyleChange('fontWeight', e.target.value)}
                   className={styles.select}
                 >
@@ -223,11 +233,11 @@ export const PropertiesSidebar: React.FC = () => {
               <div className={styles.colorField}>
                 <div 
                   className={styles.colorPreview}
-                  style={{ '--color': selectedElement.styles?.color || '#000000' } as React.CSSProperties}
+                  style={{ '--color': selectedElement.styles?.[viewportMode]?.color || '#000000' } as React.CSSProperties}
                 />
                 <input
                   type="color"
-                  value={selectedElement.styles?.color || '#000000'}
+                  value={selectedElement.styles?.[viewportMode]?.color || '#000000'}
                   onChange={(e) => handleStyleChange('color', e.target.value)}
                   className={styles.colorInput}
                 />
@@ -239,21 +249,21 @@ export const PropertiesSidebar: React.FC = () => {
               <label className={styles.fieldLabel}>Text Alignment</label>
               <div className={styles.fieldGroupThree}>
                 <button 
-                  className={`btn btn--ghost ${selectedElement.styles?.textAlign === 'left' ? 'btn--primary' : ''}`}
+                  className={`btn btn--ghost ${selectedElement.styles?.[viewportMode]?.textAlign === 'left' ? 'btn--primary' : ''}`}
                   onClick={() => handleStyleChange('textAlign', 'left')}
                   title="Align Left"
                 >
                   <AlignLeft size={16} />
                 </button>
                 <button 
-                  className={`btn btn--ghost ${selectedElement.styles?.textAlign === 'center' ? 'btn--primary' : ''}`}
+                  className={`btn btn--ghost ${selectedElement.styles?.[viewportMode]?.textAlign === 'center' ? 'btn--primary' : ''}`}
                   onClick={() => handleStyleChange('textAlign', 'center')}
                   title="Align Center"
                 >
                   <AlignCenter size={16} />
                 </button>
                 <button 
-                  className={`btn btn--ghost ${selectedElement.styles?.textAlign === 'right' ? 'btn--primary' : ''}`}
+                  className={`btn btn--ghost ${selectedElement.styles?.[viewportMode]?.textAlign === 'right' ? 'btn--primary' : ''}`}
                   onClick={() => handleStyleChange('textAlign', 'right')}
                   title="Align Right"
                 >
@@ -275,7 +285,7 @@ export const PropertiesSidebar: React.FC = () => {
               <label className={styles.fieldLabel}>Width</label>
               <input
                 type="text"
-                value={selectedElement.styles?.width || ''}
+                value={selectedElement.styles?.[viewportMode]?.width || ''}
                 onChange={(e) => handleStyleChange('width', e.target.value)}
                 className={styles.input}
                 placeholder="auto"
@@ -285,7 +295,7 @@ export const PropertiesSidebar: React.FC = () => {
               <label className={styles.fieldLabel}>Height</label>
               <input
                 type="text"
-                value={selectedElement.styles?.height || ''}
+                value={selectedElement.styles?.[viewportMode]?.height || ''}
                 onChange={(e) => handleStyleChange('height', e.target.value)}
                 className={styles.input}
                 placeholder="auto"
@@ -298,7 +308,7 @@ export const PropertiesSidebar: React.FC = () => {
             <div className={styles.field}>
               <label className={styles.fieldLabel}>Display</label>
               <select
-                value={selectedElement.styles?.display || 'block'}
+                value={selectedElement.styles?.[viewportMode]?.display || 'block'}
                 onChange={(e) => handleStyleChange('display', e.target.value)}
                 className={styles.select}
               >
@@ -312,7 +322,7 @@ export const PropertiesSidebar: React.FC = () => {
             <div className={styles.field}>
               <label className={styles.fieldLabel}>Position</label>
               <select
-                value={selectedElement.styles?.position || 'static'}
+                value={selectedElement.styles?.[viewportMode]?.position || 'static'}
                 onChange={(e) => handleStyleChange('position', e.target.value)}
                 className={styles.select}
               >
@@ -335,20 +345,25 @@ export const PropertiesSidebar: React.FC = () => {
           <SpacingControl
             label="MARGIN"
             value={{
-              top: selectedElement.styles?.marginTop || '0',
-              right: selectedElement.styles?.marginRight || '0',
-              bottom: selectedElement.styles?.marginBottom || '0',
-              left: selectedElement.styles?.marginLeft || '0',
+              top: selectedElement.styles?.[viewportMode]?.marginTop || '0',
+              right: selectedElement.styles?.[viewportMode]?.marginRight || '0',
+              bottom: selectedElement.styles?.[viewportMode]?.marginBottom || '0',
+              left: selectedElement.styles?.[viewportMode]?.marginLeft || '0',
             }}
             onChange={(newValue) => {
               const currentStyles = selectedElement.styles || {};
+              const viewportStyles = currentStyles[viewportMode] || {};
+              
               updateElement(selectedElement.id, {
                 styles: { 
-                  ...currentStyles, 
-                  marginTop: newValue.top,
-                  marginRight: newValue.right,
-                  marginBottom: newValue.bottom,
-                  marginLeft: newValue.left,
+                  ...currentStyles,
+                  [viewportMode]: {
+                    ...viewportStyles,
+                    marginTop: newValue.top,
+                    marginRight: newValue.right,
+                    marginBottom: newValue.bottom,
+                    marginLeft: newValue.left,
+                  }
                 }
               });
             }}
@@ -358,20 +373,25 @@ export const PropertiesSidebar: React.FC = () => {
           <SpacingControl
             label="PADDING"
             value={{
-              top: selectedElement.styles?.paddingTop || '0',
-              right: selectedElement.styles?.paddingRight || '0',
-              bottom: selectedElement.styles?.paddingBottom || '0',
-              left: selectedElement.styles?.paddingLeft || '0',
+              top: selectedElement.styles?.[viewportMode]?.paddingTop || '0',
+              right: selectedElement.styles?.[viewportMode]?.paddingRight || '0',
+              bottom: selectedElement.styles?.[viewportMode]?.paddingBottom || '0',
+              left: selectedElement.styles?.[viewportMode]?.paddingLeft || '0',
             }}
             onChange={(newValue) => {
               const currentStyles = selectedElement.styles || {};
+              const viewportStyles = currentStyles[viewportMode] || {};
+              
               updateElement(selectedElement.id, {
                 styles: { 
-                  ...currentStyles, 
-                  paddingTop: newValue.top,
-                  paddingRight: newValue.right,
-                  paddingBottom: newValue.bottom,
-                  paddingLeft: newValue.left,
+                  ...currentStyles,
+                  [viewportMode]: {
+                    ...viewportStyles,
+                    paddingTop: newValue.top,
+                    paddingRight: newValue.right,
+                    paddingBottom: newValue.bottom,
+                    paddingLeft: newValue.left,
+                  }
                 }
               });
             }}
@@ -389,11 +409,11 @@ export const PropertiesSidebar: React.FC = () => {
             <div className={styles.colorField}>
               <div 
                 className={styles.colorPreview}
-                style={{ '--color': selectedElement.styles?.backgroundColor || '#ffffff' } as React.CSSProperties}
+                style={{ '--color': selectedElement.styles?.[viewportMode]?.backgroundColor || '#ffffff' } as React.CSSProperties}
               />
               <input
                 type="color"
-                value={selectedElement.styles?.backgroundColor || '#ffffff'}
+                value={selectedElement.styles?.[viewportMode]?.backgroundColor || '#ffffff'}
                 onChange={(e) => handleStyleChange('backgroundColor', e.target.value)}
                 className={styles.colorInput}
               />
@@ -406,7 +426,7 @@ export const PropertiesSidebar: React.FC = () => {
               <label className={styles.fieldLabel}>Border Width</label>
               <input
                 type="number"
-                value={selectedElement.styles?.borderWidth?.replace('px', '') || ''}
+                value={selectedElement.styles?.[viewportMode]?.borderWidth?.replace('px', '') || ''}
                 onChange={(e) => handleStyleChange('borderWidth', `${e.target.value}px`)}
                 className={styles.input}
                 placeholder="0"
@@ -416,7 +436,7 @@ export const PropertiesSidebar: React.FC = () => {
               <label className={styles.fieldLabel}>Border Radius</label>
               <input
                 type="number"
-                value={selectedElement.styles?.borderRadius?.replace('px', '') || ''}
+                value={selectedElement.styles?.[viewportMode]?.borderRadius?.replace('px', '') || ''}
                 onChange={(e) => handleStyleChange('borderRadius', `${e.target.value}px`)}
                 className={styles.input}
                 placeholder="0"
@@ -430,11 +450,11 @@ export const PropertiesSidebar: React.FC = () => {
             <div className={styles.colorField}>
               <div 
                 className={styles.colorPreview}
-                style={{ '--color': selectedElement.styles?.borderColor || '#e5e7eb' } as React.CSSProperties}
+                style={{ '--color': selectedElement.styles?.[viewportMode]?.borderColor || '#e5e7eb' } as React.CSSProperties}
               />
               <input
                 type="color"
-                value={selectedElement.styles?.borderColor || '#e5e7eb'}
+                value={selectedElement.styles?.[viewportMode]?.borderColor || '#e5e7eb'}
                 onChange={(e) => handleStyleChange('borderColor', e.target.value)}
                 className={styles.colorInput}
               />
@@ -445,7 +465,7 @@ export const PropertiesSidebar: React.FC = () => {
           <div className={styles.field}>
             <label className={styles.fieldLabel}>Box Shadow</label>
             <select
-              value={selectedElement.styles?.boxShadow || 'none'}
+              value={selectedElement.styles?.[viewportMode]?.boxShadow || 'none'}
               onChange={(e) => handleStyleChange('boxShadow', e.target.value)}
               className={styles.select}
             >
