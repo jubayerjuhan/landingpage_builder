@@ -37,25 +37,13 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
   // Extract layout-specific styles (padding/margin) for the wrapper
   const layoutWrapperStyles: React.CSSProperties = {};
   if (elementStyles && isLayoutElement) {
-    const { padding, paddingTop, paddingRight, paddingBottom, paddingLeft,
-            margin, marginTop, marginRight, marginBottom, marginLeft,
-            backgroundColor, borderRadius, border, boxShadow, ...restStyles } = elementStyles;
-    
-    // Apply spacing and visual styles to wrapper
-    if (padding !== undefined) layoutWrapperStyles.padding = padding;
-    if (paddingTop !== undefined) layoutWrapperStyles.paddingTop = paddingTop;
-    if (paddingRight !== undefined) layoutWrapperStyles.paddingRight = paddingRight;
-    if (paddingBottom !== undefined) layoutWrapperStyles.paddingBottom = paddingBottom;
-    if (paddingLeft !== undefined) layoutWrapperStyles.paddingLeft = paddingLeft;
-    if (margin !== undefined) layoutWrapperStyles.margin = margin;
-    if (marginTop !== undefined) layoutWrapperStyles.marginTop = marginTop;
-    if (marginRight !== undefined) layoutWrapperStyles.marginRight = marginRight;
-    if (marginBottom !== undefined) layoutWrapperStyles.marginBottom = marginBottom;
-    if (marginLeft !== undefined) layoutWrapperStyles.marginLeft = marginLeft;
-    if (backgroundColor !== undefined) layoutWrapperStyles.backgroundColor = backgroundColor;
-    if (borderRadius !== undefined) layoutWrapperStyles.borderRadius = borderRadius;
-    if (border !== undefined) layoutWrapperStyles.border = border;
-    if (boxShadow !== undefined) layoutWrapperStyles.boxShadow = boxShadow;
+    // Apply all padding/margin/visual styles directly to wrapper
+    Object.keys(elementStyles).forEach(key => {
+      if (key.startsWith('padding') || key.startsWith('margin') || 
+          ['backgroundColor', 'borderRadius', 'border', 'boxShadow'].includes(key)) {
+        (layoutWrapperStyles as any)[key] = (elementStyles as any)[key];
+      }
+    });
   }
 
   // In preview mode, render children without wrapper

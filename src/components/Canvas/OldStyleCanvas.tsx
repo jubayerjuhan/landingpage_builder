@@ -21,6 +21,42 @@ import { ElementWrapper } from '../elements/ElementWrapper';
 import type { BuilderElement } from '../../types/builder';
 import styles from './OldStyleCanvas.module.scss';
 
+// Droppable Column Component
+interface DroppableColumnProps {
+  column: BuilderElement;
+  elements: BuilderElement[];
+  styles: Record<string, string>;
+}
+
+const DroppableColumn: React.FC<DroppableColumnProps> = ({ column, elements, styles }) => {
+  const columnElements = elements.filter(el => el.parentId === column.id);
+  const { setNodeRef, isOver } = useDroppable({
+    id: `column-${column.id}`,
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={isOver ? styles.columnOver : ''}
+      style={{ position: 'relative' }}
+    >
+      <ElementRenderer element={column}>
+        {columnElements.length > 0 ? (
+          columnElements
+            .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+            .map(element => (
+              <ElementWrapper key={element.id} element={element}>
+                <ElementRenderer element={element} />
+              </ElementWrapper>
+            ))
+        ) : (
+          <div className={styles.emptyColumn}>Drop component here</div>
+        )}
+      </ElementRenderer>
+    </div>
+  );
+};
+
 // Empty Canvas Component
 const EmptyCanvas: React.FC = () => {
   const { setNodeRef, isOver } = useDroppable({
@@ -66,7 +102,7 @@ const LayoutContainer: React.FC<{
   isLast: boolean;
   draggingType: string | null;
 }> = ({ layout, isFirst, isLast, draggingType }) => {
-  const { elements, selectedElementIds, selectElement, deleteElement, moveElement } =
+  const { elements, selectedElementIds, deleteElement, moveElement } =
     useElementStore();
   const { previewMode } = useCanvasStore();
   const isPreviewMode = previewMode === 'preview';
@@ -100,11 +136,7 @@ const LayoutContainer: React.FC<{
     id: `layout-${layout.id}`,
   });
 
-  const handleLayoutClick = (e: React.MouseEvent) => {
-    if (isPreviewMode) return;
-    e.stopPropagation();
-    selectElement(layout.id);
-  };
+  // handleLayoutClick removed - selection now handled by ElementWrapper
 
   const handleMoveUp = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -148,80 +180,61 @@ const LayoutContainer: React.FC<{
     <div className={styles.layoutWrapper}>
       {!isFirst && shouldShowDropZones && <LayoutDropZone position="above" layoutId={layout.id} />}
 
-      <div
+      <div 
         ref={setLayoutRef}
-        className={`${styles.layout} ${isSelected ? styles.selected : ''} ${
-          showDragIndicator ? styles.dragOverLayout : ''
-        }`}
-        onClick={handleLayoutClick}
+        className={showDragIndicator ? styles.dragOverLayout : ''}
       >
-        {/* Always show layout label */}
-        {!isPreviewMode && (
-          <div className={`${styles.layoutLabel} ${isSelected ? styles.selected : ''}`}>
-            {getLayoutName()}
-          </div>
-        )}
-
-        {/* Layout controls when selected */}
-        {isSelected && !isPreviewMode && (
-          <div className={styles.layoutControls}>
-            <button
-              className={styles.moveBtn}
-              onClick={handleMoveUp}
-              disabled={isFirst}
-              title="Move up"
-            >
-              <ChevronUp size={14} />
-            </button>
-            <button
-              className={styles.moveBtn}
-              onClick={handleMoveDown}
-              disabled={isLast}
-              title="Move down"
-            >
-              <ChevronDown size={14} />
-            </button>
-            <button className={styles.deleteBtn} onClick={handleDelete} title="Delete layout">
-              <Trash2 size={14} />
-            </button>
-          </div>
-        )}
-
-        {/* Render rows and columns */}
-        {rows.map(row => {
-          const columns = elements.filter(el => el.type === 'column' && el.parentId === row.id);
-
-          return (
-            <div key={row.id} className={styles.row}>
-              {columns.map(column => {
-                const columnElements = elements.filter(el => el.parentId === column.id);
-                const { setNodeRef, isOver } = useDroppable({
-                  id: `column-${column.id}`,
-                });
-
-                return (
-                  <div
-                    key={column.id}
-                    ref={setNodeRef}
-                    className={`${styles.column} ${isOver ? styles.columnOver : ''}`}
-                  >
-                    {columnElements.length > 0 ? (
-                      columnElements
-                        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-                        .map(element => (
-                          <ElementWrapper key={element.id} element={element}>
-                            <ElementRenderer element={element} />
-                          </ElementWrapper>
-                        ))
-                    ) : (
-                      <div className={styles.emptyColumn}>Drop component here</div>
-                    )}
-                  </div>
-                );
-              })}
+        <ElementRenderer element={layout}>
+          {/* Always show layout label */}
+          {!isPreviewMode && (
+            <div className={`${styles.layoutLabel} ${isSelected ? styles.selected : ''}`}>
+              {getLayoutName()}
             </div>
-          );
-        })}
+          )}
+
+          {/* Layout controls when selected */}
+          {isSelected && !isPreviewMode && (
+            <div className={styles.layoutControls}>
+              <button
+                className={styles.moveBtn}
+                onClick={handleMoveUp}
+                disabled={isFirst}
+                title="Move up"
+              >
+                <ChevronUp size={14} />
+              </button>
+              <button
+                className={styles.moveBtn}
+                onClick={handleMoveDown}
+                disabled={isLast}
+                title="Move down"
+              >
+                <ChevronDown size={14} />
+              </button>
+              <button className={styles.deleteBtn} onClick={handleDelete} title="Delete layout">
+                <Trash2 size={14} />
+              </button>
+            </div>
+          )}
+
+          {/* Render rows and columns */}
+          {rows.map(row => {
+            const columns = elements.filter(el => el.type === 'column' && el.parentId === row.id);
+
+            return (
+              <ElementRenderer key={row.id} element={row}>
+                {columns.map(column => (
+                  <DroppableColumn 
+                    key={column.id} 
+                    column={column} 
+                    elements={elements}
+                    styles={styles}
+                  />
+                ))}
+              </ElementRenderer>
+            );
+          })}
+        </ElementRenderer>
       </div>
 
       {!isLast && shouldShowDropZones && <LayoutDropZone position="below" layoutId={layout.id} />}
