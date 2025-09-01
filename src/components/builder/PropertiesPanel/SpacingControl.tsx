@@ -31,9 +31,17 @@ export const SpacingControl: React.FC<SpacingControlProps> = ({
   const [linked, setLinked] = useState(false);
   const [unit, setUnit] = useState<'px' | 'rem' | '%' | 'auto'>('px');
   
+  // Ensure value has default structure
+  const safeValue: SpacingValue = {
+    top: value?.top || '0',
+    right: value?.right || '0', 
+    bottom: value?.bottom || '0',
+    left: value?.left || '0',
+  };
+  
   // Parse value to number
-  const parseValue = (val: string | number): number => {
-    if (val === 'auto') return 0;
+  const parseValue = (val: string | number | undefined): number => {
+    if (!val || val === 'auto') return 0;
     if (typeof val === 'number') return val;
     return parseInt(val) || 0;
   };
@@ -95,7 +103,7 @@ export const SpacingControl: React.FC<SpacingControlProps> = ({
     
     // If linking, set all values to top value
     if (newLinked) {
-      const topValue = value.top;
+      const topValue = safeValue.top;
       onChange({
         top: topValue,
         right: topValue,
@@ -136,7 +144,7 @@ export const SpacingControl: React.FC<SpacingControlProps> = ({
           <input
             type="number"
             className={styles.inputTop}
-            value={parseValue(value.top)}
+            value={parseValue(safeValue.top)}
             onChange={(e) => handleSideChange('top', e.target.value)}
             placeholder="0"
           />
@@ -146,7 +154,7 @@ export const SpacingControl: React.FC<SpacingControlProps> = ({
             <input
               type="number"
               className={styles.inputLeft}
-              value={parseValue(value.left)}
+              value={parseValue(safeValue.left)}
               onChange={(e) => handleSideChange('left', e.target.value)}
               placeholder="0"
               disabled={linked}
@@ -161,7 +169,7 @@ export const SpacingControl: React.FC<SpacingControlProps> = ({
             <input
               type="number"
               className={styles.inputRight}
-              value={parseValue(value.right)}
+              value={parseValue(safeValue.right)}
               onChange={(e) => handleSideChange('right', e.target.value)}
               placeholder="0"
               disabled={linked}
@@ -172,7 +180,7 @@ export const SpacingControl: React.FC<SpacingControlProps> = ({
           <input
             type="number"
             className={styles.inputBottom}
-            value={parseValue(value.bottom)}
+            value={parseValue(safeValue.bottom)}
             onChange={(e) => handleSideChange('bottom', e.target.value)}
             placeholder="0"
             disabled={linked}

@@ -87,25 +87,27 @@ export const Heading: React.FC<HeadingProps> = ({ element }) => {
   
   const HeadingTag = `h${headingLevel}` as keyof JSX.IntrinsicElements;
   
-  // Don't wrap with ElementWrapper when editing
+  // Keep ElementWrapper even when editing for consistent selection
   if (isEditing) {
     return (
-      <HeadingTag
-        ref={editableRef as any}
-        contentEditable
-        suppressContentEditableWarning
-        style={{
-          ...headingStyles,
-          outline: '1px dashed rgba(84, 87, 255, 0.5)',
-          outlineOffset: '0px',
-        }}
-        onBlur={handleSave}
-        onKeyDown={handleKeyDown}
-        data-element-id={element.id}
-        data-element-type={element.type}
-      >
-        {text}
-      </HeadingTag>
+      <ElementWrapper element={element}>
+        <HeadingTag
+          ref={editableRef as any}
+          contentEditable
+          suppressContentEditableWarning
+          style={{
+            ...headingStyles,
+            outline: '1px dashed rgba(84, 87, 255, 0.5)',
+            outlineOffset: '0px',
+          }}
+          onBlur={handleSave}
+          onKeyDown={handleKeyDown}
+          data-element-id={element.id}
+          data-element-type={element.type}
+        >
+          {text}
+        </HeadingTag>
+      </ElementWrapper>
     );
   }
   

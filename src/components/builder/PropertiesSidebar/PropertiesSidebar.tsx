@@ -18,7 +18,6 @@ import {
   Italic,
   Underline
 } from 'lucide-react';
-import { useBuilderStore } from '../../../stores/builderStore';
 import useElementStore from '../../../stores/elementStore';
 import { SpacingControl } from '../PropertiesPanel/SpacingControl';
 import styles from './PropertiesSidebar.module.scss';
@@ -60,9 +59,10 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
 };
 
 export const PropertiesSidebar: React.FC = () => {
-  const { selectedElementId, elements, updateElement, deleteElement } = useBuilderStore();
-  const elementStore = useElementStore();
+  const { selectedElementIds, elements, updateElement, deleteElement } = useElementStore();
   
+  // Get the first selected element (single selection for now)
+  const selectedElementId = selectedElementIds.length > 0 ? selectedElementIds[0] : null;
   const selectedElement = selectedElementId 
     ? elements.find(el => el.id === selectedElementId)
     : null;
@@ -331,12 +331,48 @@ export const PropertiesSidebar: React.FC = () => {
           title="Spacing" 
           icon={<Ruler size={16} />}
         >
+          {/* Margin Control */}
           <SpacingControl
-            element={selectedElement}
-            onUpdate={(updates) => {
+            label="MARGIN"
+            value={{
+              top: selectedElement.styles?.marginTop || '0',
+              right: selectedElement.styles?.marginRight || '0',
+              bottom: selectedElement.styles?.marginBottom || '0',
+              left: selectedElement.styles?.marginLeft || '0',
+            }}
+            onChange={(newValue) => {
               const currentStyles = selectedElement.styles || {};
-              elementStore.updateElement(selectedElement.id, {
-                styles: { ...currentStyles, ...updates }
+              updateElement(selectedElement.id, {
+                styles: { 
+                  ...currentStyles, 
+                  marginTop: newValue.top,
+                  marginRight: newValue.right,
+                  marginBottom: newValue.bottom,
+                  marginLeft: newValue.left,
+                }
+              });
+            }}
+          />
+          
+          {/* Padding Control */}
+          <SpacingControl
+            label="PADDING"
+            value={{
+              top: selectedElement.styles?.paddingTop || '0',
+              right: selectedElement.styles?.paddingRight || '0',
+              bottom: selectedElement.styles?.paddingBottom || '0',
+              left: selectedElement.styles?.paddingLeft || '0',
+            }}
+            onChange={(newValue) => {
+              const currentStyles = selectedElement.styles || {};
+              updateElement(selectedElement.id, {
+                styles: { 
+                  ...currentStyles, 
+                  paddingTop: newValue.top,
+                  paddingRight: newValue.right,
+                  paddingBottom: newValue.bottom,
+                  paddingLeft: newValue.left,
+                }
               });
             }}
           />

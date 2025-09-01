@@ -43,6 +43,7 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
     // Only handle single clicks
     if (e.detail === 1) {
       selectElement(element.id, e.metaKey || e.ctrlKey);
+      e.stopPropagation(); // Prevent event from bubbling to parent elements
     }
   };
 

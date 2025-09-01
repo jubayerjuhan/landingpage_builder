@@ -92,7 +92,8 @@ export const SectionCanvas: React.FC = () => {
         style={{ 
           flex: 1, 
           position: 'relative',
-          overflow: 'visible' // Don't clip child elements
+          overflow: 'visible', // Don't clip child elements
+          pointerEvents: 'auto' // Ensure pointer events work
         }}
       >
         <ElementRenderer element={column}>
