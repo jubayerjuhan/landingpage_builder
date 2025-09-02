@@ -107,43 +107,44 @@ export const Builder: React.FC = () => {
                            elementType === 'two-column' ? 2 :
                            elementType === 'three-column' ? 3 : 4;
         
-        // Create a layout with a row and columns (old style)
+        // Create a simplified layout with columns directly (no row)
         const layoutId = uuidv4();
-        const rowId = uuidv4();
         const columnIds = Array.from({ length: columnCount }, () => uuidv4());
         
         // Get current layouts to determine order
         const layouts = useElementStore.getState().elements.filter(el => el.type === 'layout');
         const maxOrder = layouts.reduce((max, el) => Math.max(max, el.order || 0), -1);
         
+        const columnWidth = `${100 / columnCount}%`;
+        const layoutName = columnCount === 1 ? 'Single Column' : `${columnCount} Columns`;
+        
         const layout = {
           id: layoutId,
           type: 'layout' as ComponentType,
-          name: 'Layout',
+          name: layoutName,
           content: '',
           order: maxOrder + 1,
-          properties: {},
-          children: [{
-            id: rowId,
-            type: 'row' as ComponentType,
-            name: 'Row',
+          properties: {
+            display: 'flex',
+            flexDirection: 'row',
+            gap: '20px',
+            width: '100%',
+            padding: '0px', // Default to no padding for clean layouts
+            boxSizing: 'border-box'
+          },
+          children: columnIds.map((colId, index) => ({
+            id: colId,
+            type: 'column' as ComponentType,
+            name: `Column ${index + 1}`,
             content: '',
             properties: {
-              display: 'flex',
-              gap: '20px'
+              width: columnWidth,
+              minHeight: '100px',
+              padding: '0px', // Default to no padding for tight layouts
+              boxSizing: 'border-box'
             },
-            children: columnIds.map((colId, index) => ({
-              id: colId,
-              type: 'column' as ComponentType,
-              name: `Column ${index + 1}`,
-              content: '',
-              properties: {
-                flex: '1',
-                minHeight: '100px'
-              },
-              children: []
-            }))
-          }]
+            children: []
+          }))
         };
         
         // Handle drop zones for ordering

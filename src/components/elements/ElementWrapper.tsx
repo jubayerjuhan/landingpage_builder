@@ -36,8 +36,9 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
   
   // Extract layout-specific styles (padding/margin) for the wrapper
   const layoutWrapperStyles: React.CSSProperties = {};
-  if (elementStyles && isLayoutElement) {
-    // Apply all padding/margin/visual styles directly to wrapper
+  if (elementStyles && isLayoutElement && element.type !== 'layout') {
+    // Only apply wrapper styles for non-layout elements (row, column, etc)
+    // For layout elements, let the Section component handle all styles
     Object.keys(elementStyles).forEach(key => {
       if (key.startsWith('padding') || key.startsWith('margin') || 
           ['backgroundColor', 'borderRadius', 'border', 'boxShadow'].includes(key)) {
@@ -118,9 +119,9 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
     deleteElement(element.id);
   };
 
-  // Determine if we should show editing UI
-  const showDragHandle = isSelected || isHovered;
-  const showResizeHandles = isSelected && !isTextElement;
+  // Determine if we should show editing UI (hide for layout elements - OldStyleCanvas handles those)
+  const showDragHandle = (isSelected || isHovered) && element.type !== 'layout';
+  const showResizeHandles = isSelected && !isTextElement && element.type !== 'layout';
 
   return (
     <div

@@ -38,7 +38,7 @@ const DroppableColumn: React.FC<DroppableColumnProps> = ({ column, elements, sty
     <div
       ref={setNodeRef}
       className={isOver ? styles.columnOver : ''}
-      style={{ position: 'relative' }}
+      style={{ position: 'relative', width: '100%' }}
     >
       <ElementRenderer element={column}>
         {columnElements.length > 0 ? (
@@ -102,22 +102,21 @@ const LayoutContainer: React.FC<{
   isLast: boolean;
   draggingType: string | null;
 }> = ({ layout, isFirst, isLast, draggingType }) => {
-  const { elements, selectedElementIds, deleteElement, moveElement } =
-    useElementStore();
+  const { elements, selectedElementIds, deleteElement, moveElement } = useElementStore();
   const { previewMode } = useCanvasStore();
   const isPreviewMode = previewMode === 'preview';
 
-  const rows = elements.filter(el => el.type === 'row' && el.parentId === layout.id);
+  // Get columns directly from layout (no more rows)
+  const columns = elements.filter(el => el.type === 'column' && el.parentId === layout.id);
   const isSelected = selectedElementIds.includes(layout.id);
 
   // Get column count to determine layout name
   const getLayoutName = () => {
-    if (rows.length === 0) return 'Layout';
-    const firstRow = rows[0];
-    const columns = elements.filter(el => el.type === 'column' && el.parentId === firstRow.id);
     const columnCount = columns.length;
 
     switch (columnCount) {
+      case 0:
+        return 'Layout';
       case 1:
         return 'Single Column';
       case 2:
@@ -180,10 +179,7 @@ const LayoutContainer: React.FC<{
     <div className={styles.layoutWrapper}>
       {!isFirst && shouldShowDropZones && <LayoutDropZone position="above" layoutId={layout.id} />}
 
-      <div 
-        ref={setLayoutRef}
-        className={showDragIndicator ? styles.dragOverLayout : ''}
-      >
+      <div ref={setLayoutRef} className={showDragIndicator ? styles.dragOverLayout : ''}>
         <ElementRenderer element={layout}>
           {/* Always show layout label */}
           {!isPreviewMode && (
@@ -217,23 +213,10 @@ const LayoutContainer: React.FC<{
             </div>
           )}
 
-          {/* Render rows and columns */}
-          {rows.map(row => {
-            const columns = elements.filter(el => el.type === 'column' && el.parentId === row.id);
-
-            return (
-              <ElementRenderer key={row.id} element={row}>
-                {columns.map(column => (
-                  <DroppableColumn 
-                    key={column.id} 
-                    column={column} 
-                    elements={elements}
-                    styles={styles}
-                  />
-                ))}
-              </ElementRenderer>
-            );
-          })}
+          {/* Render columns directly (no more rows) */}
+          {columns.map(column => (
+            <DroppableColumn key={column.id} column={column} elements={elements} styles={styles} />
+          ))}
         </ElementRenderer>
       </div>
 

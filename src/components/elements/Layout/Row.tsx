@@ -26,7 +26,10 @@ export const Row: React.FC<RowProps> = ({ element, children }) => {
     flexDirection: 'row',
     gap: gap,
     width: '100%',
+    flex: '1', // Allow row to grow within its container
     minHeight: '60px',
+    boxSizing: 'border-box', // Ensure padding doesn't affect width calculations
+    position: 'relative', // Proper stacking context for child elements
     ...remainingStyles, // Only apply non-wrapper styles
   };
   

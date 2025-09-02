@@ -449,7 +449,10 @@ export const COMPONENT_DEFINITIONS: Record<ComponentType, ComponentDefinition> =
         [ViewportMode.DESKTOP]: {
           fontSize: '2rem',
           fontWeight: 'bold',
-          margin: '0',
+          marginTop: '0',
+          marginBottom: '16px', // Professional heading spacing
+          marginLeft: '0',
+          marginRight: '0',
           padding: '0',
           color: '#333'
         }
@@ -530,7 +533,11 @@ export const COMPONENT_DEFINITIONS: Record<ComponentType, ComponentDefinition> =
           fontSize: '1rem',
           lineHeight: '1.6',
           color: '#666',
-          margin: '0', padding: '0'
+          marginTop: '0',
+          marginBottom: '8px', // Professional paragraph spacing
+          marginLeft: '0',
+          marginRight: '0',
+          padding: '0'
         }
       }
     },
@@ -581,7 +588,15 @@ export const COMPONENT_DEFINITIONS: Record<ComponentType, ComponentDefinition> =
       content: 'Text content',
       properties: {},
       styles: {
-        [ViewportMode.DESKTOP]: {}
+        [ViewportMode.DESKTOP]: {
+          fontSize: '1rem',
+          color: '#333',
+          marginTop: '0',
+          marginBottom: '8px',
+          marginLeft: '0',
+          marginRight: '0',
+          padding: '0'
+        }
       }
     },
     propertySchema: baseContentProperties

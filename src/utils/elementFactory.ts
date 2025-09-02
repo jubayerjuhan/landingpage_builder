@@ -188,43 +188,43 @@ export const createSectionFromConfig = (config: SectionConfig, overrides?: Parti
 };
 
 /**
- * Creates a layout element with row and columns (old style)
+ * Creates a layout element with columns directly (simplified structure)
  */
 export const createLayoutFromConfig = (config: SectionConfig | { columns: number }, overrides?: Partial<BuilderElement>): BuilderElement => {
   const columnCount = 'columns' in config ? config.columns : 1;
   
-  // Create columns
+  // Create columns with proper width distribution
   const columns: BuilderElement[] = [];
+  const columnWidth = `${100 / columnCount}%`;
+  
   for (let i = 0; i < columnCount; i++) {
     columns.push(createElement(ComponentType.COLUMN, {
       name: `Column ${i + 1}`,
       content: '',
       properties: {
-        flex: '1',
-        minHeight: '100px'
+        width: columnWidth,
+        minHeight: '100px',
+        padding: '0px', // Default to no padding for tight layouts
+        boxSizing: 'border-box'
       },
       order: i
     }));
   }
   
-  // Create row with columns
-  const row = createElement(ComponentType.ROW, {
-    name: 'Row',
+  // Create layout with columns directly (no row wrapper)
+  const layoutName = columnCount === 1 ? 'Single Column' : `${columnCount} Columns`;
+  const layout = createElement(ComponentType.LAYOUT, {
+    name: layoutName,
     content: '',
     properties: {
       display: 'flex',
-      gap: '20px'
+      flexDirection: 'row',
+      gap: '20px', // Gap between columns
+      width: '100%',
+      padding: '0px', // Default to no padding for clean layouts
+      boxSizing: 'border-box'
     },
-    children: columns,
-    order: 0
-  });
-  
-  // Create layout with row
-  const layout = createElement(ComponentType.LAYOUT, {
-    name: 'Layout',
-    content: '',
-    properties: {},
-    children: [row],
+    children: columns, // Columns are direct children of layout
     ...overrides
   });
   

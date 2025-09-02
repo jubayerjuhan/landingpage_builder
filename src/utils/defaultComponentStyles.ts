@@ -76,7 +76,10 @@ export const defaultComponentStyles: Record<ComponentType, React.CSSProperties> 
   // ============================================================================
   
   heading: {
-    margin: '0',
+    marginTop: '0',
+    marginBottom: '16px',
+    marginLeft: '0',
+    marginRight: '0',
     padding: '0',
     fontWeight: typography.fontWeight.bold,
     lineHeight: typography.lineHeight.tight,
@@ -85,7 +88,10 @@ export const defaultComponentStyles: Record<ComponentType, React.CSSProperties> 
   },
   
   paragraph: {
-    margin: '0',
+    marginTop: '0',
+    marginBottom: '8px',
+    marginLeft: '0',
+    marginRight: '0',
     padding: '0',
     lineHeight: typography.lineHeight.normal,
     color: colors.neutral[700],
@@ -95,7 +101,10 @@ export const defaultComponentStyles: Record<ComponentType, React.CSSProperties> 
   
   text: {
     display: 'inline-block',
-    margin: '0',
+    marginTop: '0',
+    marginBottom: '8px',
+    marginLeft: '0',
+    marginRight: '0',
     padding: '0',
     lineHeight: typography.lineHeight.base,
     color: colors.neutral[700],

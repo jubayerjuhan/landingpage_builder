@@ -211,8 +211,8 @@ export const PropertiesSidebar: React.FC = () => {
           </div>
         </CollapsibleSection>
 
-        {/* Layout Properties - only show for rows */}
-        {selectedElement.type === 'row' && (
+        {/* Layout Properties - show for layout elements */}
+        {selectedElement.type === 'layout' && (
           <CollapsibleSection 
             title="Layout" 
             icon={<Grid size={16} />}
@@ -220,16 +220,13 @@ export const PropertiesSidebar: React.FC = () => {
             <div className={styles.field}>
               <label className={styles.fieldLabel}>Column Gap</label>
               <select
-                value={selectedElement.properties?.layout?.gap || '16px'}
+                value={selectedElement.properties?.gap || '20px'}
                 onChange={(e) => {
                   const currentProperties = selectedElement.properties || {};
                   updateElement(selectedElement.id, {
                     properties: {
                       ...currentProperties,
-                      layout: {
-                        ...currentProperties.layout,
-                        gap: e.target.value
-                      }
+                      gap: e.target.value
                     }
                   });
                 }}
@@ -242,6 +239,132 @@ export const PropertiesSidebar: React.FC = () => {
                 <option value="32px">32px</option>
                 <option value="48px">48px</option>
               </select>
+            </div>
+          </CollapsibleSection>
+        )}
+
+        {/* Layout Container Properties - show for layout elements */}
+        {selectedElement.type === 'layout' && (
+          <CollapsibleSection 
+            title="Layout Container" 
+            icon={<Grid size={16} />}
+          >
+            <div className={styles.field}>
+              <label className={styles.fieldLabel}>Layout Padding</label>
+              <input
+                type="text"
+                value={selectedElement.properties?.padding || '0px'}
+                onChange={(e) => {
+                  const currentProperties = selectedElement.properties || {};
+                  updateElement(selectedElement.id, {
+                    properties: {
+                      ...currentProperties,
+                      padding: e.target.value
+                    }
+                  });
+                }}
+                className={styles.input}
+                placeholder="0px"
+              />
+            </div>
+            <div className={styles.field}>
+              <label className={styles.fieldLabel}>Layout Margin</label>
+              <input
+                type="text"
+                value={selectedElement.properties?.margin || '0px'}
+                onChange={(e) => {
+                  const currentProperties = selectedElement.properties || {};
+                  updateElement(selectedElement.id, {
+                    properties: {
+                      ...currentProperties,
+                      margin: e.target.value
+                    }
+                  });
+                }}
+                className={styles.input}
+                placeholder="0px"
+              />
+            </div>
+            <div className={styles.field}>
+              <label className={styles.fieldLabel}>Min Height</label>
+              <input
+                type="text"
+                value={selectedElement.properties?.minHeight || 'auto'}
+                onChange={(e) => {
+                  const currentProperties = selectedElement.properties || {};
+                  updateElement(selectedElement.id, {
+                    properties: {
+                      ...currentProperties,
+                      minHeight: e.target.value
+                    }
+                  });
+                }}
+                className={styles.input}
+                placeholder="auto"
+              />
+            </div>
+          </CollapsibleSection>
+        )}
+
+        {/* Column Properties - show for column elements */}
+        {selectedElement.type === 'column' && (
+          <CollapsibleSection 
+            title="Column Settings" 
+            icon={<Grid size={16} />}
+          >
+            <div className={styles.field}>
+              <label className={styles.fieldLabel}>Column Width</label>
+              <input
+                type="text"
+                value={selectedElement.properties?.width || '100%'}
+                onChange={(e) => {
+                  const currentProperties = selectedElement.properties || {};
+                  updateElement(selectedElement.id, {
+                    properties: {
+                      ...currentProperties,
+                      width: e.target.value
+                    }
+                  });
+                }}
+                className={styles.input}
+                placeholder="100%"
+              />
+            </div>
+            <div className={styles.field}>
+              <label className={styles.fieldLabel}>Column Padding</label>
+              <input
+                type="text"
+                value={selectedElement.properties?.padding || '0px'}
+                onChange={(e) => {
+                  const currentProperties = selectedElement.properties || {};
+                  updateElement(selectedElement.id, {
+                    properties: {
+                      ...currentProperties,
+                      padding: e.target.value
+                    }
+                  });
+                }}
+                className={styles.input}
+                placeholder="0px"
+              />
+            </div>
+            <div className={styles.field}>
+              <label className={styles.fieldLabel}>Min Height</label>
+              <input
+                type="text"
+                value={selectedElement.properties?.minHeight || '100px'}
+                onChange={(e) => {
+                  const currentProperties = selectedElement.properties || {};
+                  updateElement(selectedElement.id, {
+                    properties: {
+                      ...currentProperties,
+                      minHeight: e.target.value
+                    }
+                  });
+                }}
+                className={styles.input}
+                placeholder="100px"
+              />
             </div>
           </CollapsibleSection>
         )}
