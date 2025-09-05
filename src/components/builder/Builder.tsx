@@ -4,7 +4,7 @@ import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 import { TopBar } from './TopBar/TopBar';
 import { Sidebar } from './Sidebar/Sidebar';
 import { OldStyleCanvas } from '../Canvas/OldStyleCanvas';
-import { PropertiesSidebar } from './PropertiesSidebar/PropertiesSidebar';
+import { PropertiesPanel } from './PropertiesPanel/PropertiesPanel';
 import { ModalContainer } from '../modals/ModalContainer';
 import { PreviewMode } from '../preview/PreviewMode';
 import { useBuilderStore } from '../../stores/builderStore';
@@ -237,7 +237,7 @@ export const Builder: React.FC = () => {
         <div className={styles.builderMain}>
           <Sidebar />
           <OldStyleCanvas draggingType={draggingType} />
-          <PropertiesSidebar />
+          <PropertiesPanel />
         </div>
         
         {/* Modal Container for Section/Row Modals */}
