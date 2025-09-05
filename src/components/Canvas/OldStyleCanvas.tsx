@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import {
-  Plus,
   ChevronUp,
   ChevronDown,
   ZoomIn,
@@ -9,12 +8,9 @@ import {
   Grid3X3,
   Ruler as Rulers,
   Move,
-  RotateCcw,
-  Eye,
   Trash2,
 } from 'lucide-react';
 import useElementStore from '../../stores/elementStore';
-import useModalStore from '../../stores/modalStore';
 import useCanvasStore from '../../stores/canvasStore';
 import { ElementRenderer } from '../elements/ElementRenderer';
 import { ElementWrapper } from '../elements/ElementWrapper';

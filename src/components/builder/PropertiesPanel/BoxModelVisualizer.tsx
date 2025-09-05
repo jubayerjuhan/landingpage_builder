@@ -41,7 +41,7 @@ export const BoxModelVisualizer: React.FC<BoxModelVisualizerProps> = ({
       if (linked.margin) {
         // Update all sides when linked
         ['top', 'right', 'bottom', 'left'].forEach(s => {
-          onMarginChange(s as any, cleanValue);
+          onMarginChange(s as 'top' | 'right' | 'bottom' | 'left', cleanValue);
         });
       } else {
         onMarginChange(side, cleanValue);
@@ -50,7 +50,7 @@ export const BoxModelVisualizer: React.FC<BoxModelVisualizerProps> = ({
       if (linked.padding) {
         // Update all sides when linked
         ['top', 'right', 'bottom', 'left'].forEach(s => {
-          onPaddingChange(s as any, cleanValue);
+          onPaddingChange(s as 'top' | 'right' | 'bottom' | 'left', cleanValue);
         });
       } else {
         onPaddingChange(side, cleanValue);

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import type { BuilderElement } from '../../../types/builder';
 import useElementStore from '../../../stores/elementStore';
 import styles from './ResizeHandles.module.scss';
@@ -78,6 +78,7 @@ export const ResizeHandles: React.FC<ResizeHandlesProps> = ({
     document.addEventListener('mouseup', handleMouseUp);
     document.body.style.userSelect = 'none';
     document.body.style.cursor = getCursorForDirection(direction);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [containerRef, element.type]);
 
   // Handle mouse move during resize
@@ -170,6 +171,7 @@ export const ResizeHandles: React.FC<ResizeHandlesProps> = ({
     document.removeEventListener('mouseup', handleMouseUp);
     document.body.style.userSelect = '';
     document.body.style.cursor = '';
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resizeState.isResizing, dimensions, updateElement, element.id, element.styles]);
 
   // Clean up event listeners on unmount

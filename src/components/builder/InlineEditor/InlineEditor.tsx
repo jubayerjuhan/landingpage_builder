@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Bold, Italic, Underline, Type, AlignLeft, AlignCenter, AlignRight } from 'lucide-react';
+import { Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight } from 'lucide-react';
 import type { BuilderElement } from '../../../types/builder';
 import useElementStore from '../../../stores/elementStore';
 import styles from './InlineEditor.module.scss';
@@ -150,7 +150,7 @@ export const InlineEditor: React.FC<InlineEditorProps> = ({
         }
       }, 50);
     }
-  }, [isActive, onActivate]);
+  }, [isActive, onActivate, element.id, element.type]);
 
   // Handle content changes
   const handleInput = useCallback(() => {
@@ -295,7 +295,7 @@ export const InlineEditor: React.FC<InlineEditorProps> = ({
         display: 'block' // Ensure full coverage
       }}
       onDoubleClick={handleDoubleClick}
-      onClick={(e) => {
+      onClick={() => {
         console.log('🖱️ Single click on InlineEditor wrapper:', element.id);
       }}
       title="Double-click to edit"

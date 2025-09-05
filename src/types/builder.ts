@@ -234,7 +234,7 @@ export interface ComponentProperties {
   };
   
   // Component-specific properties
-  component?: Record<string, any>;
+  component?: Record<string, unknown>;
 }
 
 export interface ElementPosition {
@@ -389,11 +389,11 @@ export interface PropertyField {
   label: string;
   description?: string;
   placeholder?: string;
-  defaultValue?: any;
+  defaultValue?: unknown;
   validation?: PropertyValidation;
   conditional?: {
     field: string;
-    value: any;
+    value: unknown;
     operator?: 'equals' | 'not-equals' | 'contains' | 'not-contains';
   };
   // Type-specific options
@@ -435,7 +435,7 @@ export interface PropertyValidation {
   pattern?: RegExp;
   min?: number;
   max?: number;
-  custom?: (value: any) => string | null;
+  custom?: (value: unknown) => string | null;
 }
 
 // Store types
@@ -579,7 +579,7 @@ export interface HistorySnapshot {
 export interface HistoryAction {
   type: HistoryActionType;
   elementIds: string[];
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export enum HistoryActionType {
@@ -702,7 +702,7 @@ export interface BuilderError {
   id: string;
   type: BuilderErrorType;
   message: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
   elementId?: string;
   field?: string;
   timestamp: number;

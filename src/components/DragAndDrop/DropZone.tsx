@@ -127,7 +127,6 @@ interface CanvasDropZoneProps extends Omit<DropZoneProps, 'type'> {
 }
 
 export const CanvasDropZone: React.FC<CanvasDropZoneProps> = ({
-  canvasWidth = 1200,
   canvasHeight = 800,
   ...props
 }) => (
@@ -140,7 +139,7 @@ export const CanvasDropZone: React.FC<CanvasDropZoneProps> = ({
   />
 );
 
-interface ContainerDropZoneProps extends Omit<DropZoneProps, 'type'> {}
+type ContainerDropZoneProps = Omit<DropZoneProps, 'type'>;
 
 export const ContainerDropZone: React.FC<ContainerDropZoneProps> = (props) => (
   <DropZone
@@ -151,7 +150,7 @@ export const ContainerDropZone: React.FC<ContainerDropZoneProps> = (props) => (
   />
 );
 
-interface BetweenElementsDropZoneProps extends Omit<DropZoneProps, 'type' | 'minHeight'> {}
+type BetweenElementsDropZoneProps = Omit<DropZoneProps, 'type' | 'minHeight'>;
 
 export const BetweenElementsDropZone: React.FC<BetweenElementsDropZoneProps> = (props) => (
   <DropZone

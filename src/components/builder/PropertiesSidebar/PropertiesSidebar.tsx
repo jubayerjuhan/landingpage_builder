@@ -14,9 +14,6 @@ import {
   AlignLeft,
   AlignCenter,
   AlignRight,
-  Bold,
-  Italic,
-  Underline,
   Grid
 } from 'lucide-react';
 import useElementStore from '../../../stores/elementStore';
@@ -82,7 +79,7 @@ export const PropertiesSidebar: React.FC = () => {
         'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft'
       ];
       
-      const missingProps: any = {};
+      const missingProps: Record<string, string> = {};
       let hasMissing = false;
       
       spacingProperties.forEach(prop => {
@@ -104,7 +101,7 @@ export const PropertiesSidebar: React.FC = () => {
         });
       }
     }
-  }, [selectedElement?.id, viewportMode, updateElement]);
+  }, [selectedElement, viewportMode, updateElement]);
 
   if (!selectedElement) {
     return (
@@ -128,7 +125,7 @@ export const PropertiesSidebar: React.FC = () => {
     );
   }
 
-  const handlePropertyChange = (property: string, value: any) => {
+  const handlePropertyChange = (property: string, value: unknown) => {
     updateElement(selectedElement.id, { [property]: value });
   };
 

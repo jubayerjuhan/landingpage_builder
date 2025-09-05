@@ -41,26 +41,7 @@ export const DragHandle: React.FC<DragHandleProps> = ({
     return null;
   }
 
-  const dragHandleStyles: React.CSSProperties = {
-    position: 'absolute',
-    width: '24px',
-    height: '24px',
-    backgroundColor: '#5457ff',
-    border: '2px solid white',
-    borderRadius: '6px',
-    cursor: isDragging ? 'grabbing' : 'grab',
-    transition: 'all 0.2s ease',
-    zIndex: 1000,
-    color: 'white',
-    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
-    ...(isDragging
-      ? {
-          backgroundColor: '#3b3fd1',
-          transform: 'scale(0.95)',
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)',
-        }
-      : {}),
-  };
+  // Note: dragHandleStyles removed as it was unused - styles are applied via CSS modules
 
   return (
     <div

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DndContext, DragOverlay } from '@dnd-kit/core';
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
-import { Eye } from 'lucide-react';
 import { TopBar } from './TopBar/TopBar';
 import { Sidebar } from './Sidebar/Sidebar';
 import { OldStyleCanvas } from '../Canvas/OldStyleCanvas';
@@ -10,7 +9,6 @@ import { ModalContainer } from '../modals/ModalContainer';
 import { PreviewMode } from '../preview/PreviewMode';
 import { useBuilderStore } from '../../stores/builderStore';
 import useElementStore from '../../stores/elementStore';
-import useModalStore from '../../stores/modalStore';
 import { ComponentType } from '../../types/builder';
 import { v4 as uuidv4 } from 'uuid';
 import styles from './Builder.module.scss';
@@ -19,9 +17,8 @@ export const Builder: React.FC = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [draggingType, setDraggingType] = useState<string | null>(null);
   const [draggedLabel, setDraggedLabel] = useState<string | null>(null);
-  const { addElement, addLayout, updateElement, deleteElement, selectedElementId, reorderElements, isPreviewMode, setPreviewMode } = useBuilderStore();
+  const { addElement, updateElement, reorderElements, isPreviewMode, setPreviewMode } = useBuilderStore();
   const { addElementWithChildren, selectElement } = useElementStore();
-  const { openAddSectionModal } = useModalStore();
 
   // Handle keyboard shortcuts
   useEffect(() => {
@@ -73,7 +70,7 @@ export const Builder: React.FC = () => {
     if (active.data.current?.type) {
       const elementType = active.data.current.type;
       const targetId = over.id as string;
-      const activeId = active.id as string;
+      // const activeId = active.id as string;
       
       // Handle existing element movement
       if (elementType === 'existing-element') {
@@ -151,7 +148,7 @@ export const Builder: React.FC = () => {
         if (targetId === 'main-canvas' || targetId === 'main-canvas-below') {
           addElementWithChildren(layout);
         } else if (targetId.startsWith('above-') || targetId.startsWith('below-')) {
-          const [position, layoutTargetId] = targetId.split('-').slice(0, 2);
+          // const [position, layoutTargetId] = targetId.split('-').slice(0, 2);
           // TODO: Handle reordering when dropping above/below existing layouts
           addElementWithChildren(layout);
         } else if (targetId.startsWith('column-')) {
@@ -221,7 +218,7 @@ export const Builder: React.FC = () => {
     }
   };
 
-  const handleDragOver = (event: any) => {
+  const handleDragOver = (event: { over: { id: string } | null }) => {
     if (event.over) {
       console.log('Dragging over:', event.over.id);
     }

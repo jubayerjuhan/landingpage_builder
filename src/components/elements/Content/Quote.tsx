@@ -26,7 +26,7 @@ export const Quote: React.FC<QuoteProps> = ({ element }) => {
   };
   
   const text = content.text || '"This is a quote or testimonial."';
-  const author = (element.properties?.component as any)?.author || '';
+  const author = (element.properties?.component as { author?: string })?.author || '';
   
   return (
     <ElementWrapper element={element}>

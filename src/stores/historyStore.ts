@@ -204,8 +204,8 @@ export const createSnapshot = (
 const restoreSnapshot = (snapshot: HistorySnapshot) => {
   // This would typically dispatch actions to restore the state
   // For now, we'll assume the stores have methods to restore state
-  if (typeof window !== 'undefined' && (window as any).__restoreBuilderState) {
-    (window as any).__restoreBuilderState(snapshot);
+  if (typeof window !== 'undefined' && (window as Record<string, unknown>).__restoreBuilderState) {
+    ((window as Record<string, unknown>).__restoreBuilderState as (snapshot: HistorySnapshot) => void)(snapshot);
   }
 };
 

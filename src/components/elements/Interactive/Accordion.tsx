@@ -14,13 +14,13 @@ export const Accordion: React.FC<AccordionProps> = ({ element }) => {
   const styles = getCompleteElementStyles(element, viewportMode);
   const [openItems, setOpenItems] = useState<Set<number>>(new Set([0]));
   
-  const items = (element.properties?.component as any)?.items || [
+  const items = (element.properties?.component as { items?: Array<{title: string, content: string}> })?.items || [
     { title: 'Accordion Item 1', content: 'This is the content for the first accordion item.' },
     { title: 'Accordion Item 2', content: 'This is the content for the second accordion item.' },
     { title: 'Accordion Item 3', content: 'This is the content for the third accordion item.' },
   ];
   
-  const allowMultiple = (element.properties?.component as any)?.allowMultiple !== false;
+  const allowMultiple = (element.properties?.component as { allowMultiple?: boolean })?.allowMultiple !== false;
   
   const accordionStyles: React.CSSProperties = {
     border: '1px solid #e5e7eb',
@@ -49,7 +49,7 @@ export const Accordion: React.FC<AccordionProps> = ({ element }) => {
   return (
     <ElementWrapper element={element}>
       <div style={accordionStyles}>
-        {items.map((item: any, index: number) => {
+        {items.map((item: {title: string, content: string}, index: number) => {
           const isOpen = openItems.has(index);
           
           return (

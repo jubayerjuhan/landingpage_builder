@@ -27,7 +27,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ element }) => {
   };
   
   const code = content.text || 'console.log("Hello World");';
-  const language = (element.properties?.component as any)?.language || 'javascript';
+  const language = (element.properties?.component as { language?: string })?.language || 'javascript';
   
   return (
     <ElementWrapper element={element}>

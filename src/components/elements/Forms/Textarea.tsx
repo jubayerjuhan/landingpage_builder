@@ -13,8 +13,8 @@ export const Textarea: React.FC<TextareaProps> = ({ element }) => {
   const styles = getCompleteElementStyles(element, viewportMode);
   const content = getElementContent(element);
   
-  const rows = (element.properties?.component as any)?.rows || 4;
-  const required = (element.properties?.form as any)?.required || false;
+  const rows = (element.properties?.component as { rows?: number })?.rows || 4;
+  const required = (element.properties?.form as { required?: boolean })?.required || false;
   
   const textareaStyles: React.CSSProperties = {
     width: '100%',

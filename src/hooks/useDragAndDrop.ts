@@ -116,7 +116,7 @@ export const useDragAndDrop = () => {
     } finally {
       historyStore.endBatch();
     }
-  }, [dragState, elementStore, historyStore]);
+  }, [dragState, elementStore, historyStore, endDrag]);
 
   return {
     dragState,
@@ -185,7 +185,7 @@ export const useDroppableZone = (
   accepts: ComponentType[],
   type: DropTargetType = DropTargetType.ELEMENT
 ) => {
-  const { registerDropZone, unregisterDropZone, updateValidDropZone, handleDrop, dragState } = useDragAndDrop();
+  const { registerDropZone, unregisterDropZone, updateValidDropZone, dragState } = useDragAndDrop();
   const dropZoneRef = useRef<HTMLElement>(null);
 
   const {
@@ -394,7 +394,7 @@ export const useDragConstraints = () => {
     if (!canvasStore.snapToElements) return { x, y };
 
     const elements = useElementStore.getState().elements;
-    const threshold = 5; // px
+    // const threshold = 5; // px - currently unused
 
     const snappedX = x;
     const snappedY = y;

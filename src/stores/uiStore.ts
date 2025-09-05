@@ -199,17 +199,17 @@ if (typeof window !== 'undefined') {
     // Load active tabs
     const leftPanelTab = localStorage.getItem('builder-left-panel-tab');
     if (leftPanelTab) {
-      state.setLeftPanelTab(leftPanelTab as any);
+      state.setLeftPanelTab(leftPanelTab as 'components' | 'layers' | 'assets');
     }
 
     const rightPanelTab = localStorage.getItem('builder-right-panel-tab');
     if (rightPanelTab) {
-      state.setRightPanelTab(rightPanelTab as any);
+      state.setRightPanelTab(rightPanelTab as 'properties' | 'styles' | 'settings');
     }
 
     const bottomPanelTab = localStorage.getItem('builder-bottom-panel-tab');
     if (bottomPanelTab) {
-      state.setBottomPanelTab(bottomPanelTab as any);
+      state.setBottomPanelTab(bottomPanelTab as 'code' | 'console' | 'preview');
     }
   };
 

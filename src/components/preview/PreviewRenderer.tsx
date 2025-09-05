@@ -38,7 +38,7 @@ export const PreviewRenderer: React.FC<PreviewRendererProps> = ({
         .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     
     switch (element.type) {
-      case 'layout':
+      case 'layout': {
         // Render as semantic section
         const rows = getChildren(element.id);
         return (
@@ -50,8 +50,9 @@ export const PreviewRenderer: React.FC<PreviewRendererProps> = ({
             {rows.map(row => renderElement(row))}
           </section>
         );
+      }
       
-      case 'row':
+      case 'row': {
         // Render as flexbox container with complete styles
         const columns = getChildren(element.id);
         return (
@@ -63,8 +64,9 @@ export const PreviewRenderer: React.FC<PreviewRendererProps> = ({
             {columns.map(col => renderElement(col))}
           </div>
         );
+      }
       
-      case 'column':
+      case 'column': {
         // Render as flex item with complete styles
         const columnChildren = getChildren(element.id);
         return (
@@ -76,8 +78,9 @@ export const PreviewRenderer: React.FC<PreviewRendererProps> = ({
             {columnChildren.map(child => renderElement(child))}
           </div>
         );
+      }
       
-      case 'heading':
+      case 'heading': {
         // Render as semantic heading
         const level = element.properties?.level || 'h2';
         const HeadingTag = level as keyof JSX.IntrinsicElements;
@@ -89,6 +92,7 @@ export const PreviewRenderer: React.FC<PreviewRendererProps> = ({
             {element.content || 'Heading'}
           </HeadingTag>
         );
+      }
       
       case 'paragraph':
         // Render as paragraph

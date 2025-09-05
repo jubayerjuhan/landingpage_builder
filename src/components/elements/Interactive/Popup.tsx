@@ -13,9 +13,10 @@ export const Popup: React.FC<PopupProps> = ({ element }) => {
   const styles = getCompleteElementStyles(element, viewportMode);
   const [isVisible, setIsVisible] = useState(false);
   
-  const triggerText = (element.properties?.component as any)?.triggerText || 'Show Popup';
-  const content = (element.properties?.component as any)?.content || 'This is a popup message!';
-  const position = (element.properties?.component as any)?.position || 'top';
+  const componentProps = element.properties?.component as Record<string, unknown>;
+  const triggerText = componentProps?.triggerText as string || 'Show Popup';
+  const content = componentProps?.content as string || 'This is a popup message!';
+  const position = componentProps?.position as string || 'top';
   
   const popupStyles: React.CSSProperties = {
     position: 'relative',

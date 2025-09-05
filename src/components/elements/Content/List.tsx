@@ -20,7 +20,7 @@ export const List: React.FC<ListProps> = ({ element }) => {
   };
   
   // Get list type from properties (ordered or unordered)
-  const listType = (element.properties?.component as any)?.type || 'ul';
+  const listType = (element.properties?.component as { type?: string })?.type || 'ul';
   const text = content.text || 'List item 1\nList item 2\nList item 3';
   const items = text.split('\n').filter(item => item.trim());
   

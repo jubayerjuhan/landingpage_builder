@@ -13,7 +13,8 @@ export const Tabs: React.FC<TabsProps> = ({ element }) => {
   const styles = getCompleteElementStyles(element, viewportMode);
   const [activeTab, setActiveTab] = useState(0);
   
-  const tabs = (element.properties?.component as any)?.tabs || [
+  const componentProps = element.properties?.component as Record<string, unknown>;
+  const tabs = (componentProps?.tabs as Array<{ title: string; content: string }>) || [
     { title: 'Tab 1', content: 'This is the content for tab 1.' },
     { title: 'Tab 2', content: 'This is the content for tab 2.' },
     { title: 'Tab 3', content: 'This is the content for tab 3.' },
@@ -32,7 +33,7 @@ export const Tabs: React.FC<TabsProps> = ({ element }) => {
           borderBottom: '1px solid #e5e7eb',
           marginBottom: '1rem'
         }}>
-          {tabs.map((tab: any, index: number) => (
+          {tabs.map((tab, index) => (
             <button
               key={index}
               onClick={() => previewMode === 'preview' && setActiveTab(index)}

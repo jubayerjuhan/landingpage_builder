@@ -9,7 +9,7 @@ import type { BuilderElement } from '../../types/builder';
 import styles from './SectionCanvas.module.scss';
 
 export const SectionCanvas: React.FC = () => {
-  const { elements, selectedElementIds, selectElement, clearSelection } = useElementStore();
+  const { elements, clearSelection } = useElementStore();
   const { openAddSectionModal, openAddRowModal } = useModalStore();
 
   // Get root level sections (elements with no parentId)

@@ -10,7 +10,7 @@ interface SimpleInlineEditorProps {
 
 export const SimpleInlineEditor: React.FC<SimpleInlineEditorProps> = ({ element, children }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedContent, setEditedContent] = useState(element.content || '');
+  const [, setEditedContent] = useState(element.content || '');
   const editableRef = useRef<HTMLDivElement>(null);
   const { updateElement } = useElementStore();
 
@@ -97,7 +97,7 @@ export const SimpleInlineEditor: React.FC<SimpleInlineEditorProps> = ({ element,
   return (
     <div 
       onDoubleClick={handleDoubleClick}
-      onClick={(e) => {
+      onClick={() => {
         console.log('🔵 Single click on SimpleInlineEditor wrapper for:', element.id);
       }}
       className={styles.editableWrapper}

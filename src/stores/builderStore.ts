@@ -7,7 +7,7 @@ export interface BuilderElement {
   content: string;
   parentId: string | null;
   order: number;
-  styles?: Record<string, any>;
+  styles?: Record<string, unknown>;
 }
 
 interface BuilderStore {

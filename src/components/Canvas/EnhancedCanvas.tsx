@@ -6,12 +6,12 @@ import useCanvasStore from '../../stores/canvasStore';
 import useModalStore from '../../stores/modalStore';
 import { ElementWrapper } from '../elements/ElementWrapper';
 import { addColumnToRow, removeColumnFromRow, duplicateColumnInRow, getRowStats } from '../../utils/rowManager';
-import { Plus, Layout, Grid3X3, MoreHorizontal, Copy, Trash2, ChevronRight } from 'lucide-react';
+import { Plus, Layout, Grid3X3, MoreHorizontal, Copy, Trash2 } from 'lucide-react';
 import type { BuilderElement } from '../../types/builder';
 
 export const EnhancedCanvas: React.FC = () => {
   const { elements, selectedElementId, selectElement, clearSelection, updateElement } = useElementStore();
-  const { viewportMode, showGrid, showSnapGuides } = useCanvasStore();
+  const { viewportMode, showGrid } = useCanvasStore();
   const { openAddSectionModal, openAddRowModal } = useModalStore();
   const [activeRowMenu, setActiveRowMenu] = useState<string | null>(null);
 

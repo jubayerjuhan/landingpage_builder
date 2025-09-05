@@ -13,9 +13,9 @@ export const Input: React.FC<InputProps> = ({ element }) => {
   const styles = getCompleteElementStyles(element, viewportMode);
   const content = getElementContent(element);
   
-  const inputType = (element.properties?.form as any)?.type || 'text';
-  const required = (element.properties?.form as any)?.required || false;
-  const disabled = (element.properties?.form as any)?.disabled || false;
+  const inputType = (element.properties?.form as { type?: string })?.type || 'text';
+  const required = (element.properties?.form as { required?: boolean })?.required || false;
+  const disabled = (element.properties?.form as { disabled?: boolean })?.disabled || false;
   
   const inputStyles: React.CSSProperties = {
     width: '100%',

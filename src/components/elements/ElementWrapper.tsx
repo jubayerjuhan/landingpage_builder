@@ -42,7 +42,7 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
     Object.keys(elementStyles).forEach(key => {
       if (key.startsWith('padding') || key.startsWith('margin') || 
           ['backgroundColor', 'borderRadius', 'border', 'boxShadow'].includes(key)) {
-        (layoutWrapperStyles as any)[key] = (elementStyles as any)[key];
+        (layoutWrapperStyles as Record<string, unknown>)[key] = (elementStyles as Record<string, unknown>)[key];
       }
     });
   }

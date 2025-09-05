@@ -164,7 +164,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
               component.children.map((child) => (
                 <ComponentRenderer
                   key={child.id}
-                  component={child as any}
+                  component={child as AnyComponent}
                 />
               ))
             ) : (

@@ -32,7 +32,7 @@ export const PropertyEditor: React.FC<PropertyEditorProps> = ({
     onUpdate(updatedComponent);
   };
 
-  const handlePropertyChange = (property: string, value: any) => {
+  const handlePropertyChange = (property: string, value: unknown) => {
     const updatedComponent = {
       ...localComponent,
       [property]: value

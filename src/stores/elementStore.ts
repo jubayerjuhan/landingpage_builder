@@ -66,7 +66,7 @@ const useElementStore = create<ElementStore>((set, get) => ({
       
       // Process children if they exist
       if (el.children && el.children.length > 0) {
-        el.children.forEach((child, childIndex) => {
+        el.children.forEach((child) => {
           processElement(child, newId);
         });
       }
@@ -496,9 +496,7 @@ const useElementStore = create<ElementStore>((set, get) => ({
 
 // Set up global state restoration for history system
 if (typeof window !== 'undefined') {
-  (window as any).__restoreBuilderState = (snapshot: any) => {
-    const elementStore = useElementStore.getState();
-    
+  (window as Record<string, unknown>).__restoreBuilderState = (snapshot: { elements?: BuilderElement[]; selectedElementIds?: string[] }) => {
     // Restore elements and selection
     useElementStore.setState({
       elements: snapshot.elements || [],

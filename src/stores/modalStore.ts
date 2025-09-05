@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { createSectionFromConfig, createLayoutFromConfig, createRowWithColumns } from '../utils/elementFactory';
+import { createLayoutFromConfig, createRowWithColumns } from '../utils/elementFactory';
 import useElementStore from './elementStore';
 
 export interface SectionConfig {

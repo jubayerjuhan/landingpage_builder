@@ -13,8 +13,8 @@ export const Button: React.FC<ButtonProps> = ({ element }) => {
   const styles = getCompleteElementStyles(element, viewportMode);
   const content = getElementContent(element);
   
-  const variant = (element.properties?.component as any)?.variant || 'primary';
-  const size = (element.properties?.component as any)?.size || 'md';
+  const variant = (element.properties?.component as { variant?: string })?.variant || 'primary';
+  const size = (element.properties?.component as { size?: string })?.size || 'md';
   
   // Base button styles
   const baseStyles: React.CSSProperties = {

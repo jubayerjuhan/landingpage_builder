@@ -21,7 +21,7 @@ export const Heading: React.FC<HeadingProps> = ({ element }) => {
   const content = getElementContent(element);
   
   // Get heading level from properties or default to H2
-  const level = (element.properties?.typography as any)?.level || element.properties?.level || '2';
+  const level = (element.properties?.typography as { level?: string })?.level || element.properties?.level || '2';
   const headingLevel = Math.max(1, Math.min(6, parseInt(level))) as 1 | 2 | 3 | 4 | 5 | 6;
   
   // Complete styles already include defaults, just add edit-specific styles
@@ -92,7 +92,7 @@ export const Heading: React.FC<HeadingProps> = ({ element }) => {
     return (
       <ElementWrapper element={element}>
         <HeadingTag
-          ref={editableRef as any}
+          ref={editableRef as React.LegacyRef<HTMLElement>}
           contentEditable
           suppressContentEditableWarning
           style={{
@@ -114,7 +114,7 @@ export const Heading: React.FC<HeadingProps> = ({ element }) => {
   return (
     <ElementWrapper element={element}>
       <HeadingTag
-        ref={editableRef as any}
+        ref={editableRef as React.LegacyRef<HTMLElement>}
         style={headingStyles}
         title={previewMode === 'edit' ? 'Double-click to edit' : undefined}
       >

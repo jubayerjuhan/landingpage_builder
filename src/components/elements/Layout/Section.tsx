@@ -43,13 +43,13 @@ export const Section: React.FC<SectionProps> = ({ element, children }) => {
   const flexDir = flexDirection || element.properties?.flexDirection || 'column';
   const gapValue = gap || element.properties?.gap || '0';
   const widthValue = width || element.properties?.width || '100%';
-  const minHeightValue = minHeight || (element.properties as any)?.minHeight || '60px';
-  const boxSizingValue = boxSizing || (element.properties as any)?.boxSizing || 'border-box';
+  const minHeightValue = minHeight || (element.properties as Record<string, unknown>)?.minHeight || '60px';
+  const boxSizingValue = boxSizing || (element.properties as Record<string, unknown>)?.boxSizing || 'border-box';
 
   // Apply all styles to section element - use merged styles that include Properties panel values
   const sectionStyles: React.CSSProperties = {
     display: displayStyle,
-    flexDirection: displayStyle === 'flex' ? (flexDir as any) : undefined,
+    flexDirection: displayStyle === 'flex' ? (flexDir as React.CSSProperties['flexDirection']) : undefined,
     gap: displayStyle === 'flex' ? gapValue : undefined,
     width: widthValue,
     minHeight: element.type === 'layout' ? minHeightValue : '60px',

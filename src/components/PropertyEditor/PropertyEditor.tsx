@@ -22,13 +22,13 @@ export const PropertyEditor: React.FC = () => {
 
   const [showAdvanced, setShowAdvanced] = useState(false);
 
-  const findElementById = (elements: any[], id: string): any => {
+  const findElementById = (elements: { id: string; children?: unknown[] }[], id: string): { id: string; children?: unknown[] } | null => {
     for (const element of elements) {
       if (element.id === id) {
         return element;
       }
       if (element.children) {
-        const found = findElementById(element.children, id);
+        const found = findElementById(element.children as { id: string; children?: unknown[] }[], id);
         if (found) return found;
       }
     }

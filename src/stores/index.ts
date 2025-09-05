@@ -3,6 +3,7 @@ import useElementStore from './elementStore';
 import useCanvasStore from './canvasStore';
 import useHistoryStore, { setupHistoryKeyboardShortcuts } from './historyStore';
 import useUIStore, { setupUIKeyboardShortcuts } from './uiStore';
+import type { BuilderElement } from '../types/builder';
 
 // Re-export individual stores
 export { 
@@ -42,7 +43,7 @@ export const setupStoreIntegration = () => {
     
     // Compare elements to detect changes
     const elementsChanged = JSON.stringify(state.elements) !== JSON.stringify(prevState.elements);
-    const selectionChanged = JSON.stringify(state.selectedElementIds) !== JSON.stringify(prevState.selectedElementIds);
+    // const selectionChanged = JSON.stringify(state.selectedElementIds) !== JSON.stringify(prevState.selectedElementIds);
     
     if (elementsChanged && !history.isBatching) {
       // Create history entry for element changes
@@ -54,7 +55,7 @@ export const setupStoreIntegration = () => {
 
   // Global state restoration (used by history)
   if (typeof window !== 'undefined') {
-    (window as any).__restoreBuilderState = (snapshot: any) => {
+    (window as Window & { __restoreBuilderState?: (snapshot: { elements: BuilderElement[], selectedElementIds: string[], canvasState?: unknown }) => void }).__restoreBuilderState = (snapshot) => {
       isUpdating = true;
       
       // Restore element state
@@ -78,7 +79,7 @@ export const setupStoreIntegration = () => {
     cleanupUIShortcuts?.();
     
     if (typeof window !== 'undefined') {
-      delete (window as any).__restoreBuilderState;
+      delete (window as Window & { __restoreBuilderState?: unknown }).__restoreBuilderState;
     }
   };
 };
@@ -186,8 +187,8 @@ export const devUtils = {
 
     useCanvasStore.getState().resetView();
     useCanvasStore.setState({
-      viewportMode: 'desktop' as any,
-      previewMode: 'edit' as any
+      viewportMode: 'desktop',
+      previewMode: 'edit'
     });
 
     useHistoryStore.getState().clearHistory();
@@ -197,7 +198,7 @@ export const devUtils = {
 
   // Log store state changes (for debugging)
   enableStateLogging: () => {
-    const logState = (storeName: string) => (state: any, prevState: any) => {
+    const logState = (storeName: string) => (state: unknown, prevState: unknown) => {
       console.group(`${storeName} State Change`);
       console.log('Previous:', prevState);
       console.log('Current:', state);

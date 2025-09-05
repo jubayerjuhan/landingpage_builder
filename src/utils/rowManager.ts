@@ -1,6 +1,6 @@
 import type { BuilderElement } from '../types/builder';
 import { ComponentType } from '../types/builder';
-import { createElement, createElementWithChildren } from './elementFactory';
+import { createElement } from './elementFactory';
 
 /**
  * Row Management System - Utilities for managing row operations

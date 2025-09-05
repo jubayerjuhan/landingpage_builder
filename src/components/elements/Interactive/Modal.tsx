@@ -14,9 +14,9 @@ export const Modal: React.FC<ModalProps> = ({ element }) => {
   const styles = getCompleteElementStyles(element, viewportMode);
   const [isOpen, setIsOpen] = useState(false);
   
-  const triggerText = (element.properties?.component as any)?.triggerText || 'Open Modal';
-  const title = (element.properties?.component as any)?.title || 'Modal Title';
-  const content = (element.properties?.component as any)?.content || 'This is modal content.';
+  const triggerText = (element.properties?.component as { triggerText?: string })?.triggerText || 'Open Modal';
+  const title = (element.properties?.component as { title?: string })?.title || 'Modal Title';
+  const content = (element.properties?.component as { content?: string })?.content || 'This is modal content.';
   
   const modalStyles: React.CSSProperties = {
     ...styles,

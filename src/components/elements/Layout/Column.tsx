@@ -14,11 +14,11 @@ export const Column: React.FC<ColumnProps> = ({ element, children }) => {
 
   // Use width from properties (set by Layout when creating columns)
   const columnWidth = element.properties?.width || '100%';
-  const boxSizing = (element.properties as any)?.boxSizing || 'border-box';
-  const minHeight = (element.properties as any)?.minHeight || '100px';
+  const boxSizing = (element.properties as Record<string, unknown>)?.boxSizing || 'border-box';
+  const minHeight = (element.properties as Record<string, unknown>)?.minHeight || '100px';
 
   // Get padding from complete styles (includes Properties panel values)
-  const columnPadding = styles.padding || (element.properties as any)?.padding || '0px';
+  const columnPadding = styles.padding || (element.properties as Record<string, unknown>)?.padding || '0px';
   const columnPaddingTop = styles.paddingTop || '0px';
   const columnPaddingRight = styles.paddingRight || '0px';
   const columnPaddingBottom = styles.paddingBottom || '0px';

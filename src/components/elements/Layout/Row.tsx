@@ -14,6 +14,7 @@ export const Row: React.FC<RowProps> = ({ element, children }) => {
   const styles = getCompleteElementStyles(element, viewportMode);
   
   // Filter out styles that are handled by ElementWrapper (padding, margin, visual styles)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { padding, paddingTop, paddingRight, paddingBottom, paddingLeft,
           margin, marginTop, marginRight, marginBottom, marginLeft,
           backgroundColor, borderRadius, border, boxShadow, ...remainingStyles } = styles;
