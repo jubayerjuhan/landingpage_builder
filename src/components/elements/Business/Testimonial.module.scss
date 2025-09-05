@@ -1,0 +1,145 @@
+.testimonial {
+  width: 100%;
+  
+  &.card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    
+    &:hover {
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+    }
+  }
+  
+  &.minimal {
+    text-align: center;
+    padding: 2rem 0;
+  }
+  
+  &.side {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+    padding: 1.5rem 0;
+  }
+}
+
+.quoteIcon {
+  color: #5457ff;
+  opacity: 0.2;
+  margin-bottom: 1rem;
+}
+
+.rating {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+  
+  .card & {
+    justify-content: center;
+  }
+}
+
+.star {
+  color: #e5e7eb;
+  
+  &.filled {
+    color: #fbbf24;
+    fill: #fbbf24;
+  }
+}
+
+.quote {
+  font-size: 1.125rem;
+  line-height: 1.7;
+  color: #374151;
+  margin: 0 0 1.5rem 0;
+  font-style: italic;
+  
+  .minimal & {
+    font-size: 1.5rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    
+    &:before {
+      content: '"';
+    }
+    
+    &:after {
+      content: '"';
+    }
+  }
+}
+
+.authorSection {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  
+  .card & {
+    justify-content: center;
+  }
+}
+
+.avatarSection {
+  flex-shrink: 0;
+}
+
+.contentSection {
+  flex: 1;
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatarPlaceholder {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.authorInfo {
+  .card & {
+    text-align: center;
+  }
+}
+
+.authorName {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 1rem;
+}
+
+.authorDetails {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-top: 0.125rem;
+}
+
+.author {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.separator {
+  color: #d1d5db;
+}

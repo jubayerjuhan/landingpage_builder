@@ -11,6 +11,18 @@ import {
   Input, Textarea
 } from './index';
 
+// Import Business Components
+import { PricingTable } from './Business/PricingTable';
+import { Testimonial } from './Business/Testimonial';
+import { FAQ } from './Business/FAQ';
+import { TeamMember } from './Business/TeamMember';
+import { ContactCard } from './Business/ContactCard';
+
+// Import Advanced Components
+import { HTMLBlock } from './Advanced/HTMLBlock';
+import { Embed } from './Advanced/Embed';
+import { CustomCSS } from './Advanced/CustomCSS';
+
 interface ElementRendererProps {
   element: BuilderElement;
   children?: React.ReactNode;
@@ -115,6 +127,32 @@ export const ElementRenderer: React.FC<ElementRendererProps> = ({ element, child
       
     case ComponentType.TEXTAREA:
       return <Textarea element={element} />;
+    
+    // Business Components
+    case ComponentType.PRICING_TABLE:
+      return <PricingTable element={element} />;
+      
+    case ComponentType.TESTIMONIAL:
+      return <Testimonial element={element} />;
+      
+    case ComponentType.FAQ:
+      return <FAQ element={element} />;
+      
+    case ComponentType.TEAM_MEMBER:
+      return <TeamMember element={element} />;
+      
+    case ComponentType.CONTACT_CARD:
+      return <ContactCard element={element} />;
+    
+    // Advanced Components
+    case ComponentType.HTML_BLOCK:
+      return <HTMLBlock element={element} />;
+      
+    case ComponentType.EMBED:
+      return <Embed element={element} />;
+      
+    case ComponentType.CUSTOM_CSS:
+      return <CustomCSS element={element} />;
     
     // Fallback for unimplemented components
     default:

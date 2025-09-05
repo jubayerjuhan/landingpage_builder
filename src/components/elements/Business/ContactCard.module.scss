@@ -1,0 +1,111 @@
+.contactCard {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+  
+  &.vertical {
+    .contactInfo {
+      padding: 2rem;
+    }
+  }
+  
+  &.horizontal {
+    display: flex;
+    
+    .contactInfo {
+      flex: 1;
+      padding: 2rem;
+    }
+    
+    .mapSection {
+      width: 400px;
+      height: auto;
+      
+      iframe {
+        height: 100%;
+      }
+    }
+  }
+}
+
+.contactInfo {
+  // Padding handled by parent
+}
+
+.companyName {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 1.5rem 0;
+}
+
+.contactItems {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.contactItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.icon {
+  color: #5457ff;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.value {
+  font-size: 0.9375rem;
+  color: #374151;
+  line-height: 1.5;
+  
+  a& {
+    color: #5457ff;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    
+    &:hover {
+      color: #4446cc;
+      text-decoration: underline;
+    }
+  }
+}
+
+.mapSection {
+  background: #f3f4f6;
+  
+  iframe {
+    display: block;
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .contactCard.horizontal {
+    flex-direction: column;
+    
+    .mapSection {
+      width: 100%;
+      height: 300px;
+    }
+  }
+}
