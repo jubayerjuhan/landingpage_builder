@@ -3,6 +3,9 @@ import type { BuilderElement } from '../../../types/builder';
 import { ElementWrapper } from '../ElementWrapper';
 import { getCompleteElementStyles, getElementContent } from '../../../utils/styleUtils';
 import useCanvasStore from '../../../stores/canvasStore';
+import { MediaPlayer } from '@vidstack/react';
+import '@vidstack/react/player/styles/default/theme.css';
+import '@vidstack/react/player/styles/default/layouts/video.css';
 
 interface VideoProps {
   element: BuilderElement;
@@ -23,60 +26,36 @@ export const Video: React.FC<VideoProps> = ({ element }) => {
   };
   
   const src = content.src || '';
-  const autoplay = (element.properties?.component as any)?.autoplay || false;
-  const controls = (element.properties?.component as any)?.controls !== false;
-  const muted = (element.properties?.component as any)?.muted || false;
-  const loop = (element.properties?.component as any)?.loop || false;
+  const autoplay = (element.properties?.component as Record<string, unknown>)?.autoplay as boolean || false;
+  const controls = (element.properties?.component as Record<string, unknown>)?.controls !== false;
+  const muted = (element.properties?.component as Record<string, unknown>)?.muted as boolean || false;
+  const loop = (element.properties?.component as Record<string, unknown>)?.loop as boolean || false;
   
   // Check if it's a YouTube or Vimeo URL
-  const isYouTube = src.includes('youtube.com') || src.includes('youtu.be');
-  const isVimeo = src.includes('vimeo.com');
+  // Source can be regular MP4, HLS (.m3u8), YouTube, or Vimeo.
   
-  if (isYouTube || isVimeo) {
-    let embedSrc = src;
-    
-    // Convert YouTube URLs to embed format
-    if (isYouTube) {
-      const videoId = src.includes('youtu.be/') 
-        ? src.split('youtu.be/')[1]?.split('?')[0]
-        : src.split('v=')[1]?.split('&')[0];
-      
-      if (videoId) {
-        embedSrc = `https://www.youtube.com/embed/${videoId}?autoplay=${autoplay ? 1 : 0}&mute=${muted ? 1 : 0}&loop=${loop ? 1 : 0}`;
-      }
-    }
-    
-    // Convert Vimeo URLs to embed format
-    if (isVimeo) {
-      const videoId = src.split('vimeo.com/')[1]?.split('/')[0];
-      if (videoId) {
-        embedSrc = `https://player.vimeo.com/video/${videoId}?autoplay=${autoplay ? 1 : 0}&muted=${muted ? 1 : 0}&loop=${loop ? 1 : 0}`;
-      }
-    }
-    
+  // Vidstack Player (native controls if no custom layout)
+  if (src) {
     return (
       <ElementWrapper element={element}>
-        <div style={{ ...videoStyles, position: 'relative', paddingBottom: '56.25%', height: 0 }}>
-          <iframe
-            src={embedSrc}
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              borderRadius: '4px',
-              border: 'none'
-            }}
-            allowFullScreen
-            title="Video player"
-          />
+        <div style={videoStyles}>
+          <MediaPlayer
+            playsInline
+            autoPlay={autoplay}
+            muted={muted}
+            loop={loop}
+            controls={controls}
+            title="Video"
+            src={src}
+          >
+            {/* Provider auto-selects based on src */}
+          </MediaPlayer>
         </div>
       </ElementWrapper>
     );
   }
   
-  // Regular video file
+  // No source placeholder
   if (!src) {
     return (
       <ElementWrapper element={element}>
