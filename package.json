@@ -14,14 +14,14 @@
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
-    "@vidstack/react": "^0.6.15",
+    "@vidstack/react": "^1.12.13",
     "lucide-react": "^0.539.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "sass": "^1.90.0",
     "tailwindcss": "^4.1.11",
     "uuid": "^11.1.0",
-    "vidstack": "^0.6.15",
+    "vidstack": "^1.12.13",
     "zustand": "^5.0.7"
   },
   "devDependencies": {
