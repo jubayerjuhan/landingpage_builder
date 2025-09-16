@@ -102,6 +102,7 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
     display: isCodeBlock ? 'inline-block' : 'block',
     width: isCodeBlock ? 'fit-content' : '100%',
     maxWidth: '100%',
+    boxSizing: 'border-box',
     transition: 'all 0.2s ease',
     cursor: 'pointer',
     borderRadius: '4px',

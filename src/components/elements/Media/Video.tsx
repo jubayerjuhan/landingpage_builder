@@ -18,6 +18,7 @@ export const Video: React.FC<VideoProps> = ({ element }) => {
     height: 'auto',
     maxWidth: '100%',
     borderRadius: '4px',
+    boxSizing: 'border-box',
     ...styles,
   };
   
