@@ -22,7 +22,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ element }) => {
     margin: '1rem 0',
     padding: '1rem',
     backgroundColor: '#1f2937',
-    color: '#f9fafb',
+    color: '#e5e7eb',
     borderRadius: '0.5rem',
     overflow: 'auto',
     fontSize: '0.875rem',
@@ -174,6 +174,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ element }) => {
               lineHeight: 'inherit',
               whiteSpace: 'pre',
               wordBreak: 'normal',
+              tabSize: 2,
             }}
           >
             {code}
@@ -230,9 +231,10 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ element }) => {
             lineHeight: 'inherit',
             whiteSpace: 'pre',
             wordBreak: 'normal',
+            tabSize: 2,
           }}
         >
-          <code style={{ display: 'block', width: '100%' }}>{code}</code>
+          <code style={{ display: 'block', width: '100%', color: '#93c5fd' }}>{code}</code>
         </pre>
       </div>
     </ElementWrapper>

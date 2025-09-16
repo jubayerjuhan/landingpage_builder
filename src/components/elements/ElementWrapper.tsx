@@ -29,20 +29,28 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
   const isHovered = hoveredElementId === element.id;
   const isPreviewMode = previewMode === 'preview';
   const isTextElement = ['heading', 'paragraph', 'text'].includes(element.type);
-  const isLayoutElement = ['layout', 'section', 'row', 'column', 'container'].includes(element.type);
+  const isCodeBlock = element.type === 'code_block';
+  const isLayoutElement = ['layout', 'section', 'row', 'column', 'container'].includes(
+    element.type
+  );
 
   // For layout elements, get the complete styles to apply padding/margin to wrapper
   const elementStyles = isLayoutElement ? getCompleteElementStyles(element, viewportMode) : null;
-  
+
   // Extract layout-specific styles (padding/margin) for the wrapper
   const layoutWrapperStyles: React.CSSProperties = {};
   if (elementStyles && isLayoutElement && element.type !== 'layout') {
     // Only apply wrapper styles for non-layout elements (row, column, etc)
     // For layout elements, let the Section component handle all styles
     Object.keys(elementStyles).forEach(key => {
-      if (key.startsWith('padding') || key.startsWith('margin') || 
-          ['backgroundColor', 'borderRadius', 'border', 'boxShadow'].includes(key)) {
-        (layoutWrapperStyles as Record<string, unknown>)[key] = (elementStyles as Record<string, unknown>)[key];
+      if (
+        key.startsWith('padding') ||
+        key.startsWith('margin') ||
+        ['backgroundColor', 'borderRadius', 'border', 'boxShadow'].includes(key)
+      ) {
+        (layoutWrapperStyles as Record<string, unknown>)[key] = (
+          elementStyles as Record<string, unknown>
+        )[key];
       }
     });
   }
@@ -91,8 +99,9 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
   // Inline styles as fallback
   const inlineStyles: React.CSSProperties = {
     position: 'relative',
-    display: 'block',
-    width: '100%',
+    display: isCodeBlock ? 'inline-block' : 'block',
+    width: isCodeBlock ? 'fit-content' : '100%',
+    maxWidth: '100%',
     transition: 'all 0.2s ease',
     cursor: 'pointer',
     borderRadius: '4px',
@@ -183,29 +192,33 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
       {children}
 
       {/* Element label - hide for layout elements (row, column, layout) */}
-      {(isSelected || isHovered) && element.type !== 'row' && element.type !== 'column' && element.type !== 'layout' && element.type !== 'code_block' && (
-        <div
-          className={styles.elementLabel}
-          style={{
-            position: 'absolute',
-            top: '-24px',
-            left: '0',
-            background: '#5457ff',
-            color: 'white',
-            padding: '2px 6px',
-            borderRadius: '3px',
-            fontSize: '10px',
-            fontWeight: '500',
-            whiteSpace: 'nowrap',
-            zIndex: 1001,
-            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.2)',
-            textTransform: 'capitalize',
-            letterSpacing: '0.5px',
-          }}
-        >
-          {element.name || element.type}
-        </div>
-      )}
+      {(isSelected || isHovered) &&
+        element.type !== 'row' &&
+        element.type !== 'column' &&
+        element.type !== 'layout' &&
+        element.type !== 'code_block' && (
+          <div
+            className={styles.elementLabel}
+            style={{
+              position: 'absolute',
+              top: '-24px',
+              left: '0',
+              background: '#5457ff',
+              color: 'white',
+              padding: '2px 6px',
+              borderRadius: '3px',
+              fontSize: '10px',
+              fontWeight: '500',
+              whiteSpace: 'nowrap',
+              zIndex: 1001,
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.2)',
+              textTransform: 'capitalize',
+              letterSpacing: '0.5px',
+            }}
+          >
+            {element.name || element.type}
+          </div>
+        )}
     </div>
   );
 };
