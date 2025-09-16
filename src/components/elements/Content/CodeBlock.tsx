@@ -144,21 +144,23 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ element }) => {
           }}
           onBlur={handleSave}
         >
-          <div
-            ref={editableLangRef}
-            contentEditable
-            suppressContentEditableWarning
-            onPaste={handleLangPaste}
-            style={{
-              fontSize: '0.75rem',
-              color: '#9ca3af',
-              marginBottom: '0.5rem',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-            }}
-          >
-            {language}
-          </div>
+          {language && (
+            <div
+              ref={editableLangRef}
+              contentEditable
+              suppressContentEditableWarning
+              onPaste={handleLangPaste}
+              style={{
+                fontSize: '0.75rem',
+                color: '#9ca3af',
+                marginBottom: '0.5rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+              }}
+            >
+              {language}
+            </div>
+          )}
           <pre
             ref={editableCodeRef}
             contentEditable
@@ -230,7 +232,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ element }) => {
             wordBreak: 'normal',
           }}
         >
-          <code>{code}</code>
+          <code style={{ display: 'block', width: '100%' }}>{code}</code>
         </pre>
       </div>
     </ElementWrapper>
