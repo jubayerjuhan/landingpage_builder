@@ -85,6 +85,9 @@ export const ElementRenderer: React.FC<ElementRendererProps> = ({ element, child
       
     case ComponentType.CODE_BLOCK:
       return <CodeBlock element={element} />;
+    // Backward compatibility: older projects may use 'code' as the type key
+    case 'code' as unknown as ComponentType:
+      return <CodeBlock element={{ ...element, type: ComponentType.CODE_BLOCK }} />;
     
     // Media Components
     case ComponentType.IMAGE:
