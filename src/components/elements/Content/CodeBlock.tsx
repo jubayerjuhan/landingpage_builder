@@ -58,14 +58,72 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ element }) => {
     setIsEditing(false);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const insertText = (textToInsert: string) => {
+    document.execCommand('insertText', false, textToInsert);
+  };
+
+  const handleCodeKeyDown = (e: React.KeyboardEvent) => {
+    // Save/cancel shortcuts
     if (e.key === 'Enter' && e.ctrlKey) {
       e.preventDefault();
       handleSave();
-    } else if (e.key === 'Escape') {
+      return;
+    }
+    if (e.key === 'Escape') {
       e.preventDefault();
       setIsEditing(false);
+      return;
     }
+    // Force newline as \n to keep DOM clean
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      insertText('\n');
+      return;
+    }
+    // Indentation
+    if (e.key === 'Tab' && !e.shiftKey) {
+      e.preventDefault();
+      insertText('  ');
+      return;
+    }
+    if (e.key === 'Tab' && e.shiftKey) {
+      e.preventDefault();
+      // Remove up to two spaces before caret if present
+      const sel = window.getSelection();
+      if (!sel || sel.rangeCount === 0) return;
+      const range = sel.getRangeAt(0);
+      const pre = editableCodeRef.current;
+      if (!pre) return;
+      const beforeRange = range.cloneRange();
+      beforeRange.setStart(pre, 0);
+      const beforeText = beforeRange.toString();
+      if (beforeText.endsWith('  ')) {
+        document.execCommand('delete');
+        document.execCommand('delete');
+      } else if (beforeText.endsWith('\t')) {
+        document.execCommand('delete');
+      }
+      return;
+    }
+  };
+
+  const handleCodePaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const textData = e.clipboardData.getData('text/plain').replace(/\r\n?/g, '\n');
+    insertText(textData);
+  };
+
+  const handleLangPaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const textData = e.clipboardData.getData('text/plain').replace(/\s+/g, ' ');
+    insertText(textData);
+  };
+
+  const handleCopy = () => {
+    const toCopy = (editableCodeRef.current?.innerText || code).replace(/\u00A0/g, ' ');
+    navigator.clipboard?.writeText(toCopy).catch(() => {
+      /* ignore */
+    });
   };
 
   useEffect(() => {
@@ -82,14 +140,15 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ element }) => {
             ...codeBlockStyles,
             outline: '1px dashed rgba(84, 87, 255, 0.5)',
             outlineOffset: '0px',
+            position: 'relative',
           }}
           onBlur={handleSave}
-          onKeyDown={handleKeyDown}
         >
           <div
             ref={editableLangRef}
             contentEditable
             suppressContentEditableWarning
+            onPaste={handleLangPaste}
             style={{
               fontSize: '0.75rem',
               color: '#9ca3af',
@@ -104,17 +163,38 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ element }) => {
             ref={editableCodeRef}
             contentEditable
             suppressContentEditableWarning
+            onKeyDown={handleCodeKeyDown}
+            onPaste={handleCodePaste}
             style={{
               margin: '0',
               fontFamily: 'inherit',
               fontSize: 'inherit',
               lineHeight: 'inherit',
-              whiteSpace: 'pre-wrap',
-              wordBreak: 'break-word',
+              whiteSpace: 'pre',
+              wordBreak: 'normal',
             }}
           >
-            <code>{code}</code>
+            {code}
           </pre>
+          <button
+            type="button"
+            onClick={handleCopy}
+            style={{
+              position: 'absolute',
+              top: '8px',
+              right: '8px',
+              background: 'rgba(255,255,255,0.1)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              color: '#e5e7eb',
+              fontSize: '12px',
+              padding: '2px 6px',
+              borderRadius: '4px',
+              cursor: 'pointer',
+            }}
+            title="Copy code"
+          >
+            Copy
+          </button>
         </div>
       </ElementWrapper>
     );
@@ -146,8 +226,8 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ element }) => {
             fontFamily: 'inherit',
             fontSize: 'inherit',
             lineHeight: 'inherit',
-            whiteSpace: 'pre-wrap',
-            wordBreak: 'break-word',
+            whiteSpace: 'pre',
+            wordBreak: 'normal',
           }}
         >
           <code>{code}</code>
