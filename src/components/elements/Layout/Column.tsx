@@ -18,23 +18,22 @@ export const Column: React.FC<ColumnProps> = ({ element, children }) => {
   const minHeight = (element.properties as Record<string, unknown>)?.minHeight || '100px';
 
   // Get padding from complete styles (includes Properties panel values)
-  const columnPadding = styles.padding || (element.properties as Record<string, unknown>)?.padding || '0px';
+  const columnPadding =
+    styles.padding || (element.properties as Record<string, unknown>)?.padding || '0px';
   const columnPaddingTop = styles.paddingTop || '0px';
   const columnPaddingRight = styles.paddingRight || '0px';
   const columnPaddingBottom = styles.paddingBottom || '0px';
   const columnPaddingLeft = styles.paddingLeft || '0px';
 
   // Filter out styles to avoid duplication - we handle padding explicitly above
-  const {
-    width,
-    ...remainingStyles
-  } = styles;
+  const { width, ...remainingStyles } = styles;
 
   const columnStyles: React.CSSProperties = {
     width: width || columnWidth, // Use width from styles or properties
     flexGrow: 0, // Don't grow
     flexShrink: 0, // Don't shrink
     flexBasis: columnWidth, // Use exact width as basis
+    minWidth: 0, // Allow content to wrap within the column instead of growing container
     display: 'flex',
     flexDirection: 'column',
     // Removed gap - elements should have their own margins for WYSIWYG consistency

@@ -13,33 +13,36 @@ export const Paragraph: React.FC<ParagraphProps> = ({ element }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState('');
   const editableRef = useRef<HTMLParagraphElement>(null);
-  
+
   const { viewportMode, previewMode } = useCanvasStore();
   const { updateElement } = useElementStore();
-  
+
   const styles = getCompleteElementStyles(element, viewportMode);
   const content = getElementContent(element);
-  
+
   // Complete styles already include defaults
   const paragraphStyles: React.CSSProperties = {
     ...styles,
     cursor: previewMode === 'preview' ? 'default' : 'text',
   };
-  
-  const text = content.text || element.content || 'Add your paragraph content here. You can write as much text as you need.';
-  
+
+  const text =
+    content.text ||
+    element.content ||
+    'Add your paragraph content here. You can write as much text as you need.';
+
   // Handle double-click to start editing
   const handleDoubleClick = (e: React.MouseEvent) => {
     if (previewMode === 'preview') return;
-    
+
     e.preventDefault();
     e.stopPropagation();
-    
+
     console.log('🎯 Paragraph double-clicked, starting edit mode');
     setEditText(text);
     setIsEditing(true);
   };
-  
+
   // Handle save
   const handleSave = () => {
     const newText = editableRef.current?.innerText || editText;
@@ -47,13 +50,13 @@ export const Paragraph: React.FC<ParagraphProps> = ({ element }) => {
     updateElement(element.id, { content: newText });
     setIsEditing(false);
   };
-  
+
   // Handle cancel
   const handleCancel = () => {
     setIsEditing(false);
     setEditText(text);
   };
-  
+
   // Handle keyboard events
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && e.ctrlKey) {
@@ -64,7 +67,7 @@ export const Paragraph: React.FC<ParagraphProps> = ({ element }) => {
       handleCancel();
     }
   };
-  
+
   // Focus when editing starts
   useEffect(() => {
     if (isEditing && editableRef.current) {
@@ -77,7 +80,7 @@ export const Paragraph: React.FC<ParagraphProps> = ({ element }) => {
       selection?.addRange(range);
     }
   }, [isEditing]);
-  
+
   // If editing, render contentEditable version
   if (isEditing) {
     return (
@@ -90,6 +93,8 @@ export const Paragraph: React.FC<ParagraphProps> = ({ element }) => {
             ...paragraphStyles,
             outline: '1px dashed rgba(84, 87, 255, 0.5)',
             outlineOffset: '0px',
+            wordBreak: 'break-word',
+            overflowWrap: 'anywhere',
           }}
           onBlur={handleSave}
           onKeyDown={handleKeyDown}
@@ -99,12 +104,16 @@ export const Paragraph: React.FC<ParagraphProps> = ({ element }) => {
       </ElementWrapper>
     );
   }
-  
+
   // Normal render with double-click handler
   return (
     <ElementWrapper element={element}>
-      <p 
-        style={paragraphStyles}
+      <p
+        style={{
+          ...paragraphStyles,
+          wordBreak: 'break-word',
+          overflowWrap: 'anywhere',
+        }}
         onDoubleClick={handleDoubleClick}
         title={previewMode === 'edit' ? 'Double-click to edit' : undefined}
       >

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DndContext, DragOverlay } from '@dnd-kit/core';
-import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
+import type { DragEndEvent, DragStartEvent, DragOverEvent } from '@dnd-kit/core';
 import { TopBar } from './TopBar/TopBar';
 import { Sidebar } from './Sidebar/Sidebar';
 import { OldStyleCanvas } from '../Canvas/OldStyleCanvas';
@@ -17,7 +17,8 @@ export const Builder: React.FC = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [draggingType, setDraggingType] = useState<string | null>(null);
   const [draggedLabel, setDraggedLabel] = useState<string | null>(null);
-  const { addElement, updateElement, reorderElements, isPreviewMode, setPreviewMode } = useBuilderStore();
+  const { addElement, updateElement, reorderElements, isPreviewMode, setPreviewMode } =
+    useBuilderStore();
   const { addElementWithChildren, selectElement } = useElementStore();
 
   // Handle keyboard shortcuts
@@ -41,20 +42,20 @@ export const Builder: React.FC = () => {
     setIsDragging(true);
     const type = event.active.data.current?.type || null;
     setDraggingType(type);
-    
+
     // Set label for drag overlay
     const labelMap: Record<string, string> = {
-      'heading': 'Heading',
-      'paragraph': 'Paragraph', 
-      'text': 'Text',
-      'button': 'Button',
-      'image': 'Image',
-      'list': 'List',
+      heading: 'Heading',
+      paragraph: 'Paragraph',
+      text: 'Text',
+      button: 'Button',
+      image: 'Image',
+      list: 'List',
       'single-column': 'Single Column',
       'two-column': '2 Columns',
       'three-column': '3 Columns',
       'four-column': '4 Columns',
-      'existing-element': 'Element'
+      'existing-element': 'Element',
     };
     setDraggedLabel(type ? labelMap[type] || type : null);
   };
@@ -71,11 +72,11 @@ export const Builder: React.FC = () => {
       const elementType = active.data.current.type;
       const targetId = over.id as string;
       // const activeId = active.id as string;
-      
+
       // Handle existing element movement
       if (elementType === 'existing-element') {
         const element = active.data.current.element;
-        
+
         // Handle element reordering within column
         if (targetId.startsWith('element-above-') || targetId.startsWith('element-below-')) {
           const position = targetId.startsWith('element-above-') ? 'above' : 'below';
@@ -85,7 +86,7 @@ export const Builder: React.FC = () => {
           selectElement(element.id); // Keep element selected after reorder
           return;
         }
-        
+
         // Handle moving to different column
         if (targetId.startsWith('column-')) {
           const newParentId = targetId.replace('column-', '');
@@ -97,24 +98,29 @@ export const Builder: React.FC = () => {
         }
         return;
       }
-      
+
       // Handle new layout drops from sidebar
       if (elementType.includes('column')) {
-        const columnCount = elementType === 'single-column' ? 1 : 
-                           elementType === 'two-column' ? 2 :
-                           elementType === 'three-column' ? 3 : 4;
-        
+        const columnCount =
+          elementType === 'single-column'
+            ? 1
+            : elementType === 'two-column'
+            ? 2
+            : elementType === 'three-column'
+            ? 3
+            : 4;
+
         // Create a simplified layout with columns directly (no row)
         const layoutId = uuidv4();
         const columnIds = Array.from({ length: columnCount }, () => uuidv4());
-        
+
         // Get current layouts to determine order
         const layouts = useElementStore.getState().elements.filter(el => el.type === 'layout');
         const maxOrder = layouts.reduce((max, el) => Math.max(max, el.order || 0), -1);
-        
+
         const columnWidth = `${100 / columnCount}%`;
         const layoutName = columnCount === 1 ? 'Single Column' : `${columnCount} Columns`;
-        
+
         const layout = {
           id: layoutId,
           type: 'layout' as ComponentType,
@@ -127,23 +133,25 @@ export const Builder: React.FC = () => {
             gap: '20px',
             width: '100%',
             padding: '0px', // Default to no padding for clean layouts
-            boxSizing: 'border-box'
+            boxSizing: 'border-box',
           },
+          styles: {},
           children: columnIds.map((colId, index) => ({
             id: colId,
             type: 'column' as ComponentType,
             name: `Column ${index + 1}`,
             content: '',
             properties: {
-              width: columnWidth,
+              width: '100%',
               minHeight: '100px',
               padding: '0px', // Default to no padding for tight layouts
-              boxSizing: 'border-box'
+              boxSizing: 'border-box',
             },
-            children: []
-          }))
+            styles: {},
+            children: [],
+          })),
         };
-        
+
         // Handle drop zones for ordering
         if (targetId === 'main-canvas' || targetId === 'main-canvas-below') {
           addElementWithChildren(layout);
@@ -160,28 +168,31 @@ export const Builder: React.FC = () => {
       }
 
       // Handle regular element drops
-      
+
       // Handle dropping new element on element drop zone
       if (targetId.startsWith('element-above-') || targetId.startsWith('element-below-')) {
         const position = targetId.startsWith('element-above-') ? 'above' : 'below';
         const targetElementId = targetId.replace(`element-${position}-`, '');
-        
+
         // Find the target element to get its parent column
         const { elements } = useBuilderStore.getState();
         const targetElement = elements.find(el => el.id === targetElementId);
-        
+
         if (targetElement) {
           const newElement = {
             type: elementType,
-            content: elementType === 'heading' ? 'Your Heading Here' : 
-                     elementType === 'paragraph' ? 'Your paragraph text here' : 
-                     'Your text here',
-            parentId: targetElement.parentId
+            content:
+              elementType === 'heading'
+                ? 'Your Heading Here'
+                : elementType === 'paragraph'
+                ? 'Your paragraph text here'
+                : 'Your text here',
+            parentId: targetElement.parentId,
           };
-          
+
           // Add new element to the column
           const newElementId = addElement(newElement);
-          
+
           // Then reorder it to the desired position
           if (newElementId) {
             setTimeout(() => {
@@ -192,24 +203,31 @@ export const Builder: React.FC = () => {
         }
         return;
       }
-      
+
       // Handle dropping directly on column
       if (targetId.startsWith('column-')) {
         const columnId = targetId.replace('column-', '');
         const elementId = uuidv4();
-        
+
         const newElement = {
           id: elementId,
           type: elementType as ComponentType,
           name: elementType.charAt(0).toUpperCase() + elementType.slice(1),
-          content: elementType === 'heading' ? 'Your Heading Here' : 
-                   elementType === 'paragraph' ? 'Your paragraph text here' : 
-                   elementType === 'text' ? 'Your text here' :
-                   elementType === 'button' ? 'Click Me' :
-                   elementType === 'image' ? '' : 
-                   '',
+          content:
+            elementType === 'heading'
+              ? 'Your Heading Here'
+              : elementType === 'paragraph'
+              ? 'Your paragraph text here'
+              : elementType === 'text'
+              ? 'Your text here'
+              : elementType === 'button'
+              ? 'Click Me'
+              : elementType === 'image'
+              ? ''
+              : '',
           properties: {},
-          children: []
+          styles: {},
+          children: [],
         };
 
         addElementWithChildren(newElement, columnId);
@@ -218,7 +236,7 @@ export const Builder: React.FC = () => {
     }
   };
 
-  const handleDragOver = (event: { over: { id: string } | null }) => {
+  const handleDragOver = (event: DragOverEvent) => {
     if (event.over) {
       console.log('Dragging over:', event.over.id);
     }
@@ -239,17 +257,13 @@ export const Builder: React.FC = () => {
           <OldStyleCanvas draggingType={draggingType} />
           <PropertiesPanel />
         </div>
-        
+
         {/* Modal Container for Section/Row Modals */}
         <ModalContainer />
       </div>
-      
+
       <DragOverlay>
-        {isDragging && draggedLabel && (
-          <div className="drag-overlay">
-            📦 {draggedLabel}
-          </div>
-        )}
+        {isDragging && draggedLabel && <div className="drag-overlay">📦 {draggedLabel}</div>}
       </DragOverlay>
     </DndContext>
   );

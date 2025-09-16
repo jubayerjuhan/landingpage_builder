@@ -12,26 +12,29 @@ interface HeadingProps {
 export const Heading: React.FC<HeadingProps> = ({ element }) => {
   const [isEditing, setIsEditing] = useState(false);
   const editableRef = useRef<HTMLHeadingElement>(null);
-  
+
   const { viewportMode } = useCanvasStore();
   const { updateElement } = useElementStore();
   const { previewMode } = useCanvasStore();
-  
+
   const styles = getCompleteElementStyles(element, viewportMode);
   const content = getElementContent(element);
-  
+
   // Get heading level from properties or default to H2
-  const level = (element.properties?.typography as { level?: string })?.level || element.properties?.level || '2';
+  const level =
+    (element.properties?.typography as { level?: string })?.level ||
+    element.properties?.level ||
+    '2';
   const headingLevel = Math.max(1, Math.min(6, parseInt(level))) as 1 | 2 | 3 | 4 | 5 | 6;
-  
+
   // Complete styles already include defaults, just add edit-specific styles
   const headingStyles: React.CSSProperties = {
     ...styles,
     cursor: previewMode === 'preview' ? 'default' : 'text',
   };
-  
+
   const text = content.text || element.content || 'Your Heading Here';
-  
+
   // Handle save
   const handleSave = () => {
     const newText = editableRef.current?.innerText || text;
@@ -39,7 +42,7 @@ export const Heading: React.FC<HeadingProps> = ({ element }) => {
     updateElement(element.id, { content: newText });
     setIsEditing(false);
   };
-  
+
   // Handle keyboard events
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -50,7 +53,7 @@ export const Heading: React.FC<HeadingProps> = ({ element }) => {
       setIsEditing(false);
     }
   };
-  
+
   // Setup double-click listener using useEffect
   useEffect(() => {
     const headingElement = editableRef.current;
@@ -58,13 +61,13 @@ export const Heading: React.FC<HeadingProps> = ({ element }) => {
 
     const handleDoubleClick = (e: MouseEvent) => {
       if (previewMode === 'preview') return;
-      
+
       e.preventDefault();
       e.stopPropagation();
-      
+
       console.log('🎯 Double-click detected on heading!');
       setIsEditing(true);
-      
+
       // Focus and select text after a short delay
       setTimeout(() => {
         if (editableRef.current) {
@@ -79,14 +82,14 @@ export const Heading: React.FC<HeadingProps> = ({ element }) => {
     };
 
     headingElement.addEventListener('dblclick', handleDoubleClick);
-    
+
     return () => {
       headingElement.removeEventListener('dblclick', handleDoubleClick);
     };
   }, [previewMode, isEditing]);
-  
+
   const HeadingTag = `h${headingLevel}` as keyof JSX.IntrinsicElements;
-  
+
   // Keep ElementWrapper even when editing for consistent selection
   if (isEditing) {
     return (
@@ -99,6 +102,8 @@ export const Heading: React.FC<HeadingProps> = ({ element }) => {
             ...headingStyles,
             outline: '1px dashed rgba(84, 87, 255, 0.5)',
             outlineOffset: '0px',
+            wordBreak: 'break-word',
+            overflowWrap: 'anywhere',
           }}
           onBlur={handleSave}
           onKeyDown={handleKeyDown}
@@ -110,12 +115,16 @@ export const Heading: React.FC<HeadingProps> = ({ element }) => {
       </ElementWrapper>
     );
   }
-  
+
   return (
     <ElementWrapper element={element}>
       <HeadingTag
         ref={editableRef as React.LegacyRef<HTMLElement>}
-        style={headingStyles}
+        style={{
+          ...headingStyles,
+          wordBreak: 'break-word',
+          overflowWrap: 'anywhere',
+        }}
         title={previewMode === 'edit' ? 'Double-click to edit' : undefined}
       >
         {text}
