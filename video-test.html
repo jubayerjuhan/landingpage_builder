@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Test URLs</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .url-list { margin: 20px 0; }
+        .url-item { margin: 10px 0; padding: 10px; background: #f0f0f0; border-radius: 4px; }
+        .url-item code { background: #fff; padding: 2px 6px; border-radius: 2px; word-break: break-all; }
+        h2 { color: #333; margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <h1>Video Component Test URLs</h1>
+    <p>Open the builder at <a href="http://localhost:5557/" target="_blank">http://localhost:5557/</a> and test these video URLs:</p>
+
+    <h2>Direct Video Files (MP4)</h2>
+    <div class="url-list">
+        <div class="url-item">
+            <strong>Big Buck Bunny (Sample Video):</strong><br>
+            <code>https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4</code>
+        </div>
+        <div class="url-item">
+            <strong>Sintel Trailer:</strong><br>
+            <code>https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4</code>
+        </div>
+        <div class="url-item">
+            <strong>Test Video (Small):</strong><br>
+            <code>https://www.w3schools.com/html/mov_bbb.mp4</code>
+        </div>
+    </div>
+
+    <h2>HLS Streams (m3u8)</h2>
+    <div class="url-list">
+        <div class="url-item">
+            <strong>Bitmovin Test Stream:</strong><br>
+            <code>https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8</code>
+        </div>
+        <div class="url-item">
+            <strong>Apple Sample HLS:</strong><br>
+            <code>https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_16x9/bipbop_16x9_variant.m3u8</code>
+        </div>
+    </div>
+
+    <h2>YouTube Videos</h2>
+    <div class="url-list">
+        <div class="url-item">
+            <strong>React Conf 2024:</strong><br>
+            <code>https://www.youtube.com/watch?v=dQw4w9WgXcQ</code>
+        </div>
+        <div class="url-item">
+            <strong>Short URL format:</strong><br>
+            <code>https://youtu.be/dQw4w9WgXcQ</code>
+        </div>
+        <div class="url-item">
+            <strong>YouTube Shorts:</strong><br>
+            <code>https://www.youtube.com/shorts/SXHMnicI6Pg</code>
+        </div>
+    </div>
+
+    <h2>Vimeo Videos</h2>
+    <div class="url-list">
+        <div class="url-item">
+            <strong>Sample Vimeo Video:</strong><br>
+            <code>https://vimeo.com/253989945</code>
+        </div>
+        <div class="url-item">
+            <strong>Another Vimeo Video:</strong><br>
+            <code>https://vimeo.com/90509568</code>
+        </div>
+    </div>
+
+    <h2>How to Test</h2>
+    <ol>
+        <li>Open the builder at <a href="http://localhost:5557/" target="_blank">http://localhost:5557/</a></li>
+        <li>Add a Section element from the Layout panel</li>
+        <li>Drag a Video element from the Media panel into the section</li>
+        <li>Double-click the video placeholder to open the URL editor</li>
+        <li>Paste any of the URLs above and press Enter or click Save</li>
+        <li>The video should load and play with the Vidstack player</li>
+        <li>You can toggle autoplay, controls, muted, and loop in the properties panel</li>
+    </ol>
+</body>
+</html>

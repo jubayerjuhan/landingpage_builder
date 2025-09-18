@@ -4,9 +4,9 @@ import { ElementWrapper } from '../ElementWrapper';
 import { getCompleteElementStyles, getElementContent } from '../../../utils/styleUtils';
 import useCanvasStore from '../../../stores/canvasStore';
 import { MediaPlayer } from '@vidstack/react';
+import { defaultLayoutIcons, DefaultVideoLayout } from '@vidstack/react/player/layouts/default';
 import '@vidstack/react/player/styles/default/theme.css';
 import '@vidstack/react/player/styles/default/layouts/video.css';
-import { DefaultVideoLayout, defaultLayoutIcons } from '@vidstack/react/player/layouts/default';
 import useElementStore from '../../../stores/elementStore';
 
 interface VideoProps {
@@ -32,34 +32,44 @@ export const Video: React.FC<VideoProps> = ({ element }) => {
   };
 
   const src = content.src || '';
-  const autoplay = ((element.properties?.component as Record<string, unknown>)?.autoplay as boolean) || false;
+  const autoplay =
+    ((element.properties?.component as Record<string, unknown>)?.autoplay as boolean) || false;
   const controls = (element.properties?.component as Record<string, unknown>)?.controls !== false;
-  const muted = ((element.properties?.component as Record<string, unknown>)?.muted as boolean) || false;
-  const loop = ((element.properties?.component as Record<string, unknown>)?.loop as boolean) || false;
+  const muted =
+    ((element.properties?.component as Record<string, unknown>)?.muted as boolean) || false;
+  const loop =
+    ((element.properties?.component as Record<string, unknown>)?.loop as boolean) || false;
 
-  const toVidstackSrc = (raw: string): unknown => {
+  const getVideoSource = (raw: string) => {
     const url = raw.trim();
     if (!url) return '';
-    // YouTube
+
+    // YouTube URLs
     if (url.includes('youtube.com') || url.includes('youtu.be')) {
-      let id = '';
-      if (url.includes('youtu.be/')) id = url.split('youtu.be/')[1]?.split(/[?&#]/)[0] || '';
-      else if (url.includes('/shorts/')) id = url.split('/shorts/')[1]?.split(/[?&#]/)[0] || '';
-      else if (url.includes('v=')) id = url.split('v=')[1]?.split('&')[0] || '';
-      if (id) return { src: `https://www.youtube.com/watch?v=${id}`, type: 'video/youtube' };
+      let videoId = '';
+      if (url.includes('youtu.be/')) {
+        videoId = url.split('youtu.be/')[1]?.split(/[?&#]/)[0] || '';
+      } else if (url.includes('/shorts/')) {
+        videoId = url.split('/shorts/')[1]?.split(/[?&#]/)[0] || '';
+      } else if (url.includes('v=')) {
+        videoId = url.split('v=')[1]?.split('&')[0] || '';
+      } else if (url.includes('/embed/')) {
+        videoId = url.split('/embed/')[1]?.split(/[?&#]/)[0] || '';
+      }
+      return videoId ? `youtube/${videoId}` : url;
     }
-    // Vimeo
+
+    // Vimeo URLs
     if (url.includes('vimeo.com')) {
-      const vid = url.split('vimeo.com/')[1]?.split(/[?&#]/)[0] || '';
-      if (vid) return { src: `https://vimeo.com/${vid}`, type: 'video/vimeo' };
+      const videoId = url.split('vimeo.com/')[1]?.split(/[?&#]/)[0] || '';
+      return videoId ? `vimeo/${videoId}` : url;
     }
-    // HLS
-    if (url.endsWith('.m3u8')) return { src: url, type: 'application/vnd.apple.mpegurl' };
-    // MP4 or others
+
+    // Return direct URLs as is (MP4, HLS, etc.)
     return url;
   };
 
-  const vdsSrc = toVidstackSrc(src);
+  const videoSource = getVideoSource(src);
 
   if (src) {
     return (
@@ -171,15 +181,20 @@ export const Video: React.FC<VideoProps> = ({ element }) => {
             </div>
           )}
           <MediaPlayer
-            playsInline
-            autoPlay={autoplay}
+            title="Video"
+            src={videoSource}
+            autoplay={autoplay}
             muted={muted}
             loop={loop}
-            controls={controls}
-            title="Video"
-            src={vdsSrc as unknown as string | { src: string; type?: string }}
+            playsInline
+            style={{
+              width: '100%',
+              aspectRatio: '16 / 9',
+              backgroundColor: '#000',
+              borderRadius: '4px',
+            }}
           >
-            <DefaultVideoLayout icons={defaultLayoutIcons} />
+            {controls && <DefaultVideoLayout icons={defaultLayoutIcons} />}
           </MediaPlayer>
           {previewMode === 'edit' && src && (
             <div
