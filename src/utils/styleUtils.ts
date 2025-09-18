@@ -121,14 +121,19 @@ export const getElementStyles = (
  * Merges element content properties for easy access
  */
 export const getElementContent = (element: BuilderElement) => {
+  // Check if content is an object (for images, etc.)
+  const contentObj = typeof element.content === 'object' && element.content
+    ? element.content as Record<string, any>
+    : {};
+
   return {
-    text: element.content || element.properties?.content?.text || '',
-    html: element.properties?.content?.html || '',
-    src: element.properties?.content?.src || '',
-    alt: element.properties?.content?.alt || '',
-    href: element.properties?.content?.href || '',
-    target: element.properties?.content?.target || '_self',
-    title: element.properties?.content?.title || '',
-    placeholder: element.properties?.content?.placeholder || '',
+    text: typeof element.content === 'string' ? element.content : (element.properties?.content?.text || contentObj.text || ''),
+    html: element.properties?.content?.html || contentObj.html || '',
+    src: element.properties?.content?.src || contentObj.src || '',
+    alt: element.properties?.content?.alt || contentObj.alt || '',
+    href: element.properties?.content?.href || contentObj.href || '',
+    target: element.properties?.content?.target || contentObj.target || '_self',
+    title: element.properties?.content?.title || contentObj.title || '',
+    placeholder: element.properties?.content?.placeholder || contentObj.placeholder || '',
   };
 };

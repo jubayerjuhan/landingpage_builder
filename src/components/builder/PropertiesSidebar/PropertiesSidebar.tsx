@@ -17,9 +17,11 @@ import {
   Bold,
   Italic,
   Underline,
+  Image as ImageIcon,
 } from 'lucide-react';
 import { useBuilderStore } from '../../../stores/builderStore';
 import { SpacingControl, type SpacingValues } from './SpacingControl';
+import { ImageUpload } from '../../ui/ImageUpload';
 import styles from './PropertiesSidebar.module.scss';
 
 interface CollapsibleSectionProps {
@@ -82,6 +84,18 @@ export const PropertiesSidebar: React.FC = () => {
 
   const handlePropertyChange = (property: string, value: any) => {
     updateElement(selectedElement.id, { [property]: value });
+  };
+
+  const handleContentPropertyChange = (property: string, value: any) => {
+    const currentContent = typeof selectedElement.content === 'object' && selectedElement.content
+      ? selectedElement.content
+      : {};
+
+    const newContent = { ...currentContent, [property]: value };
+
+    updateElement(selectedElement.id, {
+      content: newContent
+    });
   };
 
   const handleStyleChange = (styleProperty: string, value: string) => {
@@ -263,11 +277,81 @@ export const PropertiesSidebar: React.FC = () => {
             <div className={styles.field}>
               <label className={styles.fieldLabel}>Text Content</label>
               <textarea
-                value={selectedElement.content}
+                value={typeof selectedElement.content === 'string' ? selectedElement.content : selectedElement.content?.text || ''}
                 onChange={e => handlePropertyChange('content', e.target.value)}
                 className={styles.textarea}
                 placeholder="Enter your text here..."
               />
+            </div>
+          </CollapsibleSection>
+        )}
+
+        {/* Image Properties */}
+        {selectedElement.type === 'image' && (
+          <CollapsibleSection title="Image" icon={<ImageIcon size={16} />}>
+            <div className={styles.field}>
+              <label className={styles.fieldLabel}>Image Source</label>
+              <ImageUpload
+                value={
+                  typeof selectedElement.content === 'object' && selectedElement.content
+                    ? (selectedElement.content.src || '')
+                    : ''
+                }
+                onChange={(value) => handleContentPropertyChange('src', value)}
+                onImageData={(data) => {
+                  // Update alt text if provided
+                  if (data.alt) {
+                    handleContentPropertyChange('alt', data.alt);
+                  }
+                }}
+                placeholder="Click to upload or drag & drop"
+              />
+            </div>
+
+            <div className={styles.field}>
+              <label className={styles.fieldLabel}>Alt Text</label>
+              <input
+                type="text"
+                value={
+                  typeof selectedElement.content === 'object' && selectedElement.content
+                    ? (selectedElement.content.alt || '')
+                    : ''
+                }
+                onChange={e => handleContentPropertyChange('alt', e.target.value)}
+                className={styles.input}
+                placeholder="Describe the image for SEO and accessibility"
+              />
+            </div>
+
+            <div className={styles.fieldGroup}>
+              <div className={styles.field}>
+                <label className={styles.fieldLabel}>Object Fit</label>
+                <select
+                  value={selectedElement.styles?.objectFit || 'cover'}
+                  onChange={e => handleStyleChange('objectFit', e.target.value)}
+                  className={styles.select}
+                >
+                  <option value="cover">Cover</option>
+                  <option value="contain">Contain</option>
+                  <option value="fill">Fill</option>
+                  <option value="none">None</option>
+                  <option value="scale-down">Scale Down</option>
+                </select>
+              </div>
+              <div className={styles.field}>
+                <label className={styles.fieldLabel}>Aspect Ratio</label>
+                <select
+                  value={selectedElement.styles?.aspectRatio || 'auto'}
+                  onChange={e => handleStyleChange('aspectRatio', e.target.value)}
+                  className={styles.select}
+                >
+                  <option value="auto">Auto</option>
+                  <option value="1/1">1:1 (Square)</option>
+                  <option value="16/9">16:9 (Wide)</option>
+                  <option value="4/3">4:3 (Standard)</option>
+                  <option value="21/9">21:9 (Ultra Wide)</option>
+                </select>
+              </div>
             </div>
           </CollapsibleSection>
         )}

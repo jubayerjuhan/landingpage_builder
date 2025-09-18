@@ -4,10 +4,11 @@ import { v4 as uuidv4 } from 'uuid';
 export interface BuilderElement {
   id: string;
   type: string;
-  content: string;
+  content: string | Record<string, any>;
   parentId: string | null;
   order: number;
   styles?: Record<string, any>;
+  properties?: Record<string, any>;
 }
 
 interface BuilderStore {

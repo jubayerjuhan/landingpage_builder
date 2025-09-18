@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { GripVertical } from 'lucide-react';
 import { useBuilderStore } from '../../../../stores/builderStore';
+import { Image } from '../../../elements/Media/Image';
 import styles from './Element.module.scss';
 
 interface ElementProps {
@@ -376,27 +377,7 @@ export const Element: React.FC<ElementProps> = ({ element }) => {
         );
       
       case 'image':
-        return (
-          <div className={styles.imagePlaceholder} style={elementStyles}>
-            {element.imageUrl ? (
-              <img 
-                src={element.imageUrl} 
-                alt={element.altText || 'Image'}
-                className={styles.image}
-                style={{
-                  width: '100%',
-                  height: 'auto',
-                  borderRadius: elementStyles.borderRadius || '0'
-                }}
-              />
-            ) : (
-              <div className={styles.placeholderContent}>
-                <div className={styles.placeholderIcon}>🖼️</div>
-                <span>Click to upload image</span>
-              </div>
-            )}
-          </div>
-        );
+        return <Image element={element} />;
       
       case 'list':
         return renderListComponent();
