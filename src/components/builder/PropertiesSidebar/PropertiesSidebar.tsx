@@ -97,6 +97,17 @@ export const PropertiesSidebar: React.FC = () => {
     });
   };
 
+  const handleSpacingChange = (spacingProperty: string, value: string) => {
+    const currentProperties = selectedElement.properties || {};
+    const currentSpacing = currentProperties.spacing || {};
+    updateElement(selectedElement.id, {
+      properties: {
+        ...currentProperties,
+        spacing: { ...currentSpacing, [spacingProperty]: value }
+      }
+    });
+  };
+
   const handleDelete = () => {
     if (selectedElement) {
       deleteElement(selectedElement.id);
@@ -324,63 +335,82 @@ export const PropertiesSidebar: React.FC = () => {
         </CollapsibleSection>
 
         {/* Spacing Properties */}
-        <CollapsibleSection 
-          title="Spacing" 
+        <CollapsibleSection
+          title="Spacing"
           icon={<Ruler size={16} />}
         >
-          {/* Margin */}
-          <div className={styles.field}>
-            <label className={styles.fieldLabel}>Margin</label>
-            <div className={styles.spacingGrid}>
-              <div className={styles.field}>
-                <label className={styles.fieldLabel}>Top</label>
-                <input
-                  type="number"
-                  value={selectedElement.styles?.marginTop?.replace('px', '') || ''}
-                  onChange={(e) => handleStyleChange('marginTop', `${e.target.value}px`)}
-                  className={styles.input}
-                  placeholder="0"
-                />
-              </div>
-              <div className={styles.field}>
-                <label className={styles.fieldLabel}>Bottom</label>
-                <input
-                  type="number"
-                  value={selectedElement.styles?.marginBottom?.replace('px', '') || ''}
-                  onChange={(e) => handleStyleChange('marginBottom', `${e.target.value}px`)}
-                  className={styles.input}
-                  placeholder="0"
-                />
-              </div>
+          {/* For layout elements, show uniform padding control */}
+          {selectedElement.type === 'layout' && (
+            <div className={styles.field}>
+              <label className={styles.fieldLabel}>Padding</label>
+              <input
+                type="number"
+                value={selectedElement.properties?.spacing?.padding?.replace('px', '') || ''}
+                onChange={(e) => handleSpacingChange('padding', `${e.target.value}px`)}
+                className={styles.input}
+                placeholder="40"
+              />
             </div>
-          </div>
+          )}
 
-          {/* Padding */}
-          <div className={styles.field}>
-            <label className={styles.fieldLabel}>Padding</label>
-            <div className={styles.spacingGrid}>
+          {/* For non-layout elements, show detailed margin and padding controls */}
+          {selectedElement.type !== 'layout' && (
+            <>
+              {/* Margin */}
               <div className={styles.field}>
-                <label className={styles.fieldLabel}>Top</label>
-                <input
-                  type="number"
-                  value={selectedElement.styles?.paddingTop?.replace('px', '') || ''}
-                  onChange={(e) => handleStyleChange('paddingTop', `${e.target.value}px`)}
-                  className={styles.input}
-                  placeholder="0"
-                />
+                <label className={styles.fieldLabel}>Margin</label>
+                <div className={styles.spacingGrid}>
+                  <div className={styles.field}>
+                    <label className={styles.fieldLabel}>Top</label>
+                    <input
+                      type="number"
+                      value={selectedElement.properties?.spacing?.marginTop?.replace('px', '') || selectedElement.styles?.marginTop?.replace('px', '') || ''}
+                      onChange={(e) => handleSpacingChange('marginTop', `${e.target.value}px`)}
+                      className={styles.input}
+                      placeholder="0"
+                    />
+                  </div>
+                  <div className={styles.field}>
+                    <label className={styles.fieldLabel}>Bottom</label>
+                    <input
+                      type="number"
+                      value={selectedElement.properties?.spacing?.marginBottom?.replace('px', '') || selectedElement.styles?.marginBottom?.replace('px', '') || ''}
+                      onChange={(e) => handleSpacingChange('marginBottom', `${e.target.value}px`)}
+                      className={styles.input}
+                      placeholder="0"
+                    />
+                  </div>
+                </div>
               </div>
+
+              {/* Padding */}
               <div className={styles.field}>
-                <label className={styles.fieldLabel}>Bottom</label>
-                <input
-                  type="number"
-                  value={selectedElement.styles?.paddingBottom?.replace('px', '') || ''}
-                  onChange={(e) => handleStyleChange('paddingBottom', `${e.target.value}px`)}
-                  className={styles.input}
-                  placeholder="0"
-                />
+                <label className={styles.fieldLabel}>Padding</label>
+                <div className={styles.spacingGrid}>
+                  <div className={styles.field}>
+                    <label className={styles.fieldLabel}>Top</label>
+                    <input
+                      type="number"
+                      value={selectedElement.properties?.spacing?.paddingTop?.replace('px', '') || selectedElement.styles?.paddingTop?.replace('px', '') || ''}
+                      onChange={(e) => handleSpacingChange('paddingTop', `${e.target.value}px`)}
+                      className={styles.input}
+                      placeholder="0"
+                    />
+                  </div>
+                  <div className={styles.field}>
+                    <label className={styles.fieldLabel}>Bottom</label>
+                    <input
+                      type="number"
+                      value={selectedElement.properties?.spacing?.paddingBottom?.replace('px', '') || selectedElement.styles?.paddingBottom?.replace('px', '') || ''}
+                      onChange={(e) => handleSpacingChange('paddingBottom', `${e.target.value}px`)}
+                      className={styles.input}
+                      placeholder="0"
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+            </>
+          )}
         </CollapsibleSection>
 
         {/* Style Properties */}

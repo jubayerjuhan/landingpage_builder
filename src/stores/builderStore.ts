@@ -108,8 +108,12 @@ export const useBuilderStore = create<BuilderStore>((set, get) => ({
       parentId: null,
       order: newOrder,
       styles: {
-        padding: '40px',
         backgroundColor: 'transparent'
+      },
+      properties: {
+        spacing: {
+          padding: '40px'
+        }
       }
     };
 

@@ -11,7 +11,7 @@ interface ContainerProps {
 export const Container: React.FC<ContainerProps> = ({ element, children }) => {
   const { viewportMode } = useCanvasStore();
   const styles = getElementStyles(element, viewportMode);
-  
+
   const containerStyles: React.CSSProperties = {
     display: 'flex',
     flexDirection: 'column',
@@ -21,21 +21,23 @@ export const Container: React.FC<ContainerProps> = ({ element, children }) => {
     position: 'relative',
     ...styles,
   };
-  
+
   return (
     <div style={containerStyles} data-element-id={element.id} data-element-type={element.type}>
       {children || (
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '60px',
-          color: '#9ca3af',
-          fontSize: '14px',
-          border: '2px dashed #e5e7eb',
-          borderRadius: '8px',
-          padding: '20px'
-        }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: '60px',
+            color: '#9ca3af',
+            fontSize: '14px',
+            border: '2px dashed #e5e7eb',
+            borderRadius: '8px',
+            padding: '20px',
+          }}
+        >
           Drop components here
         </div>
       )}
