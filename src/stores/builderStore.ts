@@ -115,7 +115,11 @@ export const useBuilderStore = create<BuilderStore>((set, get) => ({
           paddingTop: '40px',
           paddingRight: '40px',
           paddingBottom: '40px',
-          paddingLeft: '40px'
+          paddingLeft: '40px',
+          marginTop: '0px',
+          marginRight: '0px',
+          marginBottom: '0px',
+          marginLeft: '0px'
         }
       }
     };

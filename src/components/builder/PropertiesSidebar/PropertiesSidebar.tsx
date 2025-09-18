@@ -200,11 +200,27 @@ export const PropertiesSidebar: React.FC = () => {
 
   const getMarginValues = (): SpacingValues => {
     const spacing = selectedElement.properties?.spacing;
+
+    // Check if any individual margin values exist
+    const hasIndividualValues = spacing?.marginTop || spacing?.marginRight ||
+                                spacing?.marginBottom || spacing?.marginLeft;
+
+    // If no individual values exist, use general margin as fallback for all sides
+    // Otherwise, use individual values with '0px' as fallback
+    if (!hasIndividualValues && spacing?.margin) {
+      return {
+        top: spacing.margin,
+        right: spacing.margin,
+        bottom: spacing.margin,
+        left: spacing.margin,
+      };
+    }
+
     return {
-      top: spacing?.marginTop || spacing?.margin || '0px',
-      right: spacing?.marginRight || spacing?.margin || '0px',
-      bottom: spacing?.marginBottom || spacing?.margin || '0px',
-      left: spacing?.marginLeft || spacing?.margin || '0px',
+      top: spacing?.marginTop || '0px',
+      right: spacing?.marginRight || '0px',
+      bottom: spacing?.marginBottom || '0px',
+      left: spacing?.marginLeft || '0px',
     };
   };
 
@@ -412,15 +428,13 @@ export const PropertiesSidebar: React.FC = () => {
             type="padding"
           />
 
-          {/* Margin Control - Show for non-layout elements */}
-          {selectedElement.type !== 'layout' && (
-            <SpacingControl
-              label="Margin"
-              values={getMarginValues()}
-              onChange={values => handleSpacingControlChange('margin', values)}
-              type="margin"
-            />
-          )}
+          {/* Margin Control */}
+          <SpacingControl
+            label="Margin"
+            values={getMarginValues()}
+            onChange={values => handleSpacingControlChange('margin', values)}
+            type="margin"
+          />
         </CollapsibleSection>
 
         {/* Style Properties */}
