@@ -25,6 +25,15 @@
   }
 }
 
+.noOutline {
+  outline: none !important;
+
+  &:hover {
+    outline: none !important;
+    outline-offset: 0 !important;
+  }
+}
+
 .editableContent {
   min-height: 1.5em;
   outline: none;

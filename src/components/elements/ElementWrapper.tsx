@@ -1,6 +1,6 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import type { BuilderElement } from '../../types/builder';
-import useElementStore from '../../stores/elementStore';
+import { useBuilderStore } from '../../stores/builderStore';
 import useCanvasStore from '../../stores/canvasStore';
 import { DragHandle } from '../builder/DragHandle';
 import { ResizeHandles } from '../builder/ResizeHandles';
@@ -10,57 +10,60 @@ interface ElementWrapperProps {
   element: BuilderElement;
   children: React.ReactNode;
   className?: string;
+  showSelectionChrome?: boolean;
 }
 
 export const ElementWrapper: React.FC<ElementWrapperProps> = ({
   element,
   children,
   className = '',
+  showSelectionChrome = true,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  
-  const { selectedElementIds, hoveredElementId, selectElement, setHoveredElement } =
-    useElementStore();
+  const [isHovered, setIsHovered] = useState(false);
+
+  const { selectedElementId, selectElement, isPreviewMode } = useBuilderStore();
   const { previewMode } = useCanvasStore();
 
-  const isSelected = selectedElementIds.includes(element.id) && element.id.length > 0;
-  const isHovered = hoveredElementId === element.id;
-  const isPreviewMode = previewMode === 'preview';
-  const isTextElement = ['heading', 'paragraph', 'text'].includes(element.type);
+  const isSelected = selectedElementId === element.id;
+  const isPreview = isPreviewMode || previewMode === 'preview';
+  const isTextElement = ['heading', 'paragraph', 'text', 'image'].includes(element.type);
+
+  // Defensive check: ensure we have proper selection state
+  const shouldShowChrome = showSelectionChrome && !isPreview;
+  const shouldShowSelectedOutline = !isPreview && isSelected;
+  const shouldShowHoverOutline = shouldShowChrome && isHovered && !isSelected;
+  const shouldShowLabel = shouldShowChrome && isSelected && Boolean(selectedElementId);
 
   const handleClick = (e: React.MouseEvent) => {
-    if (isPreviewMode) return;
+    if (isPreview) return;
+    e.stopPropagation(); // Prevent parent elements from handling this click
     // Don't interfere with double-click for text editing
     if (e.detail >= 2 && isTextElement) {
-      e.stopPropagation();
       return;
     }
     // Only handle single clicks
     if (e.detail === 1) {
-      selectElement(element.id, e.metaKey || e.ctrlKey);
+      selectElement(element.id);
     }
   };
 
-  const handleMouseEnter = (e: React.MouseEvent) => {
-    if (isPreviewMode) return;
-    e.stopPropagation();
-    setHoveredElement(element.id);
+  const handleMouseEnter = () => {
+    if (isPreview) return;
+    setIsHovered(true);
   };
 
-  const handleMouseLeave = (e: React.MouseEvent) => {
-    if (isPreviewMode) return;
-    e.stopPropagation();
-    if (hoveredElementId === element.id) {
-      setHoveredElement(null);
-    }
+  const handleMouseLeave = () => {
+    if (isPreview) return;
+    setIsHovered(false);
   };
 
   // Base wrapper styles
   const wrapperClasses = [
     styles.elementWrapper,
     className,
-    isSelected ? styles.selected : '',
-    isHovered ? styles.hovered : '',
+    shouldShowChrome && isSelected ? styles.selected : '',
+    shouldShowChrome && isHovered ? styles.hovered : '',
     `element-${element.type}`
   ].filter(Boolean).join(' ');
 
@@ -70,14 +73,13 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
     display: 'block',
     width: '100%',
     transition: 'all 0.2s ease',
-    cursor: isPreviewMode ? 'default' : 'pointer',
+    cursor: isPreview ? 'default' : 'pointer',
     borderRadius: '4px',
-    ...(isSelected ? {
+    ...(shouldShowSelectedOutline ? {
       outline: '2px solid #5457ff',
       outlineOffset: '1px',
-      background: 'rgba(84, 87, 255, 0.05)',
     } : {}),
-    ...(isHovered && !isSelected ? {
+    ...(shouldShowHoverOutline ? {
       outline: '2px solid rgba(84, 87, 255, 0.3)',
       outlineOffset: '1px',
       background: 'rgba(84, 87, 255, 0.02)'
@@ -85,8 +87,8 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
   };
 
   // Determine if we should show editing UI
-  const showDragHandle = !isPreviewMode && (isSelected || isHovered);
-  const showResizeHandles = !isPreviewMode && isSelected && !isTextElement;
+  const showDragHandle = shouldShowLabel;
+  const showResizeHandles = shouldShowLabel && !isTextElement;
 
   return (
     <div
@@ -100,13 +102,15 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
       data-element-type={element.type}
     >
       {/* Drag Handle */}
-      <DragHandle
-        element={element}
-        isVisible={showDragHandle}
-      />
-      
+      {shouldShowChrome && (
+        <DragHandle
+          element={element}
+          isVisible={showDragHandle}
+        />
+      )}
+
       {/* Resize Handles for non-text elements */}
-      {showResizeHandles && (
+      {shouldShowChrome && showResizeHandles && (
         <ResizeHandles
           element={element}
           isVisible={showResizeHandles}
@@ -118,8 +122,8 @@ export const ElementWrapper: React.FC<ElementWrapperProps> = ({
       {children}
 
       {/* Element label */}
-      {(isSelected || isHovered) && (
-        <div 
+      {shouldShowLabel && (
+        <div
           className={styles.elementLabel}
           style={{
             position: 'absolute',

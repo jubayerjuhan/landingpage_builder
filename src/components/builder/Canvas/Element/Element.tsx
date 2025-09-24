@@ -664,9 +664,17 @@ export const Element: React.FC<ElementProps> = ({ element }) => {
     opacity: isDragging ? 0.8 : 1
   } : undefined;
 
+  const elementClasses = [
+    styles.element,
+    isSelected && !isPreviewMode && element.type !== 'image' ? styles.selected : '',
+    isDragging ? styles.dragging : '',
+    isPreviewMode ? styles.previewMode : '',
+    element.type === 'image' ? styles.noOutline : '',
+  ].filter(Boolean).join(' ');
+
   return (
     <div
-      className={`${styles.element} ${isSelected && !isPreviewMode ? styles.selected : ''} ${isDragging ? styles.dragging : ''} ${isPreviewMode ? styles.previewMode : ''}`}
+      className={elementClasses}
       style={dragStyle}
       onClick={handleClick}
       onDoubleClick={handleDoubleClick}

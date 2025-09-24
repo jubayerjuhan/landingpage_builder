@@ -113,10 +113,10 @@ export const useBuilderStore = create<BuilderStore>((set, get) => ({
       },
       properties: {
         spacing: {
-          paddingTop: '40px',
-          paddingRight: '40px',
-          paddingBottom: '40px',
-          paddingLeft: '40px',
+          paddingTop: '20px',
+          paddingRight: '20px',
+          paddingBottom: '20px',
+          paddingLeft: '20px',
           marginTop: '0px',
           marginRight: '0px',
           marginBottom: '0px',

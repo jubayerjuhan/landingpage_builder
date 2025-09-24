@@ -89,7 +89,7 @@ export const Image: React.FC<ImageProps> = ({ element }) => {
 
   if (!hasImage) {
     return (
-      <ElementWrapper element={element}>
+      <ElementWrapper element={element} showSelectionChrome={false}>
         <div
           style={placeholderStyles}
           onClick={handleClick}
@@ -119,7 +119,7 @@ export const Image: React.FC<ImageProps> = ({ element }) => {
   }
 
   return (
-    <ElementWrapper element={element}>
+    <ElementWrapper element={element} showSelectionChrome={false}>
       <img
         src={src}
         alt={alt}
