@@ -280,6 +280,27 @@
   }
 }
 
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-3;
+  font-size: $font-sm;
+  color: $text-secondary;
+
+  input[type='checkbox'] {
+    width: 18px;
+    height: 18px;
+    accent-color: $primary;
+  }
+}
+
+.helperText {
+  margin-top: $space-1;
+  font-size: $font-xs;
+  color: $text-tertiary;
+}
+
 .fieldGroup {
   display: grid;
   grid-template-columns: 1fr 1fr;

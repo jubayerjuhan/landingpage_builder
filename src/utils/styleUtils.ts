@@ -1,4 +1,4 @@
-import type { BuilderElement, ViewportMode, ComponentProperties } from '../types/builder';
+import type { BuilderElement, ViewportMode } from '../types/builder';
 
 /**
  * Converts BuilderElement properties and styles to CSS styles for a given viewport
@@ -130,6 +130,7 @@ export const getElementContent = (element: BuilderElement) => {
     text: typeof element.content === 'string' ? element.content : (element.properties?.content?.text || contentObj.text || ''),
     html: element.properties?.content?.html || contentObj.html || '',
     src: element.properties?.content?.src || contentObj.src || '',
+    poster: element.properties?.content?.poster || contentObj.poster || '',
     alt: element.properties?.content?.alt || contentObj.alt || '',
     href: element.properties?.content?.href || contentObj.href || '',
     target: element.properties?.content?.target || contentObj.target || '_self',

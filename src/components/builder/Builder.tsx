@@ -62,11 +62,54 @@ export const Builder: React.FC = () => {
 
     if (!over) return;
 
+    const buildElementPayload = (elementType: string, parentId: string | null) => {
+      if (elementType === 'video') {
+        return {
+          type: elementType,
+          content: {
+            src: '',
+            poster: '',
+            title: ''
+          },
+          parentId,
+          properties: {
+            content: {
+              src: '',
+              poster: '',
+              title: ''
+            },
+            component: {
+              controls: true,
+              autoplay: false,
+              muted: true,
+              loop: false
+            }
+          },
+          styles: {
+            width: '100%',
+            maxWidth: '100%',
+            borderRadius: '8px',
+            overflow: 'hidden'
+          }
+        };
+      }
+
+      const defaultContent = elementType === 'heading' ? 'Your Heading Here'
+        : elementType === 'paragraph' ? 'Your paragraph text here'
+        : 'Your text here';
+
+      return {
+        type: elementType,
+        content: defaultContent,
+        parentId
+      };
+    };
+
     if (active.data.current?.type) {
       const elementType = active.data.current.type;
       const targetId = over.id as string;
       const activeId = active.id as string;
-      
+
       // Handle existing element movement
       if (elementType === 'existing-element') {
         const element = active.data.current.element;
@@ -125,17 +168,11 @@ export const Builder: React.FC = () => {
         const targetElement = elements.find(el => el.id === targetElementId);
         
         if (targetElement) {
-          const newElement = {
-            type: elementType,
-            content: elementType === 'heading' ? 'Your Heading Here' : 
-                     elementType === 'paragraph' ? 'Your paragraph text here' : 
-                     'Your text here',
-            parentId: targetElement.parentId
-          };
-          
+          const newElement = buildElementPayload(elementType, targetElement.parentId ?? null);
+
           // Add new element to the column
           const newElementId = addElement(newElement);
-          
+
           // Then reorder it to the desired position
           if (newElementId) {
             setTimeout(() => {
@@ -146,15 +183,10 @@ export const Builder: React.FC = () => {
         }
         return;
       }
-      
+
       // Handle dropping directly on column
-      const newElement = {
-        type: elementType,
-        content: elementType === 'heading' ? 'Your Heading Here' : 
-                 elementType === 'paragraph' ? 'Your paragraph text here' : 
-                 'Your text here',
-        parentId: targetId.startsWith('column-') ? targetId.replace('column-', '') : null
-      };
+      const newParentId = targetId.startsWith('column-') ? targetId.replace('column-', '') : null;
+      const newElement = buildElementPayload(elementType, newParentId);
 
       addElement(newElement);
     }

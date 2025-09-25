@@ -1,13 +1,29 @@
 import React, { useState } from 'react';
-import { Save, Eye, EyeOff, Undo, Redo, Monitor, Tablet, Smartphone, Zap, Settings } from 'lucide-react';
+import { Save, Eye, EyeOff, Undo, Redo, Monitor, Tablet, Smartphone, Zap, Settings, Download } from 'lucide-react';
 import { useBuilderStore } from '../../../stores/builderStore';
+import { buildHtmlDocumentFromElements } from '../../../utils/export/componentExport';
+import { ComponentType } from '../../../types/builder';
+import type { BuilderElement as ExportBuilderElement, ComponentProperties, ResponsiveStyleObject } from '../../../types/builder';
 import styles from './TopBar.module.scss';
 
 type Viewport = 'desktop' | 'tablet' | 'mobile';
 
+const buildResponsiveStyles = (styles?: Record<string, unknown>): ResponsiveStyleObject => ({
+  desktop: (styles?.desktop ?? styles ?? {}) as React.CSSProperties,
+  tablet: (styles?.tablet ?? {}) as React.CSSProperties,
+  mobile: (styles?.mobile ?? {}) as React.CSSProperties,
+});
+
+const ensureContentObject = (value: unknown): Record<string, unknown> => {
+  if (value && typeof value === 'object') {
+    return value as Record<string, unknown>;
+  }
+  return {};
+};
+
 export const TopBar: React.FC = () => {
   const [currentViewport, setCurrentViewport] = useState<Viewport>('desktop');
-  const { isPreviewMode, togglePreviewMode } = useBuilderStore();
+  const { isPreviewMode, togglePreviewMode, elements } = useBuilderStore();
 
   const viewports = [
     { id: 'desktop' as Viewport, label: 'Desktop', icon: Monitor },
@@ -43,6 +59,52 @@ export const TopBar: React.FC = () => {
   const handlePublish = () => {
     // TODO: Implement publish functionality
     console.log('Publishing...');
+  };
+
+  const handleExport = () => {
+    const exportableElements = [...elements]
+      .filter(element => element.type === 'video')
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+    if (exportableElements.length === 0) {
+      window.alert('Add a video to the canvas before exporting to HTML.');
+      return;
+    }
+
+    const normalizedElements: ExportBuilderElement[] = exportableElements.map(element => {
+      const properties: ComponentProperties = {
+        ...(element.properties as ComponentProperties | undefined),
+      };
+
+      const contentObject = ensureContentObject(element.content);
+      if (!properties.content) {
+        properties.content = contentObject;
+      } else {
+        properties.content = {
+          ...properties.content,
+          ...contentObject,
+        };
+      }
+
+      return {
+        id: element.id,
+        type: element.type as ComponentType,
+        content: contentObject,
+        properties,
+        styles: buildResponsiveStyles(element.styles as Record<string, unknown> | undefined),
+      } as ExportBuilderElement;
+    });
+
+    const htmlDocument = buildHtmlDocumentFromElements(normalizedElements);
+    const blob = new Blob([htmlDocument], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = 'landing-page.html';
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -121,6 +183,15 @@ export const TopBar: React.FC = () => {
           >
             <Save size={16} />
             <span>Save</span>
+          </button>
+          
+          <button 
+            className={styles.button}
+            onClick={handleExport}
+            title="Export to HTML"
+          >
+            <Download size={16} />
+            <span>Export</span>
           </button>
           
           <button 

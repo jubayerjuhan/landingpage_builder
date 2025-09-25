@@ -17,6 +17,7 @@ import {
   Bold,
   Italic,
   Underline,
+  Play,
   Image as ImageIcon,
 } from 'lucide-react';
 import { useBuilderStore } from '../../../stores/builderStore';
@@ -94,7 +95,26 @@ export const PropertiesSidebar: React.FC = () => {
     const newContent = { ...currentContent, [property]: value };
 
     updateElement(selectedElement.id, {
-      content: newContent
+      content: newContent,
+      properties: {
+        ...selectedElement.properties,
+        content: {
+          ...(selectedElement.properties?.content || {}),
+          [property]: value
+        }
+      }
+    });
+  };
+
+  const handleComponentPropertyChange = (property: string, value: any) => {
+    updateElement(selectedElement.id, {
+      properties: {
+        ...selectedElement.properties,
+        component: {
+          ...(selectedElement.properties?.component || {}),
+          [property]: value
+        }
+      }
     });
   };
 
@@ -355,6 +375,106 @@ export const PropertiesSidebar: React.FC = () => {
             </div>
           </CollapsibleSection>
         )}
+
+        {/* Video Properties */}
+        {selectedElement.type === 'video' && (() => {
+          const contentObj = (typeof selectedElement.content === 'object' && selectedElement.content)
+            ? (selectedElement.content as Record<string, unknown>)
+            : ((selectedElement.properties?.content as Record<string, unknown>) || {});
+          const componentProps = (selectedElement.properties?.component as Record<string, unknown>) || {};
+
+          const stringValue = (value: unknown) => (typeof value === 'string' ? value : '');
+          const booleanValue = (value: unknown, fallback: boolean) => (typeof value === 'boolean' ? value : fallback);
+
+          const controlsEnabled = booleanValue(componentProps.controls, true);
+          const autoplayEnabled = booleanValue(componentProps.autoplay, false);
+          const mutedEnabled = booleanValue(componentProps.muted, true);
+          const loopEnabled = booleanValue(componentProps.loop, false);
+
+          return (
+            <CollapsibleSection title="Video" icon={<Play size={16} />}>
+              <div className={styles.field}>
+                <label className={styles.fieldLabel}>Video URL</label>
+                <input
+                  type="url"
+                  value={stringValue(contentObj.src)}
+                  onChange={e => handleContentPropertyChange('src', e.target.value)}
+                  className={styles.input}
+                  placeholder="https://example.com/video.mp4 or YouTube/Vimeo URL"
+                />
+              </div>
+
+              <div className={styles.field}>
+                <label className={styles.fieldLabel}>Poster Image</label>
+                <input
+                  type="url"
+                  value={stringValue(contentObj.poster)}
+                  onChange={e => handleContentPropertyChange('poster', e.target.value)}
+                  className={styles.input}
+                  placeholder="Optional cover image shown before playback"
+                />
+              </div>
+
+              <div className={styles.field}>
+                <label className={styles.fieldLabel}>Video Title</label>
+                <input
+                  type="text"
+                  value={stringValue(contentObj.title)}
+                  onChange={e => handleContentPropertyChange('title', e.target.value)}
+                  className={styles.input}
+                  placeholder="Used for accessibility and export markup"
+                />
+              </div>
+
+              <div className={styles.field}>
+                <label className={styles.checkboxLabel}>
+                  <span>Show Controls</span>
+                  <input
+                    type="checkbox"
+                    checked={controlsEnabled}
+                    onChange={e => handleComponentPropertyChange('controls', e.target.checked)}
+                  />
+                </label>
+              </div>
+
+              <div className={styles.field}>
+                <label className={styles.checkboxLabel}>
+                  <span>Autoplay</span>
+                  <input
+                    type="checkbox"
+                    checked={autoplayEnabled}
+                    onChange={e => handleComponentPropertyChange('autoplay', e.target.checked)}
+                  />
+                </label>
+                <div className={styles.helperText}>
+                  Browsers require muted autoplay; audio stays muted in the editor.
+                </div>
+              </div>
+
+              <div className={styles.field}>
+                <label className={styles.checkboxLabel}>
+                  <span>Start Muted</span>
+                  <input
+                    type="checkbox"
+                    checked={mutedEnabled}
+                    onChange={e => handleComponentPropertyChange('muted', e.target.checked)}
+                  />
+                </label>
+              </div>
+
+              <div className={styles.field}>
+                <label className={styles.checkboxLabel}>
+                  <span>Loop Video</span>
+                  <input
+                    type="checkbox"
+                    checked={loopEnabled}
+                    onChange={e => handleComponentPropertyChange('loop', e.target.checked)}
+                  />
+                </label>
+              </div>
+            </CollapsibleSection>
+          );
+        })()}
 
         {/* Typography Properties */}
         {['heading', 'paragraph', 'text', 'button'].includes(selectedElement.type) && (

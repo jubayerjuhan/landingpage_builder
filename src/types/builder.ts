@@ -6,7 +6,7 @@ import type { ReactNode } from 'react';
 export interface BuilderElement {
   id: string;
   type: ComponentType;
-  content?: string;
+  content?: string | Record<string, any>;
   properties: ComponentProperties;
   styles: ResponsiveStyleObject;
   children?: BuilderElement[];
@@ -80,6 +80,7 @@ export interface ComponentProperties {
     placeholder?: string;
     alt?: string;
     src?: string;
+    poster?: string;
     href?: string;
     target?: '_blank' | '_self' | '_parent' | '_top';
     title?: string;
@@ -347,6 +348,15 @@ export interface ComponentDefinition {
   acceptsChildren?: ComponentType[];
   canBeChildOf?: ComponentType[];
   previewImage?: string;
+  exportConfig?: ComponentExportConfig;
+}
+
+export interface ComponentExportConfig {
+  html: (element: BuilderElement) => string;
+  assets?: {
+    scripts?: string[];
+    styles?: string[];
+  };
 }
 
 export enum ComponentCategory {

@@ -335,6 +335,20 @@
   }
 }
 
+.vidstackPlayer {
+  width: 100%;
+  height: 100%;
+
+  :global(media-player) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+}
+
 .video {
   width: 100%;
   height: auto;

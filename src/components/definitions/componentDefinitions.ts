@@ -42,6 +42,16 @@ import {
   PropertyFieldType,
   ViewportMode
 } from '../../types/builder';
+import {
+  buildVidstackHtml,
+  getVideoConfigFromElement,
+  VIDSTACK_CDN_DEFAULT_LAYOUT_SCRIPT,
+  VIDSTACK_CDN_DEFAULT_LAYOUT_STYLE,
+  VIDSTACK_CDN_VIMEO_PROVIDER,
+  VIDSTACK_CDN_YOUTUBE_PROVIDER,
+  VIDSTACK_CDN_SCRIPT,
+  VIDSTACK_CDN_STYLE
+} from '../../utils/video';
 
 // Component category definitions
 export const COMPONENT_CATEGORIES: Record<ComponentCategory, ComponentCategoryInfo> = {
@@ -700,13 +710,97 @@ export const COMPONENT_DEFINITIONS: Record<ComponentType, ComponentDefinition> =
     canHaveChildren: false,
     defaultProps: {
       type: ComponentType.VIDEO,
-      content: '',
-      properties: {},
+      content: {
+        src: '',
+        poster: '',
+        title: ''
+      },
+      properties: {
+        content: {
+          src: '',
+          poster: '',
+          title: ''
+        },
+        component: {
+          controls: true,
+          autoplay: false,
+          muted: true,
+          loop: false
+        }
+      },
       styles: {
-        [ViewportMode.DESKTOP]: {}
+        [ViewportMode.DESKTOP]: {
+          width: '100%',
+          maxWidth: '100%',
+          borderRadius: '8px',
+          overflow: 'hidden'
+        }
       }
     },
-    propertySchema: baseContentProperties
+    propertySchema: {
+      video: {
+        label: 'Video',
+        icon: Play,
+        order: 1,
+        fields: {
+          src: {
+            type: PropertyFieldType.URL,
+            label: 'Video Source',
+            placeholder: 'https://example.com/video.mp4'
+          },
+          poster: {
+            type: PropertyFieldType.URL,
+            label: 'Poster Image',
+            placeholder: 'https://example.com/poster.jpg'
+          },
+          title: {
+            type: PropertyFieldType.TEXT,
+            label: 'Video Title',
+            placeholder: 'Optional title for accessibility'
+          }
+        }
+      },
+      playback: {
+        label: 'Playback',
+        icon: Settings,
+        order: 2,
+        fields: {
+          controls: {
+            type: PropertyFieldType.CHECKBOX,
+            label: 'Show Controls',
+            defaultValue: true
+          },
+          autoplay: {
+            type: PropertyFieldType.CHECKBOX,
+            label: 'Autoplay',
+            defaultValue: false
+          },
+          muted: {
+            type: PropertyFieldType.CHECKBOX,
+            label: 'Start Muted',
+            defaultValue: true
+          },
+          loop: {
+            type: PropertyFieldType.CHECKBOX,
+            label: 'Loop Video',
+            defaultValue: false
+          }
+        }
+      },
+      ...baseContentProperties
+    },
+    exportConfig: {
+      html: (element) => buildVidstackHtml(getVideoConfigFromElement(element)),
+      assets: {
+        scripts: [
+          VIDSTACK_CDN_SCRIPT,
+          VIDSTACK_CDN_DEFAULT_LAYOUT_SCRIPT,
+          VIDSTACK_CDN_YOUTUBE_PROVIDER,
+          VIDSTACK_CDN_VIMEO_PROVIDER
+        ],
+        styles: [VIDSTACK_CDN_STYLE, VIDSTACK_CDN_DEFAULT_LAYOUT_STYLE]
+      }
+    }
   },
 
   [ComponentType.ICON]: {

@@ -3,6 +3,8 @@ import { useDraggable } from '@dnd-kit/core';
 import { GripVertical } from 'lucide-react';
 import { useBuilderStore } from '../../../../stores/builderStore';
 import { Image } from '../../../elements/Media/Image';
+import { VidstackPlayer } from '../../../elements/Media/VidstackPlayer';
+import { getVideoConfigFromElement, hasVideoSource } from '../../../../utils/video';
 import styles from './Element.module.scss';
 
 interface ElementProps {
@@ -435,27 +437,23 @@ export const Element: React.FC<ElementProps> = ({ element }) => {
           </div>
         );
       
-      case 'video':
+      case 'video': {
+        const videoConfig = getVideoConfigFromElement(element);
+        const hasSource = hasVideoSource(videoConfig);
+
         return (
           <div className={styles.videoContainer} style={elementStyles}>
-            {element.videoUrl ? (
-              <video 
-                className={styles.video}
-                controls={element.showControls !== false}
-                autoPlay={element.autoplay === true}
-                loop={element.loop === true}
-                muted={element.muted === true}
-                poster={element.posterUrl}
-              >
-                <source src={element.videoUrl} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-            ) : element.embedUrl ? (
-              <iframe 
-                className={styles.videoEmbed}
-                src={element.embedUrl}
-                frameBorder="0"
-                allowFullScreen
+            {hasSource ? (
+              <VidstackPlayer
+                className={styles.vidstackPlayer}
+                src={videoConfig.source}
+                poster={videoConfig.poster}
+                title={videoConfig.title}
+                controls={videoConfig.controls}
+                autoPlay={isPreviewMode && videoConfig.autoplay}
+                muted={videoConfig.muted || (videoConfig.autoplay && !isPreviewMode)}
+                loop={videoConfig.loop}
+                disablePointerEvents={!isPreviewMode}
               />
             ) : (
               <div className={styles.placeholderContent}>
@@ -465,6 +463,7 @@ export const Element: React.FC<ElementProps> = ({ element }) => {
             )}
           </div>
         );
+      }
       
       case 'gallery':
         const galleryImages = element.images || [];
