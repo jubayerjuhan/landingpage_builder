@@ -56,6 +56,8 @@ export const Video: React.FC<VideoProps> = ({ element }) => {
           autoPlay={videoConfig.autoplay}
           muted={videoConfig.muted}
           loop={videoConfig.loop}
+          thumbnails={videoConfig.thumbnails}
+          textTracks={videoConfig.textTracks}
         />
       </div>
     </ElementWrapper>

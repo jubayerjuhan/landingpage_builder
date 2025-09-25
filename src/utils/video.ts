@@ -2,6 +2,15 @@ import type { BuilderElement } from '../types/builder';
 
 type ElementLike = BuilderElement | Record<string, unknown> | null | undefined;
 
+export interface VideoTextTrackConfig {
+  src: string;
+  kind?: string;
+  label?: string;
+  language?: string;
+  type?: string;
+  default?: boolean;
+}
+
 export interface VideoConfig {
   src: string;
   source: string | { src: string; type?: string };
@@ -11,6 +20,8 @@ export interface VideoConfig {
   controls: boolean;
   muted: boolean;
   loop: boolean;
+  thumbnails?: string;
+  textTracks: VideoTextTrackConfig[];
 }
 
 const normalizeBoolean = (value: unknown, fallback: boolean): boolean => {
@@ -149,6 +160,19 @@ export const getVideoConfigFromElement = (element: BuilderElement | Record<strin
     false
   );
 
+  const thumbnails = toStringOrEmpty(
+    componentProps.thumbnails ??
+      content.thumbnails ??
+      elementRecord.thumbnails
+  ).trim() || undefined;
+
+  const rawTracks = componentProps.textTracks ?? content.textTracks ?? elementRecord.textTracks;
+  const textTracks: VideoTextTrackConfig[] = Array.isArray(rawTracks)
+    ? rawTracks
+        .map((track) => normalizeTrack(track))
+        .filter((track): track is VideoTextTrackConfig => Boolean(track && track.src))
+    : [];
+
   return {
     src,
     source,
@@ -158,10 +182,31 @@ export const getVideoConfigFromElement = (element: BuilderElement | Record<strin
     controls,
     muted,
     loop,
+    thumbnails,
+    textTracks,
   };
 };
 
 export const hasVideoSource = (config: VideoConfig): boolean => Boolean(config.src);
+
+const normalizeTrack = (track: unknown): VideoTextTrackConfig | null => {
+  const asRecord = toRecord(track);
+  if (!asRecord) return null;
+
+  const src = toStringOrEmpty(asRecord.src).trim();
+  if (!src) return null;
+
+  const language = toStringOrEmpty(asRecord.language).trim();
+
+  return {
+    src,
+    kind: toStringOrEmpty(asRecord.kind).trim() || undefined,
+    label: toStringOrEmpty(asRecord.label).trim() || undefined,
+    language: language || undefined,
+    type: toStringOrEmpty(asRecord.type).trim() || undefined,
+    default: normalizeBoolean(asRecord.default, false),
+  };
+};
 
 const escapeHtmlAttribute = (value: string): string =>
   value
@@ -174,42 +219,64 @@ export const VIDSTACK_CDN_SCRIPT = 'https://cdn.vidstack.io/player/latest/vidsta
 export const VIDSTACK_CDN_STYLE = 'https://cdn.vidstack.io/player/latest/vidstack.css';
 export const VIDSTACK_CDN_DEFAULT_LAYOUT_SCRIPT = 'https://cdn.vidstack.io/player/latest/vidstack-layouts-default.js';
 export const VIDSTACK_CDN_DEFAULT_LAYOUT_STYLE = 'https://cdn.vidstack.io/player/latest/vidstack-layouts-default.css';
-export const VIDSTACK_CDN_YOUTUBE_PROVIDER = 'https://cdn.vidstack.io/player/latest/vidstack-youtube.js';
-export const VIDSTACK_CDN_VIMEO_PROVIDER = 'https://cdn.vidstack.io/player/latest/vidstack-vimeo.js';
 
 export const buildVidstackHtml = (config: VideoConfig): string => {
   if (!config.src) {
     return '';
   }
 
-  const source = typeof config.source === 'string' ? { src: config.source } : config.source;
-  if (!source?.src) {
+  const resolvedSource = typeof config.source === 'string' ? { src: config.source } : config.source;
+  if (!resolvedSource?.src) {
     return '';
   }
 
-  const providerType = source.type;
   const attributes = [
-    `src="${escapeHtmlAttribute(source.src)}"`,
+    `src="${escapeHtmlAttribute(config.src)}"`,
     config.poster ? `poster="${escapeHtmlAttribute(config.poster)}"` : '',
     config.title ? `title="${escapeHtmlAttribute(config.title)}"` : '',
+    'view-type="video"',
+    'stream-type="on-demand"',
+    'log-level="warn"',
+    'crossorigin="anonymous"',
+    'playsinline',
     config.autoplay ? 'autoplay' : '',
     config.muted ? 'muted' : '',
-    config.loop ? 'loop' : '',
-    'playsinline'
+    config.loop ? 'loop' : ''
   ].filter(Boolean);
 
-  const providerMarkup = providerType === 'video/youtube'
-    ? '  <youtube-provider></youtube-provider>'
-    : providerType === 'video/vimeo'
-      ? '  <vimeo-provider></vimeo-provider>'
-      : '';
+  const providerMarkup: string[] = ['  <media-provider>'];
+  if (config.poster) {
+    providerMarkup.push('    <media-poster class="vds-poster"></media-poster>');
+  }
+
+  const sourceAttributes = [
+    `src="${escapeHtmlAttribute(resolvedSource.src)}"`,
+    resolvedSource.type ? `type="${escapeHtmlAttribute(resolvedSource.type)}"` : ''
+  ].filter(Boolean);
+  providerMarkup.push(`    <source ${sourceAttributes.join(' ')} />`);
+
+  config.textTracks.forEach((track) => {
+    const trackAttributes = [
+      `src="${escapeHtmlAttribute(track.src)}"`,
+      track.kind ? `kind="${escapeHtmlAttribute(track.kind)}"` : '',
+      track.label ? `label="${escapeHtmlAttribute(track.label)}"` : '',
+      track.language ? `srclang="${escapeHtmlAttribute(track.language)}"` : '',
+      track.type ? `type="${escapeHtmlAttribute(track.type)}"` : '',
+      track.default ? 'default' : ''
+    ].filter(Boolean);
+    providerMarkup.push(`    <track ${trackAttributes.join(' ')} />`);
+  });
+  providerMarkup.push('  </media-provider>');
+
+  const layoutMarkup = config.controls !== false
+    ? `  <media-video-layout${config.thumbnails ? ` thumbnails="${escapeHtmlAttribute(config.thumbnails)}"` : ''}></media-video-layout>`
+    : '';
 
   return [
     `<media-player ${attributes.join(' ')}>`,
-    '  <media-provider></media-provider>',
-    providerMarkup,
+    ...providerMarkup,
+    layoutMarkup,
     '  <media-outlet></media-outlet>',
-    config.controls !== false ? '  <media-default-layout></media-default-layout>' : '',
     '</media-player>'
-  ].join('\n');
+  ].filter(Boolean).join('\n');
 };

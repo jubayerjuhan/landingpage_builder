@@ -47,8 +47,6 @@ import {
   getVideoConfigFromElement,
   VIDSTACK_CDN_DEFAULT_LAYOUT_SCRIPT,
   VIDSTACK_CDN_DEFAULT_LAYOUT_STYLE,
-  VIDSTACK_CDN_VIMEO_PROVIDER,
-  VIDSTACK_CDN_YOUTUBE_PROVIDER,
   VIDSTACK_CDN_SCRIPT,
   VIDSTACK_CDN_STYLE
 } from '../../utils/video';
@@ -717,15 +715,42 @@ export const COMPONENT_DEFINITIONS: Record<ComponentType, ComponentDefinition> =
       },
       properties: {
         content: {
-          src: '',
-          poster: '',
-          title: ''
+          src: 'https://files.vidstack.io/sprite-fight/720p.mp4',
+          poster: 'https://files.vidstack.io/sprite-fight/poster.webp',
+          title: 'Sprite Fight',
+          thumbnails: 'https://files.vidstack.io/sprite-fight/thumbnails.vtt'
         },
         component: {
           controls: true,
           autoplay: false,
           muted: true,
-          loop: false
+          loop: false,
+          thumbnails: 'https://files.vidstack.io/sprite-fight/thumbnails.vtt',
+          textTracks: [
+            {
+              src: 'https://files.vidstack.io/sprite-fight/subs/english.vtt',
+              label: 'English',
+              language: 'en-US',
+              kind: 'subtitles',
+              type: 'vtt',
+              default: true
+            },
+            {
+              src: 'https://files.vidstack.io/sprite-fight/subs/spanish.vtt',
+              label: 'Spanish',
+              language: 'es-ES',
+              kind: 'subtitles',
+              type: 'vtt'
+            },
+            {
+              src: 'https://files.vidstack.io/sprite-fight/chapters.vtt',
+              language: 'en-US',
+              kind: 'chapters',
+              type: 'vtt',
+              label: 'Chapters',
+              default: true
+            }
+          ]
         }
       },
       styles: {
@@ -752,6 +777,11 @@ export const COMPONENT_DEFINITIONS: Record<ComponentType, ComponentDefinition> =
             type: PropertyFieldType.URL,
             label: 'Poster Image',
             placeholder: 'https://example.com/poster.jpg'
+          },
+          thumbnails: {
+            type: PropertyFieldType.URL,
+            label: 'Thumbnail Sprite',
+            placeholder: 'https://example.com/thumbnails.vtt'
           },
           title: {
             type: PropertyFieldType.TEXT,
@@ -794,9 +824,7 @@ export const COMPONENT_DEFINITIONS: Record<ComponentType, ComponentDefinition> =
       assets: {
         scripts: [
           VIDSTACK_CDN_SCRIPT,
-          VIDSTACK_CDN_DEFAULT_LAYOUT_SCRIPT,
-          VIDSTACK_CDN_YOUTUBE_PROVIDER,
-          VIDSTACK_CDN_VIMEO_PROVIDER
+          VIDSTACK_CDN_DEFAULT_LAYOUT_SCRIPT
         ],
         styles: [VIDSTACK_CDN_STYLE, VIDSTACK_CDN_DEFAULT_LAYOUT_STYLE]
       }

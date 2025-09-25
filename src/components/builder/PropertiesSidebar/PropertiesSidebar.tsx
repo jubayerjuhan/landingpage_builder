@@ -416,6 +416,17 @@ export const PropertiesSidebar: React.FC = () => {
               </div>
 
               <div className={styles.field}>
+                <label className={styles.fieldLabel}>Thumbnails VTT</label>
+                <input
+                  type="url"
+                  value={stringValue(componentProps.thumbnails)}
+                  onChange={e => handleComponentPropertyChange('thumbnails', e.target.value)}
+                  className={styles.input}
+                  placeholder="Sprite sheet VTT for hover previews"
+                />
+              </div>
+
+              <div className={styles.field}>
                 <label className={styles.fieldLabel}>Video Title</label>
                 <input
                   type="text"

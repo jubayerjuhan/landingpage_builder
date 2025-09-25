@@ -453,6 +453,8 @@ export const Element: React.FC<ElementProps> = ({ element }) => {
                 autoPlay={isPreviewMode && videoConfig.autoplay}
                 muted={videoConfig.muted || (videoConfig.autoplay && !isPreviewMode)}
                 loop={videoConfig.loop}
+                thumbnails={videoConfig.thumbnails}
+                textTracks={videoConfig.textTracks}
                 disablePointerEvents={!isPreviewMode}
               />
             ) : (
