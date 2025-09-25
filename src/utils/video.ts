@@ -37,6 +37,26 @@ const toRecord = (value: unknown): Record<string, unknown> | undefined => {
   return undefined;
 };
 
+const inferMimeType = (src: string): string | undefined => {
+  const cleanSrc = src.split('?')[0].split('#')[0];
+  const extension = cleanSrc.slice(cleanSrc.lastIndexOf('.') + 1).toLowerCase();
+  switch (extension) {
+    case 'mp4':
+      return 'video/mp4';
+    case 'webm':
+      return 'video/webm';
+    case 'ogg':
+    case 'ogv':
+      return 'video/ogg';
+    case 'm3u8':
+      return 'application/x-mpegURL';
+    case 'mpd':
+      return 'application/dash+xml';
+    default:
+      return undefined;
+  }
+};
+
 const getContentObject = (element: ElementLike): Record<string, unknown> => {
   const asRecord = toRecord(element);
   if (!asRecord) return {};
@@ -87,11 +107,14 @@ export const getVideoConfigFromElement = (element: BuilderElement | Record<strin
   const lowerSrc = normalizedSrc.toLowerCase();
   const isYouTube = lowerSrc.includes('youtube.com/watch') || lowerSrc.includes('youtu.be/');
   const isVimeo = lowerSrc.includes('vimeo.com/');
+  const mimeType = inferMimeType(normalizedSrc);
   const source = isYouTube
     ? { src: normalizedSrc, type: 'video/youtube' }
     : isVimeo
       ? { src: normalizedSrc, type: 'video/vimeo' }
-      : normalizedSrc;
+      : mimeType
+        ? { src: normalizedSrc, type: mimeType }
+        : normalizedSrc;
 
   const poster = toStringOrEmpty(
     content.poster ??
