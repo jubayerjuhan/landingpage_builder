@@ -13,6 +13,27 @@ export const Link: React.FC<LinkProps> = ({ element }) => {
   const styles = getElementStyles(element, viewportMode);
   const content = getElementContent(element);
   
+  const normalizeHref = (raw?: string) => {
+    const trimmed = (raw || '').trim();
+    if (!trimmed) return '#';
+
+    const lower = trimmed.toLowerCase();
+    if (
+      lower.startsWith('http://') ||
+      lower.startsWith('https://') ||
+      lower.startsWith('mailto:') ||
+      lower.startsWith('tel:')
+    ) {
+      return trimmed;
+    }
+
+    if (trimmed.startsWith('#') || trimmed.startsWith('/')) {
+      return trimmed;
+    }
+
+    return `https://${trimmed}`;
+  };
+
   const linkStyles: React.CSSProperties = {
     color: '#3b82f6',
     textDecoration: 'underline',
@@ -22,7 +43,9 @@ export const Link: React.FC<LinkProps> = ({ element }) => {
   };
   
   const text = content.text || 'Link text';
-  const href = content.href || '#';
+  const href = normalizeHref(content.href);
+  const target = content.target || '_self';
+  const rel = target === '_blank' ? 'noopener noreferrer' : undefined;
   
   const handleClick = (e: React.MouseEvent) => {
     if (previewMode === 'edit') {
@@ -34,7 +57,8 @@ export const Link: React.FC<LinkProps> = ({ element }) => {
     <ElementWrapper element={element}>
       <a
         href={href}
-        target={content.target}
+        target={target}
+        rel={rel}
         style={linkStyles}
         onClick={handleClick}
         onMouseEnter={(e) => {

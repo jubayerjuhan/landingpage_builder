@@ -970,7 +970,13 @@ export const COMPONENT_DEFINITIONS: Record<ComponentType, ComponentDefinition> =
     defaultProps: {
       type: ComponentType.LINK,
       content: 'Link text',
-      properties: {},
+      properties: {
+        content: {
+          text: 'Link text',
+          href: '#',
+          target: '_self'
+        }
+      },
       styles: {
         [ViewportMode.DESKTOP]: {}
       }

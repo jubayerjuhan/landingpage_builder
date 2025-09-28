@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { GripVertical } from 'lucide-react';
 import { useBuilderStore } from '../../../../stores/builderStore';
@@ -25,6 +25,81 @@ export const Element: React.FC<ElementProps> = ({ element }) => {
   const { updateElement, selectedElementId, selectElement, isPreviewMode } = useBuilderStore();
 
   const isSelected = selectedElementId === element.id;
+
+  const buttonContent = useMemo(() => {
+    if (element.type !== 'button') {
+      return {
+        text: '',
+        href: '#',
+        target: '_self'
+      };
+    }
+
+    const rawContent = element.content;
+    const baseContent = (typeof rawContent === 'object' && rawContent !== null)
+      ? rawContent as Record<string, any>
+      : {};
+    const textFromRaw = typeof rawContent === 'string' ? rawContent : baseContent.text;
+    const contentProps = (element.properties?.content || {}) as Record<string, any>;
+
+    const text = (contentProps.text ?? textFromRaw ?? '') as string;
+    const href = (contentProps.href ?? baseContent.href ?? '#') as string;
+    const target = (contentProps.target ?? baseContent.target ?? '_self') as string;
+
+    return {
+      text: text || 'Click Me',
+      href,
+      target
+    };
+  }, [element.content, element.properties, element.type]);
+
+  const normalizeHref = (raw?: string) => {
+    const trimmed = (raw || '').trim();
+    if (!trimmed) return '#';
+
+    const lower = trimmed.toLowerCase();
+    if (
+      lower.startsWith('http://') ||
+      lower.startsWith('https://') ||
+      lower.startsWith('mailto:') ||
+      lower.startsWith('tel:')
+    ) {
+      return trimmed;
+    }
+
+    if (trimmed.startsWith('#') || trimmed.startsWith('/')) {
+      return trimmed;
+    }
+
+    return `https://${trimmed}`;
+  };
+
+  const linkContent = useMemo(() => {
+    if (element.type !== 'link') {
+      return {
+        text: '',
+        href: '#',
+        target: '_self'
+      };
+    }
+
+    const rawContent = element.content;
+    const baseContent = (typeof rawContent === 'object' && rawContent !== null)
+      ? rawContent as Record<string, any>
+      : {};
+    const textFromRaw = typeof rawContent === 'string' ? rawContent : baseContent.text;
+    const contentProps = (element.properties?.content || {}) as Record<string, any>;
+
+    const text = (contentProps.text ?? textFromRaw ?? '') as string;
+    const href = normalizeHref((contentProps.href ?? baseContent.href ?? '#') as string);
+    const target = (contentProps.target ?? baseContent.target ?? '_self') as string;
+
+    return {
+      text: text || 'Link text',
+      href,
+      target
+    };
+  }, [element.content, element.properties, element.type]);
 
   // Make element draggable
   const {
@@ -101,14 +176,14 @@ export const Element: React.FC<ElementProps> = ({ element }) => {
       }
       // Set content for button
       if (element.type === 'button' && buttonRef.current) {
-        buttonRef.current.textContent = element.content || 'Click Me';
+        buttonRef.current.textContent = buttonContent.text || 'Click Me';
       }
       // Set content for quote
       if (element.type === 'quote' && quoteRef.current) {
         quoteRef.current.textContent = element.content || 'This is a quote. Click to edit.';
       }
     }
-  }, [isSelected, element.type, element.content]);
+  }, [isSelected, element.type, element.content, buttonContent.text]);
 
   // Focus and select text when editing starts
   useEffect(() => {
@@ -349,34 +424,87 @@ export const Element: React.FC<ElementProps> = ({ element }) => {
           />
         );
       
-      case 'button':
-        return isSelected && !isPreviewMode ? (
-          <button 
-            ref={buttonRef}
-            className={styles.button} 
-            style={elementStyles}
-            contentEditable={true}
-            suppressContentEditableWarning
-            onBlur={(e) => {
-              const newContent = (e.target as HTMLElement).textContent || '';
-              updateElement(element.id, { content: newContent });
-            }}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                (e.target as HTMLElement).blur();
+      case 'button': {
+        const handleButtonBlur = (event: React.FocusEvent<HTMLButtonElement>) => {
+          const newText = (event.target as HTMLElement).textContent?.trim() || '';
+          const rawContent = element.content;
+          const baseContent = (typeof rawContent === 'object' && rawContent !== null)
+            ? rawContent as Record<string, any>
+            : { text: typeof rawContent === 'string' ? rawContent : undefined };
+
+          const nextContent = { ...baseContent, text: newText };
+          const existingProperties = (element.properties || {}) as Record<string, any>;
+
+          updateElement(element.id, {
+            content: nextContent,
+            properties: {
+              ...existingProperties,
+              content: {
+                ...(existingProperties.content || {}),
+                text: newText
               }
-            }}
-          />
-        ) : (
-          <button 
-            className={styles.button} 
-            style={elementStyles}
-            dangerouslySetInnerHTML={{ 
-              __html: element.content || 'Click Me' 
-            }}
-          />
+            }
+          });
+        };
+
+        const preventNavigationIfEditing = (event: React.MouseEvent<HTMLAnchorElement>) => {
+          if (!isPreviewMode) {
+            event.preventDefault();
+          }
+        };
+
+        if (isSelected && !isPreviewMode) {
+          return (
+            <button
+              ref={buttonRef}
+              className={styles.button}
+              style={elementStyles}
+              type="button"
+              contentEditable={true}
+              suppressContentEditableWarning
+              onBlur={handleButtonBlur}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  (e.target as HTMLElement).blur();
+                }
+              }}
+            >
+              {buttonContent.text}
+            </button>
+          );
+        }
+
+        const trimmedHref = buttonContent.href?.trim();
+        const hasNavigableHref = !!trimmedHref && trimmedHref !== '#';
+        const commonProps = {
+          className: styles.button,
+          style: elementStyles
+        } as const;
+
+        if (hasNavigableHref) {
+          return (
+            <a
+              {...commonProps}
+              href={trimmedHref}
+              target={buttonContent.target || '_self'}
+              rel={buttonContent.target === '_blank' ? 'noopener noreferrer' : undefined}
+              onClick={preventNavigationIfEditing}
+            >
+              {buttonContent.text}
+            </a>
+          );
+        }
+
+        return (
+          <button
+            {...commonProps}
+            type="button"
+          >
+            {buttonContent.text}
+          </button>
         );
+      }
       
       case 'image':
         return <Image element={element} />;
@@ -519,17 +647,30 @@ export const Element: React.FC<ElementProps> = ({ element }) => {
           </div>
         );
       
-      case 'link':
+      case 'link': {
+        const hrefValue = normalizeHref(linkContent.href);
+        const targetValue = linkContent.target || '_self';
+        const relValue = targetValue === '_blank' ? 'noopener noreferrer' : undefined;
+
+        const handleLinkClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+          if (!isPreviewMode) {
+            event.preventDefault();
+          }
+        };
+
         return (
-          <a 
-            href={element.url || '#'} 
-            className={styles.link} 
+          <a
+            href={hrefValue}
+            target={targetValue}
+            rel={relValue}
+            className={styles.link}
             style={elementStyles}
-            target={element.target || '_self'}
+            onClick={handleLinkClick}
           >
-            {element.content || 'Link text'}
+            {linkContent.text || 'Link text'}
           </a>
         );
+      }
       
       case 'accordion':
         const accordionItems = element.accordionItems || [

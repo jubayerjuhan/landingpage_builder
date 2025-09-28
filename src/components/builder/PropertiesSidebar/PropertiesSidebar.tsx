@@ -14,11 +14,9 @@ import {
   AlignLeft,
   AlignCenter,
   AlignRight,
-  Bold,
-  Italic,
-  Underline,
   Play,
   Image as ImageIcon,
+  MousePointer,
 } from 'lucide-react';
 import { useBuilderStore } from '../../../stores/builderStore';
 import { SpacingControl, type SpacingValues } from './SpacingControl';
@@ -31,6 +29,26 @@ interface CollapsibleSectionProps {
   children: React.ReactNode;
   defaultCollapsed?: boolean;
 }
+
+const TEXT_COMPONENT_TYPES: string[] = ['heading', 'paragraph', 'text', 'link'];
+const CONTENT_COMPONENT_TYPES: string[] = ['heading', 'paragraph', 'text', 'button', 'link'];
+const LAYOUT_COMPONENT_TYPES: string[] = ['layout', 'section', 'row', 'column', 'container'];
+
+const normalizeHref = (value: string): string => {
+  const trimmed = value.trim();
+  if (!trimmed) return '#';
+
+  const lower = trimmed.toLowerCase();
+  const hasProtocol = lower.startsWith('http://') || lower.startsWith('https://') || lower.startsWith('mailto:') || lower.startsWith('tel:');
+  const isAnchor = trimmed.startsWith('#');
+  const isRelativePath = trimmed.startsWith('/');
+
+  if (hasProtocol || isAnchor || isRelativePath) {
+    return trimmed;
+  }
+
+  return `https://${trimmed}`;
+};
 
 const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
   title,
@@ -83,8 +101,30 @@ export const PropertiesSidebar: React.FC = () => {
     );
   }
 
+  const isContentComponent = CONTENT_COMPONENT_TYPES.includes(selectedElement.type);
+  const isTextComponent = TEXT_COMPONENT_TYPES.includes(selectedElement.type);
+  const isLayoutComponent = LAYOUT_COMPONENT_TYPES.includes(selectedElement.type);
+
   const handlePropertyChange = (property: string, value: any) => {
-    updateElement(selectedElement.id, { [property]: value });
+    if (property === 'content' && (selectedElement.type === 'button' || selectedElement.type === 'link')) {
+      // For interactive text elements, keep content as object with text property
+      const currentContent = typeof selectedElement.content === 'object' && selectedElement.content
+        ? selectedElement.content
+        : {};
+
+      updateElement(selectedElement.id, {
+        content: { ...currentContent, text: value },
+        properties: {
+          ...selectedElement.properties,
+          content: {
+            ...(selectedElement.properties?.content || {}),
+            text: value
+          }
+        }
+      });
+    } else {
+      updateElement(selectedElement.id, { [property]: value });
+    }
   };
 
   const handleContentPropertyChange = (property: string, value: any) => {
@@ -92,7 +132,11 @@ export const PropertiesSidebar: React.FC = () => {
       ? selectedElement.content
       : {};
 
-    const newContent = { ...currentContent, [property]: value };
+    const newValue = property === 'href' && typeof value === 'string'
+      ? normalizeHref(value)
+      : value;
+
+    const newContent = { ...currentContent, [property]: newValue };
 
     updateElement(selectedElement.id, {
       content: newContent,
@@ -100,7 +144,7 @@ export const PropertiesSidebar: React.FC = () => {
         ...selectedElement.properties,
         content: {
           ...(selectedElement.properties?.content || {}),
-          [property]: value
+          [property]: newValue
         }
       }
     });
@@ -122,17 +166,6 @@ export const PropertiesSidebar: React.FC = () => {
     const currentStyles = selectedElement.styles || {};
     updateElement(selectedElement.id, {
       styles: { ...currentStyles, [styleProperty]: value },
-    });
-  };
-
-  const handleSpacingChange = (spacingProperty: string, value: string) => {
-    const currentProperties = selectedElement.properties || {};
-    const currentSpacing = currentProperties.spacing || {};
-    updateElement(selectedElement.id, {
-      properties: {
-        ...currentProperties,
-        spacing: { ...currentSpacing, [spacingProperty]: value },
-      },
     });
   };
 
@@ -292,16 +325,148 @@ export const PropertiesSidebar: React.FC = () => {
         </CollapsibleSection>
 
         {/* Content Properties */}
-        {['heading', 'paragraph', 'text', 'button'].includes(selectedElement.type) && (
+        {isContentComponent && (
           <CollapsibleSection title="Content" icon={<Type size={16} />}>
             <div className={styles.field}>
               <label className={styles.fieldLabel}>Text Content</label>
               <textarea
-                value={typeof selectedElement.content === 'string' ? selectedElement.content : selectedElement.content?.text || ''}
+                value={(() => {
+                  if (selectedElement.type === 'button') {
+                    if (typeof selectedElement.content === 'string') {
+                      return selectedElement.content;
+                    } else if (typeof selectedElement.content === 'object' && selectedElement.content) {
+                      return selectedElement.content.text || selectedElement.content.content || '';
+                    }
+                    return selectedElement.properties?.content?.text || '';
+                  }
+                  return typeof selectedElement.content === 'string' ? selectedElement.content : selectedElement.content?.text || '';
+                })()}
                 onChange={e => handlePropertyChange('content', e.target.value)}
                 className={styles.textarea}
                 placeholder="Enter your text here..."
               />
+            </div>
+            {/* Button-specific URL field */}
+            {selectedElement.type === 'button' && (
+              <div className={styles.field}>
+                <label className={styles.fieldLabel}>Link URL</label>
+                <input
+                  type="url"
+                  value={
+                    typeof selectedElement.content === 'object' && selectedElement.content
+                      ? (selectedElement.content.href || '')
+                      : ''
+                  }
+                  onChange={e => handleContentPropertyChange('href', e.target.value)}
+                  className={styles.input}
+                  placeholder="https://example.com"
+                />
+              </div>
+            )}
+
+            {/* Link-specific fields */}
+            {selectedElement.type === 'link' && (
+              <>
+                <div className={styles.field}>
+                  <label className={styles.fieldLabel}>Link URL</label>
+                  <input
+                    type="url"
+                    value={
+                      typeof selectedElement.content === 'object' && selectedElement.content
+                        ? (selectedElement.content.href || '')
+                        : selectedElement.properties?.content?.href || ''
+                    }
+                    onChange={e => handleContentPropertyChange('href', e.target.value)}
+                    className={styles.input}
+                    placeholder="https://example.com"
+                  />
+                </div>
+                <div className={styles.field}>
+                  <label className={styles.checkboxLabel}>
+                    <span>Open in new tab</span>
+                    <input
+                      type="checkbox"
+                      checked={(() => {
+                        const content = typeof selectedElement.content === 'object' && selectedElement.content
+                          ? selectedElement.content
+                          : selectedElement.properties?.content;
+                        return (content?.target || '_self') === '_blank';
+                      })()}
+                      onChange={e => handleContentPropertyChange('target', e.target.checked ? '_blank' : '_self')}
+                    />
+                  </label>
+                </div>
+              </>
+            )}
+          </CollapsibleSection>
+        )}
+
+        {/* Button Properties */}
+        {selectedElement.type === 'button' && (
+          <CollapsibleSection title="Button Style" icon={<MousePointer size={16} />}>
+            <div className={styles.fieldGroup}>
+              <div className={styles.field}>
+                <label className={styles.fieldLabel}>Variant</label>
+                <select
+                  value={selectedElement.properties?.component?.variant || 'primary'}
+                  onChange={e => handleComponentPropertyChange('variant', e.target.value)}
+                  className={styles.select}
+                >
+                  <option value="primary">Primary</option>
+                  <option value="secondary">Secondary</option>
+                  <option value="outline">Outline</option>
+                  <option value="ghost">Ghost</option>
+                </select>
+              </div>
+              <div className={styles.field}>
+                <label className={styles.fieldLabel}>Size</label>
+                <select
+                  value={selectedElement.properties?.component?.size || 'md'}
+                  onChange={e => handleComponentPropertyChange('size', e.target.value)}
+                  className={styles.select}
+                >
+                  <option value="sm">Small</option>
+                  <option value="md">Medium</option>
+                  <option value="lg">Large</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Button Colors */}
+            <div className={styles.field}>
+              <label className={styles.fieldLabel}>Button Background</label>
+              <div className={styles.colorField}>
+                <div
+                  className={styles.colorPreview}
+                  style={
+                    { '--color': selectedElement.styles?.backgroundColor || '#3b82f6' } as React.CSSProperties
+                  }
+                />
+                <input
+                  type="color"
+                  value={selectedElement.styles?.backgroundColor || '#3b82f6'}
+                  onChange={e => handleStyleChange('backgroundColor', e.target.value)}
+                  className={styles.colorInput}
+                />
+              </div>
+            </div>
+
+            <div className={styles.field}>
+              <label className={styles.fieldLabel}>Button Text Color</label>
+              <div className={styles.colorField}>
+                <div
+                  className={styles.colorPreview}
+                  style={
+                    { '--color': selectedElement.styles?.color || '#ffffff' } as React.CSSProperties
+                  }
+                />
+                <input
+                  type="color"
+                  value={selectedElement.styles?.color || '#ffffff'}
+                  onChange={e => handleStyleChange('color', e.target.value)}
+                  className={styles.colorInput}
+                />
+              </div>
             </div>
           </CollapsibleSection>
         )}
@@ -488,7 +653,7 @@ export const PropertiesSidebar: React.FC = () => {
         })()}
 
         {/* Typography Properties */}
-        {['heading', 'paragraph', 'text', 'button'].includes(selectedElement.type) && (
+        {isTextComponent && (
           <CollapsibleSection title="Typography" icon={<Type size={16} />}>
             {/* Font Size and Weight */}
             <div className={styles.fieldGroup}>
@@ -575,167 +740,173 @@ export const PropertiesSidebar: React.FC = () => {
         )}
 
         {/* Layout & Position */}
-        <CollapsibleSection title="Layout" icon={<Move size={16} />}>
-          {/* Dimensions */}
-          <div className={styles.fieldGroup}>
-            <div className={styles.field}>
-              <label className={styles.fieldLabel}>Width</label>
-              <input
-                type="text"
-                value={selectedElement.styles?.width || ''}
-                onChange={e => handleStyleChange('width', e.target.value)}
-                className={styles.input}
-                placeholder="auto"
-              />
+        {isLayoutComponent && (
+          <CollapsibleSection title="Layout" icon={<Move size={16} />}>
+            {/* Dimensions */}
+            <div className={styles.fieldGroup}>
+              <div className={styles.field}>
+                <label className={styles.fieldLabel}>Width</label>
+                <input
+                  type="text"
+                  value={selectedElement.styles?.width || ''}
+                  onChange={e => handleStyleChange('width', e.target.value)}
+                  className={styles.input}
+                  placeholder="auto"
+                />
+              </div>
+              <div className={styles.field}>
+                <label className={styles.fieldLabel}>Height</label>
+                <input
+                  type="text"
+                  value={selectedElement.styles?.height || ''}
+                  onChange={e => handleStyleChange('height', e.target.value)}
+                  className={styles.input}
+                  placeholder="auto"
+                />
+              </div>
             </div>
-            <div className={styles.field}>
-              <label className={styles.fieldLabel}>Height</label>
-              <input
-                type="text"
-                value={selectedElement.styles?.height || ''}
-                onChange={e => handleStyleChange('height', e.target.value)}
-                className={styles.input}
-                placeholder="auto"
-              />
-            </div>
-          </div>
 
-          {/* Display and Position */}
-          <div className={styles.fieldGroup}>
-            <div className={styles.field}>
-              <label className={styles.fieldLabel}>Display</label>
-              <select
-                value={selectedElement.styles?.display || 'block'}
-                onChange={e => handleStyleChange('display', e.target.value)}
-                className={styles.select}
-              >
-                <option value="block">Block</option>
-                <option value="inline-block">Inline Block</option>
-                <option value="flex">Flex</option>
-                <option value="inline-flex">Inline Flex</option>
-                <option value="none">None</option>
-              </select>
+            {/* Display and Position */}
+            <div className={styles.fieldGroup}>
+              <div className={styles.field}>
+                <label className={styles.fieldLabel}>Display</label>
+                <select
+                  value={selectedElement.styles?.display || 'block'}
+                  onChange={e => handleStyleChange('display', e.target.value)}
+                  className={styles.select}
+                >
+                  <option value="block">Block</option>
+                  <option value="inline-block">Inline Block</option>
+                  <option value="flex">Flex</option>
+                  <option value="inline-flex">Inline Flex</option>
+                  <option value="none">None</option>
+                </select>
+              </div>
+              <div className={styles.field}>
+                <label className={styles.fieldLabel}>Position</label>
+                <select
+                  value={selectedElement.styles?.position || 'static'}
+                  onChange={e => handleStyleChange('position', e.target.value)}
+                  className={styles.select}
+                >
+                  <option value="static">Static</option>
+                  <option value="relative">Relative</option>
+                  <option value="absolute">Absolute</option>
+                  <option value="fixed">Fixed</option>
+                  <option value="sticky">Sticky</option>
+                </select>
+              </div>
             </div>
-            <div className={styles.field}>
-              <label className={styles.fieldLabel}>Position</label>
-              <select
-                value={selectedElement.styles?.position || 'static'}
-                onChange={e => handleStyleChange('position', e.target.value)}
-                className={styles.select}
-              >
-                <option value="static">Static</option>
-                <option value="relative">Relative</option>
-                <option value="absolute">Absolute</option>
-                <option value="fixed">Fixed</option>
-                <option value="sticky">Sticky</option>
-              </select>
-            </div>
-          </div>
-        </CollapsibleSection>
+          </CollapsibleSection>
+        )}
 
         {/* Spacing Properties */}
-        <CollapsibleSection title="Spacing" icon={<Ruler size={16} />}>
-          {/* Padding Control */}
-          <SpacingControl
-            label="Padding"
-            values={getPaddingValues()}
-            onChange={values => handleSpacingControlChange('padding', values)}
-            type="padding"
-          />
+        {isLayoutComponent && (
+          <CollapsibleSection title="Spacing" icon={<Ruler size={16} />}>
+            {/* Padding Control */}
+            <SpacingControl
+              label="Padding"
+              values={getPaddingValues()}
+              onChange={values => handleSpacingControlChange('padding', values)}
+              type="padding"
+            />
 
-          {/* Margin Control */}
-          <SpacingControl
-            label="Margin"
-            values={getMarginValues()}
-            onChange={values => handleSpacingControlChange('margin', values)}
-            type="margin"
-          />
-        </CollapsibleSection>
+            {/* Margin Control */}
+            <SpacingControl
+              label="Margin"
+              values={getMarginValues()}
+              onChange={values => handleSpacingControlChange('margin', values)}
+              type="margin"
+            />
+          </CollapsibleSection>
+        )}
 
         {/* Style Properties */}
-        <CollapsibleSection title="Appearance" icon={<Palette size={16} />}>
-          {/* Background */}
-          <div className={styles.field}>
-            <label className={styles.fieldLabel}>Background Color</label>
-            <div className={styles.colorField}>
-              <div
-                className={styles.colorPreview}
-                style={
-                  {
-                    '--color': selectedElement.styles?.backgroundColor || '#ffffff',
-                  } as React.CSSProperties
-                }
-              />
-              <input
-                type="color"
-                value={selectedElement.styles?.backgroundColor || '#ffffff'}
-                onChange={e => handleStyleChange('backgroundColor', e.target.value)}
-                className={styles.colorInput}
-              />
-            </div>
-          </div>
-
-          {/* Border */}
-          <div className={styles.fieldGroup}>
+        {isLayoutComponent && (
+          <CollapsibleSection title="Appearance" icon={<Palette size={16} />}>
+            {/* Background */}
             <div className={styles.field}>
-              <label className={styles.fieldLabel}>Border Width</label>
-              <input
-                type="number"
-                value={selectedElement.styles?.borderWidth?.replace('px', '') || ''}
-                onChange={e => handleStyleChange('borderWidth', `${e.target.value}px`)}
-                className={styles.input}
-                placeholder="0"
-              />
+              <label className={styles.fieldLabel}>Background Color</label>
+              <div className={styles.colorField}>
+                <div
+                  className={styles.colorPreview}
+                  style={
+                    {
+                      '--color': selectedElement.styles?.backgroundColor || '#ffffff',
+                    } as React.CSSProperties
+                  }
+                />
+                <input
+                  type="color"
+                  value={selectedElement.styles?.backgroundColor || '#ffffff'}
+                  onChange={e => handleStyleChange('backgroundColor', e.target.value)}
+                  className={styles.colorInput}
+                />
+              </div>
             </div>
+
+            {/* Border */}
+            <div className={styles.fieldGroup}>
+              <div className={styles.field}>
+                <label className={styles.fieldLabel}>Border Width</label>
+                <input
+                  type="number"
+                  value={selectedElement.styles?.borderWidth?.replace('px', '') || ''}
+                  onChange={e => handleStyleChange('borderWidth', `${e.target.value}px`)}
+                  className={styles.input}
+                  placeholder="0"
+                />
+              </div>
+              <div className={styles.field}>
+                <label className={styles.fieldLabel}>Border Radius</label>
+                <input
+                  type="number"
+                  value={selectedElement.styles?.borderRadius?.replace('px', '') || ''}
+                  onChange={e => handleStyleChange('borderRadius', `${e.target.value}px`)}
+                  className={styles.input}
+                  placeholder="0"
+                />
+              </div>
+            </div>
+
+            {/* Border Color */}
             <div className={styles.field}>
-              <label className={styles.fieldLabel}>Border Radius</label>
-              <input
-                type="number"
-                value={selectedElement.styles?.borderRadius?.replace('px', '') || ''}
-                onChange={e => handleStyleChange('borderRadius', `${e.target.value}px`)}
-                className={styles.input}
-                placeholder="0"
-              />
+              <label className={styles.fieldLabel}>Border Color</label>
+              <div className={styles.colorField}>
+                <div
+                  className={styles.colorPreview}
+                  style={
+                    {
+                      '--color': selectedElement.styles?.borderColor || '#e5e7eb',
+                    } as React.CSSProperties
+                  }
+                />
+                <input
+                  type="color"
+                  value={selectedElement.styles?.borderColor || '#e5e7eb'}
+                  onChange={e => handleStyleChange('borderColor', e.target.value)}
+                  className={styles.colorInput}
+                />
+              </div>
             </div>
-          </div>
 
-          {/* Border Color */}
-          <div className={styles.field}>
-            <label className={styles.fieldLabel}>Border Color</label>
-            <div className={styles.colorField}>
-              <div
-                className={styles.colorPreview}
-                style={
-                  {
-                    '--color': selectedElement.styles?.borderColor || '#e5e7eb',
-                  } as React.CSSProperties
-                }
-              />
-              <input
-                type="color"
-                value={selectedElement.styles?.borderColor || '#e5e7eb'}
-                onChange={e => handleStyleChange('borderColor', e.target.value)}
-                className={styles.colorInput}
-              />
+            {/* Shadow */}
+            <div className={styles.field}>
+              <label className={styles.fieldLabel}>Box Shadow</label>
+              <select
+                value={selectedElement.styles?.boxShadow || 'none'}
+                onChange={e => handleStyleChange('boxShadow', e.target.value)}
+                className={styles.select}
+              >
+                <option value="none">None</option>
+                <option value="0 1px 3px rgba(0,0,0,0.1)">Small</option>
+                <option value="0 4px 6px rgba(0,0,0,0.1)">Medium</option>
+                <option value="0 10px 15px rgba(0,0,0,0.1)">Large</option>
+                <option value="0 25px 50px rgba(0,0,0,0.25)">Extra Large</option>
+              </select>
             </div>
-          </div>
-
-          {/* Shadow */}
-          <div className={styles.field}>
-            <label className={styles.fieldLabel}>Box Shadow</label>
-            <select
-              value={selectedElement.styles?.boxShadow || 'none'}
-              onChange={e => handleStyleChange('boxShadow', e.target.value)}
-              className={styles.select}
-            >
-              <option value="none">None</option>
-              <option value="0 1px 3px rgba(0,0,0,0.1)">Small</option>
-              <option value="0 4px 6px rgba(0,0,0,0.1)">Medium</option>
-              <option value="0 10px 15px rgba(0,0,0,0.1)">Large</option>
-              <option value="0 25px 50px rgba(0,0,0,0.25)">Extra Large</option>
-            </select>
-          </div>
-        </CollapsibleSection>
+          </CollapsibleSection>
+        )}
       </div>
     </div>
   );
