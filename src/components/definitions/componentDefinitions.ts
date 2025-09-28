@@ -45,6 +45,7 @@ import {
 import {
   buildVidstackHtml,
   getVideoConfigFromElement,
+  DEFAULT_VIDEO_POSTER,
   VIDSTACK_CDN_DEFAULT_LAYOUT_SCRIPT,
   VIDSTACK_CDN_DEFAULT_LAYOUT_STYLE,
   VIDSTACK_CDN_SCRIPT,
@@ -716,7 +717,7 @@ export const COMPONENT_DEFINITIONS: Record<ComponentType, ComponentDefinition> =
       properties: {
         content: {
           src: 'https://files.vidstack.io/sprite-fight/720p.mp4',
-          poster: 'https://files.vidstack.io/sprite-fight/poster.webp',
+          poster: DEFAULT_VIDEO_POSTER,
           title: 'Sprite Fight',
           thumbnails: 'https://files.vidstack.io/sprite-fight/thumbnails.vtt'
         },

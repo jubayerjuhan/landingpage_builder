@@ -11,9 +11,16 @@ export interface VideoTextTrackConfig {
   default?: boolean;
 }
 
+export const DEFAULT_VIDEO_POSTER = 'https://i.ibb.co.com/PsSLYdTZ/placeholder-1920x1080-copy.png';
+
+export interface VideoSourceConfig {
+  src: string;
+  type?: string;
+}
+
 export interface VideoConfig {
   src: string;
-  source: string | { src: string; type?: string };
+  source: VideoSourceConfig | VideoSourceConfig[];
   poster?: string;
   title?: string;
   autoplay: boolean;
@@ -119,19 +126,22 @@ export const getVideoConfigFromElement = (element: BuilderElement | Record<strin
   const isYouTube = lowerSrc.includes('youtube.com/watch') || lowerSrc.includes('youtu.be/');
   const isVimeo = lowerSrc.includes('vimeo.com/');
   const mimeType = inferMimeType(normalizedSrc);
-  const source = isYouTube
-    ? { src: normalizedSrc, type: 'video/youtube' }
+  const primaryType = isYouTube
+    ? 'video/youtube'
     : isVimeo
-      ? { src: normalizedSrc, type: 'video/vimeo' }
-      : mimeType
-        ? { src: normalizedSrc, type: mimeType }
-        : normalizedSrc;
+      ? 'video/vimeo'
+      : mimeType;
 
-  const poster = toStringOrEmpty(
+  const source = primaryType
+    ? { src: normalizedSrc, type: primaryType }
+    : { src: normalizedSrc };
+
+  const userPoster = toStringOrEmpty(
     content.poster ??
       componentProps.poster ??
       (elementRecord.posterUrl as string | undefined)
-  ).trim() || undefined;
+  ).trim();
+  const poster = userPoster || DEFAULT_VIDEO_POSTER;
 
   const title = toStringOrEmpty(
     content.title ??
@@ -225,14 +235,18 @@ export const buildVidstackHtml = (config: VideoConfig): string => {
     return '';
   }
 
-  const resolvedSource = typeof config.source === 'string' ? { src: config.source } : config.source;
-  if (!resolvedSource?.src) {
+  const resolvedSources = (Array.isArray(config.source)
+    ? config.source
+    : [config.source]
+  ).filter((source): source is { src: string; type?: string } => Boolean(source?.src));
+
+  if (resolvedSources.length === 0) {
     return '';
   }
 
   const attributes = [
     `src="${escapeHtmlAttribute(config.src)}"`,
-    config.poster ? `poster="${escapeHtmlAttribute(config.poster)}"` : '',
+    config.poster ? `poster="${escapeHtmlAttribute(config.poster)}"` : `poster="${escapeHtmlAttribute(DEFAULT_VIDEO_POSTER)}"`,
     config.title ? `title="${escapeHtmlAttribute(config.title)}"` : '',
     'view-type="video"',
     'stream-type="on-demand"',
@@ -249,11 +263,13 @@ export const buildVidstackHtml = (config: VideoConfig): string => {
     providerMarkup.push('    <media-poster class="vds-poster"></media-poster>');
   }
 
-  const sourceAttributes = [
-    `src="${escapeHtmlAttribute(resolvedSource.src)}"`,
-    resolvedSource.type ? `type="${escapeHtmlAttribute(resolvedSource.type)}"` : ''
-  ].filter(Boolean);
-  providerMarkup.push(`    <source ${sourceAttributes.join(' ')} />`);
+  resolvedSources.forEach((source) => {
+    const sourceAttributes = [
+      `src="${escapeHtmlAttribute(source.src)}"`,
+      source.type ? `type="${escapeHtmlAttribute(source.type)}"` : ''
+    ].filter(Boolean);
+    providerMarkup.push(`    <source ${sourceAttributes.join(' ')} />`);
+  });
 
   config.textTracks.forEach((track) => {
     const trackAttributes = [
