@@ -683,23 +683,13 @@ export const Element: React.FC<ElementProps> = ({ element }) => {
         );
       
       case 'tabs':
-        const tabItems = element.tabItems || [
-          { title: 'Tab 1', content: 'Content for tab 1' },
-          { title: 'Tab 2', content: 'Content for tab 2' }
-        ];
         return (
-          <div className={styles.tabs} style={elementStyles}>
-            <div className={styles.tabHeaders}>
-              {tabItems.map((item: any, index: number) => (
-                <button key={index} className={`${styles.tabHeader} ${index === 0 ? styles.active : ''}`}>
-                  {item.title}
-                </button>
-              ))}
-            </div>
-            <div className={styles.tabContent}>
-              {tabItems[0]?.content || 'Tab content'}
-            </div>
-          </div>
+          <CanvasTabs
+            element={element}
+            elementStyles={elementStyles}
+            isPreviewMode={isPreviewMode}
+            onSelect={selectElement}
+          />
         );
       
       case 'modal':
@@ -948,6 +938,122 @@ function CanvasAccordion({ element, elementStyles, isPreviewMode, onSelect }: Ca
           </div>
         );
       })}
+    </div>
+  );
+}
+
+interface CanvasTabsProps {
+  element: any;
+  elementStyles: React.CSSProperties;
+  isPreviewMode: boolean;
+  onSelect: (id: string) => void;
+}
+
+function CanvasTabs({ element, elementStyles, isPreviewMode, onSelect }: CanvasTabsProps) {
+  const componentConfig = (element.properties?.component || {}) as Record<string, unknown>;
+
+  const items = useMemo(() => {
+    const rawTabs = componentConfig.tabs;
+    if (Array.isArray(rawTabs) && rawTabs.length > 0) {
+      return rawTabs as Array<{ title?: string; content?: string }>;
+    }
+
+    return [
+      { title: 'Tab 1', content: 'This is the content for tab 1.' },
+      { title: 'Tab 2', content: 'This is the content for tab 2.' },
+      { title: 'Tab 3', content: 'This is the content for tab 3.' }
+    ];
+  }, [componentConfig.tabs]);
+
+  const clampIndex = useCallback((value: number) => {
+    if (!Number.isInteger(value)) {
+      return 0;
+    }
+    return Math.min(Math.max(value, 0), Math.max(items.length - 1, 0));
+  }, [items.length]);
+
+  const defaultActive = useMemo(() => {
+    const raw = componentConfig.defaultActive;
+    if (typeof raw === 'number') {
+      return clampIndex(raw);
+    }
+    return 0;
+  }, [clampIndex, componentConfig.defaultActive]);
+
+  const [activeIndex, setActiveIndex] = useState(() => clampIndex(defaultActive));
+
+  useEffect(() => {
+    setActiveIndex(clampIndex(defaultActive));
+  }, [clampIndex, defaultActive, items.length]);
+
+  const handleSelect = useCallback((index: number) => {
+    const clamped = clampIndex(index);
+    setActiveIndex(clamped);
+
+    if (!isPreviewMode) {
+      onSelect(element.id);
+    }
+  }, [clampIndex, element.id, isPreviewMode, onSelect]);
+
+  const handleClick = useCallback((event: React.MouseEvent<HTMLButtonElement>, index: number) => {
+    event.preventDefault();
+    event.stopPropagation();
+    handleSelect(index);
+  }, [handleSelect]);
+
+  const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      event.stopPropagation();
+      handleSelect(index);
+    }
+
+    if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+      event.preventDefault();
+      const delta = event.key === 'ArrowRight' ? 1 : -1;
+      const nextIndex = clampIndex(index + delta);
+      handleSelect(nextIndex);
+    }
+  }, [clampIndex, handleSelect]);
+
+  return (
+    <div className={styles.tabs} style={elementStyles}>
+      <div className={styles.tabHeaders} role="tablist" aria-orientation="horizontal">
+        {items.map((item, index) => {
+          const isActive = index === activeIndex;
+          const headerId = `${element.id}-canvas-tab-${index}`;
+          const panelId = `${element.id}-canvas-panel-${index}`;
+          const headerClasses = [
+            styles.tabHeader,
+            isActive ? styles.tabHeaderActive : styles.tabHeaderInactive
+          ].filter(Boolean).join(' ');
+
+          return (
+            <button
+              key={index}
+              className={headerClasses}
+              type="button"
+              role="tab"
+              id={headerId}
+              aria-controls={panelId}
+              aria-selected={isActive}
+              tabIndex={isActive ? 0 : -1}
+              onClick={(event) => handleClick(event, index)}
+              onKeyDown={(event) => handleKeyDown(event, index)}
+            >
+              {item.title || `Tab ${index + 1}`}
+            </button>
+          );
+        })}
+      </div>
+      <div
+        className={styles.tabContent}
+        role="tabpanel"
+        id={`${element.id}-canvas-panel-${activeIndex}`}
+        aria-labelledby={`${element.id}-canvas-tab-${activeIndex}`}
+      >
+        {items[activeIndex]?.content || 'Tab content'}
+      </div>
     </div>
   );
 }

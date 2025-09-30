@@ -163,16 +163,27 @@ export const PropertiesSidebar: React.FC = () => {
     });
   };
 
-  const updateComponentItems = (items: Array<{ title?: string; content?: string }>) => {
+  const updateComponentList = (
+    key: 'items' | 'tabs',
+    list: Array<{ title?: string; content?: string }>
+  ) => {
     updateElement(selectedElement.id, {
       properties: {
         ...selectedElement.properties,
         component: {
           ...(selectedElement.properties?.component || {}),
-          items
+          [key]: list
         }
       }
     });
+  };
+
+  const updateComponentItems = (items: Array<{ title?: string; content?: string }>) => {
+    updateComponentList('items', items);
+  };
+
+  const updateComponentTabs = (tabs: Array<{ title?: string; content?: string }>) => {
+    updateComponentList('tabs', tabs);
   };
 
   const getAccordionItems = (): Array<{ title: string; content: string }> => {
@@ -191,6 +202,31 @@ export const PropertiesSidebar: React.FC = () => {
       {
         title: 'Accordion Item 2',
         content: 'This is the content for the second accordion item.'
+      }
+    ];
+  };
+
+  const getTabItems = (): Array<{ title: string; content: string }> => {
+    const rawTabs = (selectedElement.properties?.component as any)?.tabs;
+    if (Array.isArray(rawTabs) && rawTabs.length > 0) {
+      return rawTabs.map((tab) => ({
+        title: typeof tab?.title === 'string' ? tab.title : '',
+        content: typeof tab?.content === 'string' ? tab.content : ''
+      }));
+    }
+
+    return [
+      {
+        title: 'Tab 1',
+        content: 'This is the content for tab 1.'
+      },
+      {
+        title: 'Tab 2',
+        content: 'This is the content for tab 2.'
+      },
+      {
+        title: 'Tab 3',
+        content: 'This is the content for tab 3.'
       }
     ];
   };
@@ -585,6 +621,132 @@ export const PropertiesSidebar: React.FC = () => {
 
               <button className={styles.addItemButton} onClick={handleAddItem} type="button">
                 + Add Item
+              </button>
+            </CollapsibleSection>
+          );
+        })()}
+
+        {/* Tabs Properties */}
+        {selectedElement.type === 'tabs' && (() => {
+          const tabs = getTabItems();
+          const componentConfig = (selectedElement.properties?.component || {}) as Record<string, unknown>;
+
+          const clampIndex = (value: number, length: number) => {
+            if (!Number.isInteger(value)) {
+              return 0;
+            }
+            if (length <= 0) {
+              return 0;
+            }
+            return Math.min(Math.max(value, 0), length - 1);
+          };
+
+          const currentDefaultActive = clampIndex(
+            typeof componentConfig.defaultActive === 'number'
+              ? componentConfig.defaultActive
+              : 0,
+            tabs.length
+          );
+
+          const handleTabsUpdate = (nextTabs: Array<{ title: string; content: string }>) => {
+            updateComponentTabs(nextTabs);
+
+            const clamped = clampIndex(currentDefaultActive, nextTabs.length);
+            if (clamped !== currentDefaultActive) {
+              handleComponentPropertyChange('defaultActive', clamped);
+            }
+          };
+
+          const handleTabChange = (index: number, field: 'title' | 'content', value: string) => {
+            const updated = tabs.map((tab, idx) =>
+              idx === index ? { ...tab, [field]: value } : tab
+            );
+            handleTabsUpdate(updated);
+          };
+
+          const handleAddTab = () => {
+            const nextTabs = [
+              ...tabs,
+              {
+                title: `Tab ${tabs.length + 1}`,
+                content: 'New tab content'
+              }
+            ];
+
+            handleTabsUpdate(nextTabs);
+          };
+
+          const handleRemoveTab = (index: number) => {
+            if (tabs.length <= 1) {
+              return;
+            }
+
+            const nextTabs = tabs.filter((_, idx) => idx !== index);
+            handleTabsUpdate(nextTabs);
+          };
+
+          const handleDefaultActiveChange = (value: number) => {
+            handleComponentPropertyChange('defaultActive', clampIndex(value, tabs.length));
+          };
+
+          return (
+            <CollapsibleSection title="Tabs Settings" icon={<Menu size={16} />}>
+              <div className={styles.field}>
+                <label className={styles.fieldLabel}>Default Active Tab</label>
+                <select
+                  value={currentDefaultActive}
+                  onChange={(e) => handleDefaultActiveChange(Number(e.target.value))}
+                  className={styles.select}
+                >
+                  {tabs.map((tab, index) => (
+                    <option key={index} value={index}>
+                      {tab.title || `Tab ${index + 1}`}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className={styles.fieldList}>
+                {tabs.map((tab, index) => (
+                  <div key={index} className={styles.fieldCard}>
+                    <div className={styles.fieldCardHeader}>
+                      <span>Tab {index + 1}</span>
+                      <button
+                        className={styles.removeItemButton}
+                        onClick={() => handleRemoveTab(index)}
+                        disabled={tabs.length <= 1}
+                        title="Remove tab"
+                        type="button"
+                      >
+                        ×
+                      </button>
+                    </div>
+                    <div className={styles.field}>
+                      <label className={styles.fieldLabel}>Title</label>
+                      <input
+                        type="text"
+                        value={tab.title}
+                        onChange={(e) => handleTabChange(index, 'title', e.target.value)}
+                        className={styles.input}
+                        placeholder="Tab title"
+                      />
+                    </div>
+                    <div className={styles.field}>
+                      <label className={styles.fieldLabel}>Content</label>
+                      <textarea
+                        value={tab.content}
+                        onChange={(e) => handleTabChange(index, 'content', e.target.value)}
+                        className={styles.textarea}
+                        rows={3}
+                        placeholder="Tab content"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <button className={styles.addItemButton} onClick={handleAddTab} type="button">
+                + Add Tab
               </button>
             </CollapsibleSection>
           );

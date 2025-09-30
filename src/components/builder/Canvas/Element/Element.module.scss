@@ -724,15 +724,15 @@
   &:last-child {
     border-right: none;
   }
-  
-  &.active {
-    background: #5457ff;
-    color: white;
-  }
-  
-  &:not(.active):hover {
-    background: #f3f4f6;
-  }
+}
+
+.tabHeaderActive {
+  background: #5457ff;
+  color: white;
+}
+
+.tabHeaderInactive:hover {
+  background: #f3f4f6;
 }
 
 .tabContent {
