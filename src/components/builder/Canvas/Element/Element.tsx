@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { GripVertical } from 'lucide-react';
 import { useBuilderStore } from '../../../../stores/builderStore';
@@ -672,31 +672,15 @@ export const Element: React.FC<ElementProps> = ({ element }) => {
         );
       }
       
-      case 'accordion': {
-        const componentConfig = (element.properties?.component || {}) as Record<string, unknown>;
-        const items = Array.isArray(componentConfig.items) && componentConfig.items.length > 0
-          ? (componentConfig.items as Array<{ title?: string; content?: string }>)
-          : [
-              { title: 'Accordion Item 1', content: 'Content for item 1' },
-              { title: 'Accordion Item 2', content: 'Content for item 2' }
-            ];
-
+      case 'accordion':
         return (
-          <div className={styles.accordion} style={elementStyles}>
-            {items.map((item, index) => (
-              <div key={index} className={styles.accordionItem}>
-                <div className={styles.accordionHeader}>
-                  {item.title || `Item ${index + 1}`}
-                  <span className={styles.accordionIcon}>▼</span>
-                </div>
-                <div className={styles.accordionContent}>
-                  {item.content || 'Accordion content'}
-                </div>
-              </div>
-            ))}
-          </div>
+          <CanvasAccordion
+            element={element}
+            elementStyles={elementStyles}
+            isPreviewMode={isPreviewMode}
+            onSelect={selectElement}
+          />
         );
-      }
       
       case 'tabs':
         const tabItems = element.tabItems || [
@@ -849,3 +833,121 @@ export const Element: React.FC<ElementProps> = ({ element }) => {
     </div>
   );
 };
+
+interface CanvasAccordionProps {
+  element: any;
+  elementStyles: React.CSSProperties;
+  isPreviewMode: boolean;
+  onSelect: (id: string) => void;
+}
+
+function CanvasAccordion({ element, elementStyles, isPreviewMode, onSelect }: CanvasAccordionProps) {
+  const componentConfig = (element.properties?.component || {}) as Record<string, unknown>;
+
+  const items = useMemo(() => {
+    if (Array.isArray(componentConfig.items) && componentConfig.items.length > 0) {
+      return componentConfig.items as Array<{ title?: string; content?: string }>;
+    }
+
+    return [
+      { title: 'Accordion Item 1', content: 'Content for item 1' },
+      { title: 'Accordion Item 2', content: 'Content for item 2' }
+    ];
+  }, [componentConfig.items]);
+
+  const allowMultiple = componentConfig.allowMultiple !== false;
+
+  const defaultOpen = useMemo(() => {
+    const raw = componentConfig.defaultOpen;
+    if (Array.isArray(raw) && raw.length > 0) {
+      return (raw.filter((value) => Number.isInteger(value)) as number[]);
+    }
+
+    return items.length > 0 ? [0] : [];
+  }, [componentConfig.defaultOpen, items.length]);
+
+  const [openItems, setOpenItems] = useState<number[]>(defaultOpen);
+
+  useEffect(() => {
+    setOpenItems(defaultOpen);
+  }, [defaultOpen, element.id]);
+
+  const toggleItem = useCallback((index: number) => {
+    setOpenItems(prev => {
+      const next = new Set(prev);
+
+      if (next.has(index)) {
+        next.delete(index);
+      } else {
+        if (!allowMultiple) {
+          next.clear();
+        }
+        next.add(index);
+      }
+
+      return Array.from(next).sort();
+    });
+  }, [allowMultiple]);
+
+  const handleToggle = useCallback((index: number) => {
+    if (!isPreviewMode) {
+      onSelect(element.id);
+    }
+
+    toggleItem(index);
+  }, [element.id, isPreviewMode, onSelect, toggleItem]);
+
+  const handleClick = useCallback((event: React.MouseEvent<HTMLButtonElement>, index: number) => {
+    event.preventDefault();
+    event.stopPropagation();
+    handleToggle(index);
+  }, [handleToggle]);
+
+  const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      event.stopPropagation();
+      handleToggle(index);
+    }
+  }, [handleToggle]);
+
+  return (
+    <div className={styles.accordion} style={elementStyles}>
+      {items.map((item, index) => {
+        const isOpen = openItems.includes(index);
+        const headerId = `${element.id}-canvas-accordion-header-${index}`;
+        const panelId = `${element.id}-canvas-accordion-panel-${index}`;
+
+        return (
+          <div key={index} className={styles.accordionItem}>
+            <button
+              type="button"
+              className={styles.accordionHeader}
+              onClick={(event) => handleClick(event, index)}
+              onKeyDown={(event) => handleKeyDown(event, index)}
+              id={headerId}
+              aria-controls={panelId}
+              aria-expanded={isOpen}
+            >
+              <span>{item.title || `Item ${index + 1}`}</span>
+              <span className={styles.accordionIcon} aria-hidden="true">
+                {isOpen ? '▲' : '▼'}
+              </span>
+            </button>
+
+            {isOpen && (
+              <div
+                className={styles.accordionContent}
+                id={panelId}
+                role="region"
+                aria-labelledby={headerId}
+              >
+                {item.content || 'Accordion content'}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}

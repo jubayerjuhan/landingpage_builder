@@ -1,9 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import type { BuilderElement } from '../../../types/builder';
 import { ElementWrapper } from '../ElementWrapper';
 import { getElementStyles } from '../../../utils/styleUtils';
 import useCanvasStore from '../../../stores/canvasStore';
 import { ChevronDown } from 'lucide-react';
+import { useBuilderStore } from '../../../stores/builderStore';
 
 interface AccordionProps {
   element: BuilderElement;
@@ -11,8 +12,10 @@ interface AccordionProps {
 
 export const Accordion: React.FC<AccordionProps> = ({ element }) => {
   const { viewportMode, previewMode } = useCanvasStore();
+  const { selectElement } = useBuilderStore();
   const styles = getElementStyles(element, viewportMode);
   const componentConfig = (element.properties?.component || {}) as Record<string, unknown>;
+  const isPreviewMode = previewMode === 'preview';
 
   const items = useMemo(() => {
     const rawItems = componentConfig.items;
@@ -58,32 +61,62 @@ export const Accordion: React.FC<AccordionProps> = ({ element }) => {
     ...styles,
   };
   
-  const toggleItem = (index: number) => {
-    const newOpenItems = new Set(openItems);
-    
-    if (newOpenItems.has(index)) {
-      newOpenItems.delete(index);
-    } else {
-      if (!allowMultiple) {
-        newOpenItems.clear();
+  const toggleItem = useCallback((index: number) => {
+    setOpenItems(prev => {
+      const next = new Set(prev);
+
+      if (next.has(index)) {
+        next.delete(index);
+      } else {
+        if (!allowMultiple) {
+          next.clear();
+        }
+        next.add(index);
       }
-      newOpenItems.add(index);
+
+      return next;
+    });
+  }, [allowMultiple]);
+
+  const handleToggle = useCallback((index: number) => {
+    if (!isPreviewMode) {
+      selectElement(element.id);
     }
-    
-    setOpenItems(newOpenItems);
-  };
+
+    toggleItem(index);
+  }, [element.id, isPreviewMode, selectElement, toggleItem]);
+
+  const handleClick = useCallback((event: React.MouseEvent<HTMLButtonElement>, index: number) => {
+    event.preventDefault();
+    event.stopPropagation();
+    handleToggle(index);
+  }, [handleToggle]);
+
+  const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      event.stopPropagation();
+      handleToggle(index);
+    }
+  }, [handleToggle]);
   
   return (
     <ElementWrapper element={element}>
       <div style={accordionStyles}>
         {items.map((item: any, index: number) => {
           const isOpen = openItems.has(index);
+          const headerId = `${element.id}-accordion-header-${index}`;
+          const panelId = `${element.id}-accordion-panel-${index}`;
           
           return (
             <div key={index}>
               <button
                 type="button"
-                onClick={() => toggleItem(index)}
+                onClick={event => handleClick(event, index)}
+                onKeyDown={event => handleKeyDown(event, index)}
+                id={headerId}
+                aria-controls={panelId}
+                aria-expanded={isOpen}
                 style={{
                   width: '100%',
                   padding: '1rem',
@@ -100,12 +133,12 @@ export const Accordion: React.FC<AccordionProps> = ({ element }) => {
                   transition: 'background-color 0.2s ease',
                 }}
                 onMouseEnter={(e) => {
-                  if (previewMode === 'preview') {
+                  if (isPreviewMode) {
                     (e.target as HTMLElement).style.backgroundColor = '#f9fafb';
                   }
                 }}
                 onMouseLeave={(e) => {
-                  if (previewMode === 'preview') {
+                  if (isPreviewMode) {
                     (e.target as HTMLElement).style.backgroundColor = 'white';
                   }
                 }}
@@ -123,6 +156,9 @@ export const Accordion: React.FC<AccordionProps> = ({ element }) => {
               
               {isOpen && (
                 <div
+                  id={panelId}
+                  role="region"
+                  aria-labelledby={headerId}
                   style={{
                     padding: '1rem',
                     backgroundColor: '#f9fafb',
