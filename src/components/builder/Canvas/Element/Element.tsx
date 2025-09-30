@@ -672,26 +672,31 @@ export const Element: React.FC<ElementProps> = ({ element }) => {
         );
       }
       
-      case 'accordion':
-        const accordionItems = element.accordionItems || [
-          { title: 'Accordion Item 1', content: 'Content for item 1' },
-          { title: 'Accordion Item 2', content: 'Content for item 2' }
-        ];
+      case 'accordion': {
+        const componentConfig = (element.properties?.component || {}) as Record<string, unknown>;
+        const items = Array.isArray(componentConfig.items) && componentConfig.items.length > 0
+          ? (componentConfig.items as Array<{ title?: string; content?: string }>)
+          : [
+              { title: 'Accordion Item 1', content: 'Content for item 1' },
+              { title: 'Accordion Item 2', content: 'Content for item 2' }
+            ];
+
         return (
           <div className={styles.accordion} style={elementStyles}>
-            {accordionItems.map((item: any, index: number) => (
+            {items.map((item, index) => (
               <div key={index} className={styles.accordionItem}>
                 <div className={styles.accordionHeader}>
-                  {item.title}
+                  {item.title || `Item ${index + 1}`}
                   <span className={styles.accordionIcon}>▼</span>
                 </div>
                 <div className={styles.accordionContent}>
-                  {item.content}
+                  {item.content || 'Accordion content'}
                 </div>
               </div>
             ))}
           </div>
         );
+      }
       
       case 'tabs':
         const tabItems = element.tabItems || [

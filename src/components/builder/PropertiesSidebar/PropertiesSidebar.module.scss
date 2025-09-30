@@ -280,6 +280,69 @@
   }
 }
 
+.fieldList {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+  margin-bottom: $space-3;
+}
+
+.fieldCard {
+  border: 1px solid $border;
+  border-radius: $radius-base;
+  background: $background-secondary;
+  padding: $space-3;
+  box-shadow: $shadow-xs;
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.fieldCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: $font-sm;
+  font-weight: $font-weight-semibold;
+  color: $text-secondary;
+}
+
+.removeItemButton {
+  border: none;
+  background: transparent;
+  color: $text-tertiary;
+  font-size: $font-lg;
+  line-height: 1;
+  cursor: pointer;
+  transition: color $transition-base;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  &:not(:disabled):hover {
+    color: $danger;
+  }
+}
+
+.addItemButton {
+  width: 100%;
+  border: 1px dashed $border;
+  border-radius: $radius-base;
+  background: transparent;
+  padding: $space-2;
+  font-size: $font-sm;
+  color: $primary;
+  cursor: pointer;
+  transition: all $transition-base;
+
+  &:hover {
+    background: $primary-100;
+    border-color: $primary;
+  }
+}
+
 .checkboxLabel {
   display: flex;
   align-items: center;

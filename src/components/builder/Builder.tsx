@@ -123,6 +123,38 @@ export const Builder: React.FC = () => {
         };
       }
 
+      if (elementType === 'button') {
+        return {
+          type: elementType,
+          content: {
+            text: 'Click me',
+            href: '#'
+          },
+          parentId,
+          properties: {
+            content: {
+              text: 'Click me',
+              href: '#'
+            },
+            component: {
+              variant: 'primary',
+              size: 'md'
+            }
+          },
+          styles: {
+            padding: '0.75rem 1.5rem',
+            backgroundColor: '#3b82f6',
+            color: 'white',
+            border: 'none',
+            borderRadius: '0.25rem',
+            cursor: 'pointer',
+            fontSize: '1rem',
+            textDecoration: 'none',
+            display: 'inline-block'
+          }
+        };
+      }
+
       const defaultContent = elementType === 'heading' ? 'Your Heading Here'
         : elementType === 'paragraph' ? 'Your paragraph text here'
         : 'Your text here';

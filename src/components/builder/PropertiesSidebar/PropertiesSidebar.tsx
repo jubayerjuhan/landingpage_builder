@@ -17,6 +17,7 @@ import {
   Play,
   Image as ImageIcon,
   MousePointer,
+  Menu,
 } from 'lucide-react';
 import { useBuilderStore } from '../../../stores/builderStore';
 import { SpacingControl, type SpacingValues } from './SpacingControl';
@@ -160,6 +161,38 @@ export const PropertiesSidebar: React.FC = () => {
         }
       }
     });
+  };
+
+  const updateComponentItems = (items: Array<{ title?: string; content?: string }>) => {
+    updateElement(selectedElement.id, {
+      properties: {
+        ...selectedElement.properties,
+        component: {
+          ...(selectedElement.properties?.component || {}),
+          items
+        }
+      }
+    });
+  };
+
+  const getAccordionItems = (): Array<{ title: string; content: string }> => {
+    const rawItems = (selectedElement.properties?.component as any)?.items;
+    if (Array.isArray(rawItems) && rawItems.length > 0) {
+      return rawItems.map((item) => ({
+        title: typeof item?.title === 'string' ? item.title : '',
+        content: typeof item?.content === 'string' ? item.content : ''
+      }));
+    }
+    return [
+      {
+        title: 'Accordion Item 1',
+        content: 'This is the content for the first accordion item.'
+      },
+      {
+        title: 'Accordion Item 2',
+        content: 'This is the content for the second accordion item.'
+      }
+    ];
   };
 
   const handleStyleChange = (styleProperty: string, value: string) => {
@@ -470,6 +503,92 @@ export const PropertiesSidebar: React.FC = () => {
             </div>
           </CollapsibleSection>
         )}
+
+        {/* Accordion Properties */}
+        {selectedElement.type === 'accordion' && (() => {
+          const items = getAccordionItems();
+
+          const handleItemChange = (index: number, field: 'title' | 'content', value: string) => {
+            const updated = items.map((item, idx) =>
+              idx === index ? { ...item, [field]: value } : item
+            );
+            updateComponentItems(updated);
+          };
+
+          const handleAddItem = () => {
+            updateComponentItems([
+              ...items,
+              {
+                title: `Accordion Item ${items.length + 1}`,
+                content: 'New accordion content'
+              }
+            ]);
+          };
+
+          const handleRemoveItem = (index: number) => {
+            if (items.length <= 1) return;
+            updateComponentItems(items.filter((_, idx) => idx !== index));
+          };
+
+          const allowMultiple = (selectedElement.properties?.component as any)?.allowMultiple !== false;
+
+          return (
+            <CollapsibleSection title="Accordion Settings" icon={<Menu size={16} />}>
+              <div className={styles.field}>
+                <label className={styles.checkboxLabel}>
+                  <span>Allow multiple sections open</span>
+                  <input
+                    type="checkbox"
+                    checked={allowMultiple}
+                    onChange={(e) => handleComponentPropertyChange('allowMultiple', e.target.checked)}
+                  />
+                </label>
+              </div>
+
+              <div className={styles.fieldList}>
+                {items.map((item, index) => (
+                  <div key={index} className={styles.fieldCard}>
+                    <div className={styles.fieldCardHeader}>
+                      <span>Item {index + 1}</span>
+                      <button
+                        className={styles.removeItemButton}
+                        onClick={() => handleRemoveItem(index)}
+                        disabled={items.length <= 1}
+                        title="Remove item"
+                      >
+                        ×
+                      </button>
+                    </div>
+                    <div className={styles.field}>
+                      <label className={styles.fieldLabel}>Title</label>
+                      <input
+                        type="text"
+                        value={item.title}
+                        onChange={(e) => handleItemChange(index, 'title', e.target.value)}
+                        className={styles.input}
+                        placeholder="Accordion title"
+                      />
+                    </div>
+                    <div className={styles.field}>
+                      <label className={styles.fieldLabel}>Content</label>
+                      <textarea
+                        value={item.content}
+                        onChange={(e) => handleItemChange(index, 'content', e.target.value)}
+                        className={styles.textarea}
+                        rows={3}
+                        placeholder="Accordion content"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <button className={styles.addItemButton} onClick={handleAddItem} type="button">
+                + Add Item
+              </button>
+            </CollapsibleSection>
+          );
+        })()}
 
         {/* Image Properties */}
         {selectedElement.type === 'image' && (

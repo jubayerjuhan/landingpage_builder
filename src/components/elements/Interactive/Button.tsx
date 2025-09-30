@@ -12,7 +12,7 @@ export const Button: React.FC<ButtonProps> = ({ element }) => {
   const { viewportMode, previewMode } = useCanvasStore();
   const styles = getElementStyles(element, viewportMode);
   const content = getElementContent(element);
-  
+
   const variant = (element.properties?.component as any)?.variant || 'primary';
   const size = (element.properties?.component as any)?.size || 'md';
   
@@ -61,13 +61,39 @@ export const Button: React.FC<ButtonProps> = ({ element }) => {
     },
   };
   
+  // Extract spacing from properties
+  const spacing = element.properties?.spacing;
+  const spacingStyles: React.CSSProperties = {};
+
+  // Apply padding from properties
+  if (spacing?.padding) {
+    spacingStyles.padding = spacing.padding;
+  } else if (spacing?.paddingTop || spacing?.paddingRight || spacing?.paddingBottom || spacing?.paddingLeft) {
+    spacingStyles.paddingTop = spacing.paddingTop || '0';
+    spacingStyles.paddingRight = spacing.paddingRight || '0';
+    spacingStyles.paddingBottom = spacing.paddingBottom || '0';
+    spacingStyles.paddingLeft = spacing.paddingLeft || '0';
+  }
+
+  // Apply margin from properties
+  if (spacing?.margin) {
+    spacingStyles.margin = spacing.margin;
+  } else if (spacing?.marginTop || spacing?.marginRight || spacing?.marginBottom || spacing?.marginLeft) {
+    spacingStyles.marginTop = spacing.marginTop || '0';
+    spacingStyles.marginRight = spacing.marginRight || '0';
+    spacingStyles.marginBottom = spacing.marginBottom || '0';
+    spacingStyles.marginLeft = spacing.marginLeft || '0';
+  }
+
   const buttonStyles: React.CSSProperties = {
     ...baseStyles,
-    ...sizeStyles[size as keyof typeof sizeStyles],
-    ...variantStyles[variant as keyof typeof variantStyles],
-    ...styles,
+    ...styles, // Apply custom styles first
+    ...sizeStyles[size as keyof typeof sizeStyles], // Then size styles
+    ...variantStyles[variant as keyof typeof variantStyles], // Then variant styles (this ensures variant colors override custom styles)
+    ...spacingStyles, // Finally apply spacing from properties
   };
   
+  // Use values from getElementContent (which handles all the complex extraction logic)
   const text = content.text || 'Click me';
   const href = content.href || '#';
   

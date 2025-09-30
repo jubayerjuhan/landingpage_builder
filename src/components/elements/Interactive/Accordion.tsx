@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import type { BuilderElement } from '../../../types/builder';
 import { ElementWrapper } from '../ElementWrapper';
 import { getElementStyles } from '../../../utils/styleUtils';
@@ -12,15 +12,44 @@ interface AccordionProps {
 export const Accordion: React.FC<AccordionProps> = ({ element }) => {
   const { viewportMode, previewMode } = useCanvasStore();
   const styles = getElementStyles(element, viewportMode);
-  const [openItems, setOpenItems] = useState<Set<number>>(new Set([0]));
-  
-  const items = (element.properties?.component as any)?.items || [
-    { title: 'Accordion Item 1', content: 'This is the content for the first accordion item.' },
-    { title: 'Accordion Item 2', content: 'This is the content for the second accordion item.' },
-    { title: 'Accordion Item 3', content: 'This is the content for the third accordion item.' },
-  ];
-  
-  const allowMultiple = (element.properties?.component as any)?.allowMultiple !== false;
+  const componentConfig = (element.properties?.component || {}) as Record<string, unknown>;
+
+  const items = useMemo(() => {
+    const rawItems = componentConfig.items;
+    if (Array.isArray(rawItems) && rawItems.length > 0) {
+      return rawItems as Array<{ title?: string; content?: string }>;
+    }
+    return [
+      {
+        title: 'Accordion Item 1',
+        content: 'This is the content for the first accordion item.'
+      },
+      {
+        title: 'Accordion Item 2',
+        content: 'This is the content for the second accordion item.'
+      },
+      {
+        title: 'Accordion Item 3',
+        content: 'This is the content for the third accordion item.'
+      }
+    ];
+  }, [componentConfig.items]);
+
+  const allowMultiple = componentConfig.allowMultiple !== false;
+
+  const defaultOpen = useMemo(() => {
+    const raw = componentConfig.defaultOpen;
+    if (Array.isArray(raw) && raw.length > 0) {
+      return new Set(raw.filter((value) => Number.isInteger(value)) as number[]);
+    }
+    return new Set<number>(items.length > 0 ? [0] : []);
+  }, [componentConfig.defaultOpen, items.length]);
+
+  const [openItems, setOpenItems] = useState<Set<number>>(defaultOpen);
+
+  useEffect(() => {
+    setOpenItems(defaultOpen);
+  }, [defaultOpen]);
   
   const accordionStyles: React.CSSProperties = {
     border: '1px solid #e5e7eb',
@@ -30,8 +59,6 @@ export const Accordion: React.FC<AccordionProps> = ({ element }) => {
   };
   
   const toggleItem = (index: number) => {
-    if (previewMode === 'edit') return;
-    
     const newOpenItems = new Set(openItems);
     
     if (newOpenItems.has(index)) {
@@ -55,6 +82,7 @@ export const Accordion: React.FC<AccordionProps> = ({ element }) => {
           return (
             <div key={index}>
               <button
+                type="button"
                 onClick={() => toggleItem(index)}
                 style={{
                   width: '100%',
@@ -63,7 +91,7 @@ export const Accordion: React.FC<AccordionProps> = ({ element }) => {
                   backgroundColor: 'white',
                   border: 'none',
                   borderBottom: index < items.length - 1 || isOpen ? '1px solid #e5e7eb' : 'none',
-                  cursor: previewMode === 'preview' ? 'pointer' : 'default',
+                  cursor: 'pointer',
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
